@@ -67,3 +67,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+.custom-gradient {
+  background: radial-gradient(circle at 20% 30%, #0b3ceb, transparent 20%),
+    radial-gradient(circle at 80% 70%, #669ae8, transparent 20%),
+    linear-gradient(to right, #0b3ceb, #669ae8);
+}
