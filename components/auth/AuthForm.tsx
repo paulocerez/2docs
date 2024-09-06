@@ -1,16 +1,16 @@
 import { Button } from "../ui/button";
 import SignIn from "./sign-in";
-import { Mail } from "lucide-react";
 
 export default function AuthForm() {
   return (
-    <div className="flex flex-col md:flex-row space-x-4 w-full justify-center items-center">
-      <div>
-        <SignIn />
-      </div>
-      <div>
-        <Button variant="outline">Sign in using Mail</Button>
-      </div>
+    <div className="flex flex-col space-y-6 sm:space-y-0 sm:flex-row w-full sm:w-fit sm:space-x-8 items-center ">
+      <SignIn />
+      <Button
+        variant="outline"
+        className="w-full sm:w-40 flex items-center justify-center"
+      >
+        Sign in using Mail
+      </Button>
     </div>
   );
 }

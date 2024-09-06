@@ -3,15 +3,22 @@ import { Button } from "../ui/button";
 
 export default function SignIn() {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signIn("google");
-      }}
-    >
-      <Button type="submit" variant="outline">
-        Signin with Google
-      </Button>
-    </form>
+    <div className="w-full">
+      <form
+        action={async () => {
+          "use server";
+          await signIn("google");
+        }}
+      >
+        <Button
+          type="submit"
+          variant="outline"
+          className="w-full sm:w-40 flex items-center justify-center"
+        >
+          {/* <GoogleIcon className="mr-2" /> */}
+          Sign in with Google
+        </Button>
+      </form>
+    </div>
   );
 }
