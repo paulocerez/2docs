@@ -1,16 +1,26 @@
 version: "3.8"
 services:
   db:
-    image: postgres:13
+    container_name: 2docs-db
+    image: postgres
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: 2docs_db
+      POSTGRES_PASSWORD: 2docs
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - db-data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 2docs@2docs.com
+      PGADMIN_DEFAULT_PASSWORD: 2docs
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
 volumes:
-  postgres_data:
+  db-data:
+  pgadmin-data:
+# https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5
