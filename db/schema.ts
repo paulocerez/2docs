@@ -50,6 +50,7 @@ export const sessions = pgTable("session", {
 	  identifier: text("identifier").notNull(),
 	  token: text("token").notNull(),
 	  expires: timestamp("expires", { mode: "date" }).notNull(),
+	  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
 	},
 	(verificationToken) => ({
 	  compositePk: primaryKey({
@@ -148,6 +149,18 @@ export const httpMethods = pgTable("http_method", {
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 
+export type InsertAccount = typeof accounts.$inferInsert;
+export type SelectAccount = typeof accounts.$inferSelect;
+
+export type InsertSession = typeof sessions.$inferInsert;
+export type SelectSession = typeof sessions.$inferSelect;
+
+export type InsertVerificationToken = typeof verificationTokens.$inferInsert;
+export type SelectVerificationToken = typeof verificationTokens.$inferSelect;
+
+export type InsertAuthenticator = typeof authenticators.$inferInsert;
+export type SelectAuthenticator = typeof authenticators.$inferSelect;
+
 export type InsertChatSession = typeof chatSessions.$inferInsert;
 export type SelectChatSession = typeof chatSessions.$inferSelect;
 
@@ -163,5 +176,5 @@ export type SelectApiDocumentation = typeof apiDocumentations.$inferSelect;
 export type InsertEndpoint = typeof endpoints.$inferInsert;
 export type SelectEndpoint = typeof endpoints.$inferSelect;
 
-export type InsertOperation = typeof httpMethods.$inferInsert;
-export type SelectOperation = typeof httpMethods.$inferSelect;
+export type InsertHttpMethod = typeof httpMethods.$inferInsert;
+export type SelectHttpMethod = typeof httpMethods.$inferSelect;
