@@ -6,7 +6,7 @@ import { ModeToggle } from "../mode-toggle";
 const chats = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const chatItems = chats.map((chat) => (
   <li key={chat} className="hover:bg-gray-100 rounded-md px-2">
-    {chat}: Chat
+    {chat}: Chat topic
   </li>
 ));
 
@@ -18,7 +18,7 @@ export default function DesktopSidebar({
     <div className="flex">
       <div
         className={`fixed top-0 left-0 h-full border-r border-slate-100 text-black transition-transform duration-300 ${
-          isSidebarOpen ? "w-1/5" : "w-0"
+          isSidebarOpen ? "w-2/5 lg:w-1/5" : "w-0"
         } overflow-hidden`}
       >
         {/* Entire Sidebar */}
