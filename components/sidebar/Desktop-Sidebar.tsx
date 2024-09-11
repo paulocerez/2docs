@@ -7,9 +7,9 @@ export default function DesktopSidebar({
   toggleSidebar,
 }: DesktopHeaderProps) {
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       <div
-        className={`fixed top-0 left-0 h-full bg-zinc-50 text-black transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full border-r border-slate-100 text-black transition-transform duration-300 ${
           isSidebarOpen ? "w-1/5" : "w-0"
         } overflow-hidden`}
       >
@@ -17,9 +17,12 @@ export default function DesktopSidebar({
           <div className="flex flex-row justify-between items-center">
             <h2 className="text-xl font-bold">Sidebar</h2>
             {isSidebarOpen && (
-              <Button onClick={toggleSidebar} variant="ghost" className="p-2">
+              <button
+                onClick={toggleSidebar}
+                className=" p-2 rounded-md hover:bg-slate-50"
+              >
                 <FiSidebar />
-              </Button>
+              </button>
             )}
           </div>
           <ul className="mt-4 space-y-2">
