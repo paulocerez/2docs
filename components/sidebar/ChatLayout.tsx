@@ -11,29 +11,27 @@ export default function ChatLayout() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <DesktopHeader
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-      />
-      <div className="flex flex-row flex-grow">
-        <div
-          className={`transition-all duration-300 ${
-            isSidebarOpen ? "w-1/5" : "w-0"
-          }`}
-        >
-          <DesktopSidebar
-            isSidebarOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-          />
-        </div>
-        <div
-          className={`flex-grow transition-all duration-300 ${
-            isSidebarOpen ? "w-4/5" : "w-full"
-          }`}
-        >
-          <Chat />
-        </div>
+    <div className="flex h-screen">
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarOpen ? "w-1/5" : "w-0"
+        }`}
+      >
+        <DesktopSidebar
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
+      </div>
+      <div
+        className={`flex flex-col flex-grow transition-all duration-300 ${
+          isSidebarOpen ? "w-4/5" : "w-full"
+        }`}
+      >
+        <DesktopHeader
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
+        <Chat />
       </div>
     </div>
   );

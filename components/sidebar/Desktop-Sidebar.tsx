@@ -1,6 +1,14 @@
 import { DesktopHeaderProps } from "@/types/Header";
-import { Button } from "../ui/button";
 import { FiSidebar } from "react-icons/fi";
+import AccountSelect from "./AccountSelect";
+import { ModeToggle } from "../mode-toggle";
+
+const chats = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const chatItems = chats.map((chat) => (
+  <li key={chat} className="hover:bg-gray-100 rounded-md px-2">
+    {chat}: Chat
+  </li>
+));
 
 export default function DesktopSidebar({
   isSidebarOpen,
@@ -13,40 +21,24 @@ export default function DesktopSidebar({
           isSidebarOpen ? "w-1/5" : "w-0"
         } overflow-hidden`}
       >
-        <div className="p-4">
-          <div className="flex flex-row justify-between items-center">
-            <h2 className="text-xl font-bold">Sidebar</h2>
-            {isSidebarOpen && (
-              <button
-                onClick={toggleSidebar}
-                className=" p-2 rounded-md hover:bg-slate-50"
-              >
-                <FiSidebar />
-              </button>
-            )}
+        {/* Entire Sidebar */}
+        <div className="flex flex-col justify-between p-4 h-full">
+          <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-row justify-between items-center">
+              <AccountSelect />
+              {isSidebarOpen && (
+                <button
+                  onClick={toggleSidebar}
+                  className=" p-2 rounded-md hover:bg-slate-50"
+                >
+                  <FiSidebar />
+                </button>
+              )}
+            </div>
+            <ul className="space-y-2">{chatItems}</ul>
           </div>
-          <ul className="mt-4 space-y-2">
-            <li>
-              <a href="#" className="block">
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block">
-                Profile
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block">
-                Settings
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block">
-                Logout
-              </a>
-            </li>
-          </ul>
+          <ModeToggle />
         </div>
       </div>
     </div>

@@ -5,7 +5,6 @@ export default function DesktopHeader({
   isSidebarOpen,
   toggleSidebar,
 }: DesktopHeaderProps) {
-  if (isSidebarOpen) return null;
   return (
     <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100">
       {!isSidebarOpen && (
