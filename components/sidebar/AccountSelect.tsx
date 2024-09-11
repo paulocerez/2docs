@@ -14,7 +14,7 @@ export default function AccountSelect() {
   return (
     <Select>
       <SelectTrigger className="w-[100px] h-[32px]">
-        <SelectValue placeholder="Account name" />
+        <SelectValue placeholder="Account" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

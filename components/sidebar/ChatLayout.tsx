@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import DesktopHeader from "../header/Desktop-Header";
-import DesktopSidebar from "./Desktop-Sidebar";
+import Sidebar from "./Sidebar";
 import Chat from "../chat/Chat";
+import Header from "../header/Header";
 
 export default function ChatLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -14,23 +14,17 @@ export default function ChatLayout() {
     <div className="flex h-screen">
       <div
         className={`transition-all duration-300 ${
-          isSidebarOpen ? "w-2/5 lg:w-1/5" : "w-0"
+          isSidebarOpen ? "w-full sm:w-2/5 lg:w-1/5" : "w-0"
         }`}
       >
-        <DesktopSidebar
-          isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
+        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       </div>
       <div
         className={`flex flex-col flex-grow transition-all duration-300 ${
-          isSidebarOpen ? "w-3/5 lg:w-4/5" : "w-full"
+          isSidebarOpen ? "hidden sm:flex sm:w-3/5 lg:w-4/5" : "w-full"
         }`}
       >
-        <DesktopHeader
-          isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
+        <Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <Chat isSidebarOpen={isSidebarOpen} />
       </div>
     </div>

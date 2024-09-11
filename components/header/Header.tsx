@@ -1,19 +1,26 @@
-"use client";
-import { useState } from "react";
-import DesktopHeader from "./Desktop-Header";
-import MobileHeader from "./Mobile-Header";
+import { DesktopHeaderProps } from "@/types/Header";
+import { FiSidebar } from "react-icons/fi";
 
-export default function Header() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
+export default function DesktopHeader({
+  isSidebarOpen,
+  toggleSidebar,
+}: DesktopHeaderProps) {
   return (
-    <>
-      <DesktopHeader isSidebarOpen={false} toggleSidebar={toggleSidebar} />
-      <MobileHeader />
-    </>
+    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100">
+      <div className="flex items-center">
+        {!isSidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md hover:bg-slate-50"
+          >
+            <FiSidebar />
+          </button>
+        )}
+        {/* Placeholder to maintain spacing when sidebar is open */}
+        {isSidebarOpen && <div className="w-8"></div>}
+      </div>
+      <h1 className="text-sm font-semibold">New chat</h1>
+      <h1 className="text-sm">Id #12324</h1>
+    </div>
   );
 }
