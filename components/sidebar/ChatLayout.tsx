@@ -6,6 +6,11 @@ import Header from "../header/Header";
 
 export default function ChatLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [userInputs, setUserInputs] = useState<string[]>(["", ""]);
+  const [prompt, setPrompt] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [chatResponse, setChatResponse] = useState<string>("");
+
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
