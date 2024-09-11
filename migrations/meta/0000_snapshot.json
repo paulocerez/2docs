@@ -1,5 +1,5 @@
 {
-  "id": "f2eedd97-37c3-46e7-b707-e553fa15d5e7",
+  "id": "ba5a7daf-7c69-46d7-9391-55ba44cd9424",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -634,10 +634,30 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "verificationToken_user_id_user_id_fk": {
+          "name": "verificationToken_user_id_user_id_fk",
+          "tableFrom": "verificationToken",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "verificationToken_identifier_token_pk": {
           "name": "verificationToken_identifier_token_pk",
