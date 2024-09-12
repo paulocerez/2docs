@@ -3,13 +3,64 @@ import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { RiAddLargeFill } from "react-icons/ri";
 import { TiFlowSwitch } from "react-icons/ti";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   const [additionalInputFields, setAdditionalInputFields] = useState<number>(0);
+  const [userInputs, setUserInputs] = useState<string[]>(["", ""]);
+  const [prompt, setPrompt] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [chatResponse, setChatResponse] = useState<string>("");
+
+  /* What needs to be done
+	- adding input field on button click + add the element to the userInputs state, so that it can be sent to the server
+	- setLoading state to true once the request is being made and set to false once it receives the response
+	- adding the prompt into the prompt state
+	- setChatResponse based on server route
+	- setPrompt based on user input
+*/
 
   const addInputField = () => {
+    setUserInputs([...userInputs, ""]);
     setAdditionalInputFields((prev) => prev + 1);
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const sessionId = uuidv4();
+
+    setTimeout(async () => {
+      const response = "This is a generated response based on your prompt.";
+      setChatResponse(response);
+      setLoading(false);
+
+      // Store the session in the database
+      const session = {
+        id: sessionId,
+        userInputs,
+        prompt,
+        response,
+      };
+      await fetch("/api/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(session),
+      });
+    }, 2000);
+  };
+
+  const handleInputChange = (index: number, value: string) => {
+    const newInputs = [...userInputs];
+    newInputs[index] = value;
+    setUserInputs(newInputs);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col p-4 h-full text-center items-center justify-between space-y-4">
@@ -28,20 +79,12 @@ export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
 
         {/* Message Interface */}
         <div className="flex flex-col items-center space-y-8 w-full">
-          <input
-            type="text"
-            placeholder="Insert API Doc link here"
-            className="p-2 text-xs rounded-md w-full border border-gray-100"
-          />
-          <input
-            type="text"
-            placeholder="Insert API Doc link here"
-            className="p-2 text-xs rounded-md w-full border border-gray-100"
-          />
-          {Array.from({ length: additionalInputFields }).map((_, index) => (
+          {userInputs.map((input, index) => (
             <input
               key={index}
               type="text"
+              value={input}
+              onChange={(e) => handleInputChange(index, e.target.value)}
               placeholder="Insert API Doc link here"
               className="p-2 text-xs rounded-md w-full border border-gray-100"
             />
@@ -60,12 +103,13 @@ export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         <p className="text-gray-500 text-xs">Insert a prompt to get started</p>
         <form
           className="mt-4 relative flex flex-row items-center"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={handleSubmit}
         >
           <textarea
             placeholder="What should the workflow do?"
             className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12"
             rows={1}
+            onChange={(e) => setPrompt(e.target.value)}
           />
           <button
             type="submit"

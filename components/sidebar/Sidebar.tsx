@@ -2,6 +2,7 @@ import { DesktopHeaderProps } from "@/types/Header";
 import { FiSidebar } from "react-icons/fi";
 import AccountSelect from "./AccountSelect";
 import { ModeToggle } from "../mode-toggle";
+import { useCallback, useState } from "react";
 
 const chats = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const chatItems = chats.map((chat) => (
@@ -14,6 +15,34 @@ export default function Sidebar({
   isSidebarOpen,
   toggleSidebar,
 }: DesktopHeaderProps) {
+  const [chatSessions, setChatSessions] = useState([]);
+
+  const createChatSession = useCallback(
+    async (userId: number, prompt: string) => {
+      try {
+        const response = await fetch("/api/chat-sessions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, prompt }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to create chat session");
+        }
+
+        const newSession = await response.json();
+        setChatSessions((prevSessions) => [...prevSessions, newSession]);
+        return newSession;
+      } catch (error) {
+        console.error("Error creating chat session:", error);
+        throw error;
+      }
+    },
+    []
+  );
+
   return (
     <div
       className={`fixed top-0 left-0 h-full border-r border-slate-100 text-black transition-transform duration-300 ${
@@ -24,7 +53,7 @@ export default function Sidebar({
       <div className="flex flex-col justify-between p-8 sm:p-4 h-full">
         <div className="space-y-12 sm:space-y-8">
           {/* Header */}
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center ">
             <AccountSelect />
             {isSidebarOpen && (
               <button
@@ -35,6 +64,12 @@ export default function Sidebar({
               </button>
             )}
           </div>
+          <button
+            className="border rounded-md p-2 w-full text-sm hover:bg-gray-100"
+            onClick={createNewChatSession}
+          >
+            Create new workflow
+          </button>
           <ul className="space-y-6 sm:space-y-2">{chatItems}</ul>
         </div>
         <ModeToggle />
