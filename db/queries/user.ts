@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { InsertUser, users } from "../schema";
+import { InsertUser, users } from "../schema/users";
 import { eq, and } from "drizzle-orm"
 
 export async function createUser(data: InsertUser) {
