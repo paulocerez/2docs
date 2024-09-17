@@ -1,10 +1,8 @@
-import { DesktopHeaderProps } from "@/types/Header";
+import { useSidebar } from "@/lib/hooks/use-sidebar";
 import { FiSidebar } from "react-icons/fi";
 
-export default function DesktopHeader({
-  isSidebarOpen,
-  toggleSidebar,
-}: DesktopHeaderProps) {
+export default function Header() {
+  const { isSidebarOpen, toggleSidebar } = useSidebar();
   return (
     <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100">
       <div className="flex items-center">

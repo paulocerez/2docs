@@ -1,4 +1,4 @@
-import { db } from "../client";
+import { db } from "../db";
 import { InsertUser, users } from "../schema";
 import { eq, and } from "drizzle-orm"
 

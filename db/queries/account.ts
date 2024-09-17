@@ -1,4 +1,4 @@
-import { db } from "../client";
+import { db } from "../db";
 import { accounts, InsertAccount} from "../schema";
 
 export async function createAccount(data: InsertAccount) {

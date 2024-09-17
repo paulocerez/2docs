@@ -1,32 +1,24 @@
 "use client";
-import { useState } from "react";
-import Sidebar from "./Sidebar";
-import Chat from "../chat/Chat";
+
+import { useSession } from "next-auth/react";
+import { SidebarProvider } from "@/lib/hooks/use-sidebar";
+import SidebarWrapper from "./SidebarWrapper";
 import Header from "../header/Header";
+import Chat from "../chat/Chat";
 
 export default function ChatLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const { data: session } = useSession();
+  const sessionId = session?.user?.id;
 
   return (
-    <div className="flex h-screen">
-      <div
-        className={`transition-all duration-300 ${
-          isSidebarOpen ? "w-full sm:w-2/5 lg:w-1/5" : "w-0"
-        }`}
-      >
-        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <SidebarProvider>
+      <div className="flex h-screen">
+        {sessionId && <SidebarWrapper sessionId={sessionId} />}
+        <div className="flex flex-col flex-grow">
+          <Header />
+          <Chat />
+        </div>
       </div>
-      <div
-        className={`flex flex-col flex-grow transition-all duration-300 ${
-          isSidebarOpen ? "hidden sm:flex sm:w-3/5 lg:w-4/5" : "w-full"
-        }`}
-      >
-        <Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <Chat isSidebarOpen={isSidebarOpen} />
-      </div>
-    </div>
+    </SidebarProvider>
   );
 }

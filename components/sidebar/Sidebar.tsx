@@ -1,79 +1,77 @@
-import { DesktopHeaderProps } from "@/types/Header";
-import { FiSidebar } from "react-icons/fi";
+"use client";
+import * as React from "react";
+import Link from "next/link";
+import { useSidebar } from "@/lib/hooks/use-sidebar";
+import { SelectChat } from "@/db/schema";
 import AccountSelect from "./AccountSelect";
 import { ModeToggle } from "../mode-toggle";
-import { useCallback, useState } from "react";
 
-const chats = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const chatItems = chats.map((chat) => (
-  <li key={chat} className="hover:bg-gray-100 rounded-md px-2">
-    {chat}: Chat topic
-  </li>
-));
+interface SidebarProps extends React.ComponentProps<"div"> {
+  sessionId: string;
+  initialChats: SelectChat[];
+}
 
-export default function Sidebar({
-  isSidebarOpen,
-  toggleSidebar,
-}: DesktopHeaderProps) {
-  const [chatSessions, setChatSessions] = useState([]);
+export function Sidebar({ className, sessionId, initialChats }: SidebarProps) {
+  const { isSidebarOpen, toggleSidebar } = useSidebar();
+  const [chats, setChats] = React.useState<SelectChat[]>(initialChats);
 
-  const createChatSession = useCallback(
-    async (userId: number, prompt: string) => {
-      try {
-        const response = await fetch("/api/chat-sessions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, prompt }),
-        });
+  const createChat = React.useCallback(
+    async (prompt: string) => {
+      if (sessionId) {
+        try {
+          const response = await fetch("/api/chats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: sessionId, prompt }),
+          });
 
-        if (!response.ok) {
-          throw new Error("Failed to create chat session");
+          if (!response.ok) {
+            throw new Error("Failed to create chat");
+          }
+
+          const newChat: SelectChat = await response.json();
+          setChats((prevChats) => [...prevChats, newChat]);
+
+          return newChat;
+        } catch (error) {
+          console.error("Error creating chat session:", error);
         }
-
-        const newSession = await response.json();
-        setChatSessions((prevSessions) => [...prevSessions, newSession]);
-        return newSession;
-      } catch (error) {
-        console.error("Error creating chat session:", error);
-        throw error;
       }
     },
-    []
+    [sessionId]
   );
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full border-r border-slate-100 text-black transition-transform duration-300 ${
-        isSidebarOpen ? "w-full sm:w-2/5 lg:w-1/5" : "w-0"
-      } overflow-hidden`}
+      className={`flex flex-col justify-between p-4 h-full w-full ${className}`}
     >
-      {/* Entire Sidebar */}
-      <div className="flex flex-col justify-between p-8 sm:p-4 h-full">
-        <div className="space-y-12 sm:space-y-8">
-          {/* Header */}
-          <div className="flex flex-row justify-between items-center ">
-            <AccountSelect />
-            {isSidebarOpen && (
-              <button
-                onClick={toggleSidebar}
-                className="p-2 rounded-md hover:bg-slate-50"
-              >
-                <FiSidebar />
-              </button>
-            )}
-          </div>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <AccountSelect />
           <button
-            className="border rounded-md p-2 w-full text-sm hover:bg-gray-100"
-            onClick={createNewChatSession}
+            onClick={toggleSidebar}
+            className="p-2 rounded-md hover:bg-slate-50"
           >
-            Create new workflow
+            {/* Add sidebar toggle icon */}
           </button>
-          <ul className="space-y-6 sm:space-y-2">{chatItems}</ul>
         </div>
-        <ModeToggle />
+        <button
+          className="w-full p-2 text-left border rounded-md hover:bg-gray-100"
+          onClick={() => createChat("New chat")}
+        >
+          Create new chat
+        </button>
+        <ul className="space-y-2">
+          {chats.map((chat) => (
+            <li key={chat.id} className="hover:bg-gray-100 rounded-md">
+              <Link href={`/chat/${chat.id}`} className="block p-2">
+                {chat.prompt}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
+      <ModeToggle />
     </div>
   );
 }

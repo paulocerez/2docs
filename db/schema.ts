@@ -1,10 +1,10 @@
-import { boolean, integer, pgTable, primaryKey, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, primaryKey, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters"
 
 
 // User Table
 export const users = pgTable("user", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").notNull().unique(),
@@ -80,11 +80,10 @@ export const sessions = pgTable("session", {
 	})
   )
 
-
-// Chat Session Table
-export const chatSessions = pgTable("chat_session", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
+// Chat Table
+export const chats = pgTable("chat_session", {
+	id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   startedAt: timestamp("started_at").notNull().defaultNow(),
@@ -94,21 +93,21 @@ export const chatSessions = pgTable("chat_session", {
 
 // Message Table
 export const messages = pgTable("message", {
-  id: serial("id").primaryKey(),
+	id: uuid("id").defaultRandom().primaryKey(),
   sessionId: integer("session_id")
     .notNull()
-    .references(() => chatSessions.id, { onDelete: "cascade" }),
+    .references(() => chats.id, { onDelete: "cascade" }),
   sender: text("sender").notNull(),
   content: text("content").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
 // Scrape Session Table
-export const scrapeSessions = pgTable("scrape_session", {
-  id: serial("id").primaryKey(),
+export const scrapes = pgTable("scrape_session", {
+	id: uuid("id").defaultRandom().primaryKey(),
   sessionId: integer("session_id")
     .notNull()
-    .references(() => chatSessions.id, { onDelete: "cascade" }),
+    .references(() => chats.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
   scrapedContent: text("scraped_content").notNull(),
   scrapedAt: timestamp("scraped_at").notNull().defaultNow(),
@@ -116,10 +115,10 @@ export const scrapeSessions = pgTable("scrape_session", {
 
 // API Documentation Table
 export const apiDocumentations = pgTable("api_documentation", {
-  id: serial("id").primaryKey(),
+	id: uuid("id").defaultRandom().primaryKey(),
   scrapeId: integer("scrape_id")
     .notNull()
-    .references(() => scrapeSessions.id, { onDelete: "cascade" }),
+    .references(() => scrapes.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   overview: text("overview").notNull(),
   baseUrl: text("base_url").notNull(),
@@ -128,7 +127,7 @@ export const apiDocumentations = pgTable("api_documentation", {
 
 // Endpoint Table
 export const endpoints = pgTable("endpoint", {
-  id: serial("id").primaryKey(),
+	id: uuid("id").defaultRandom().primaryKey(),
   docId: integer("doc_id")
     .notNull()
     .references(() => apiDocumentations.id, { onDelete: "cascade" }),
@@ -141,7 +140,7 @@ export const endpoints = pgTable("endpoint", {
 
 // Operation Table
 export const httpMethods = pgTable("http_method", {
-  id: serial("id").primaryKey(),
+	id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
 });
 
@@ -161,14 +160,14 @@ export type SelectVerificationToken = typeof verificationTokens.$inferSelect;
 export type InsertAuthenticator = typeof authenticators.$inferInsert;
 export type SelectAuthenticator = typeof authenticators.$inferSelect;
 
-export type InsertChatSession = typeof chatSessions.$inferInsert;
-export type SelectChatSession = typeof chatSessions.$inferSelect;
+export type InsertChat = typeof chats.$inferInsert;
+export type SelectChat = typeof chats.$inferSelect;
 
 export type InsertMessage = typeof messages.$inferInsert;
 export type SelectMessage = typeof messages.$inferSelect;
 
-export type InsertScrapeSession = typeof scrapeSessions.$inferInsert;
-export type SelectScrapeSession = typeof scrapeSessions.$inferSelect;
+export type InsertScrape = typeof scrapes.$inferInsert;
+export type SelectScrape = typeof scrapes.$inferSelect;
 
 export type InsertApiDocumentation = typeof apiDocumentations.$inferInsert;
 export type SelectApiDocumentation = typeof apiDocumentations.$inferSelect;

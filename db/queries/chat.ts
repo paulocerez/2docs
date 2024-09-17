@@ -1,14 +1,14 @@
-import { db } from "../client";
-import { chatSessions, InsertChatSession } from "../schema";
-import { eq } from "drizzle-orm"
+import { db } from "../db";
+import { chats, InsertChat, SelectChat } from "../schema";
+import { eq } from "drizzle-orm";
 
-export async function createChatSession(sessionData: InsertChatSession) {
+export async function createChat(chatData: InsertChat) {
 	// destructuring the variable as returning () returns an array -> returns the first element/object of the array (that only has one element in total)
-	const [newSession] = await db.insert(chatSessions).values(sessionData).returning();
-	return newSession
+	const [newChat] = await db.insert(chats).values(chatData).returning();
+	return newChat
   }
 
-  export async function getChatSessionsByUserId(userId: number) {
-	await db.select().from(chatSessions).where(eq(chatSessions.userId, userId))
+  export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
+	return await db.select().from(chats).where(eq(chats.userId, userId))
   }
 

@@ -4,21 +4,15 @@ import { FaArrowRight } from "react-icons/fa";
 import { RiAddLargeFill } from "react-icons/ri";
 import { TiFlowSwitch } from "react-icons/ti";
 import { v4 as uuidv4 } from "uuid";
+import { useSidebar } from "@/lib/hooks/use-sidebar";
 
-export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+export default function Chat() {
+  const { isSidebarOpen } = useSidebar();
   const [additionalInputFields, setAdditionalInputFields] = useState<number>(0);
   const [userInputs, setUserInputs] = useState<string[]>(["", ""]);
   const [prompt, setPrompt] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [chatResponse, setChatResponse] = useState<string>("");
-
-  /* What needs to be done
-	- adding input field on button click + add the element to the userInputs state, so that it can be sent to the server
-	- setLoading state to true once the request is being made and set to false once it receives the response
-	- adding the prompt into the prompt state
-	- setChatResponse based on server route
-	- setPrompt based on user input
-*/
 
   const addInputField = () => {
     setUserInputs([...userInputs, ""]);
@@ -72,12 +66,11 @@ export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         <TiFlowSwitch className="text-4xl" />
         <div className="w-full">
           <h1 className="font-medium lg:font-semibold md:text-2xl leading-6 lg:leading-8">
-            Combine two or more API's into seamless code workflows by inserting
-            their API Doc links and defining a prompt.
+            Combine two or more API&apos;s into seamless code workflows by
+            inserting their API Doc links and defining a prompt.
           </h1>
         </div>
 
-        {/* Message Interface */}
         <div className="flex flex-col items-center space-y-8 w-full">
           {userInputs.map((input, index) => (
             <input
@@ -98,7 +91,6 @@ export default function Chat({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         </div>
       </div>
 
-      {/* Prompt Interface */}
       <div className="rounded-lg border border-gray-100 p-4 w-full max-w-3xl mx-auto">
         <p className="text-gray-500 text-xs">Insert a prompt to get started</p>
         <form
