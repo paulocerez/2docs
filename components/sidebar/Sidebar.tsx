@@ -1,17 +1,12 @@
-import { ModeToggle } from "../mode-toggle";
 import { SidebarProps } from "@/types/types";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import { createChat } from "@/db/queries/chat";
 import SidebarChatList from "../chat/SidebarChatList";
 
-export function Sidebar({
-  sessionId,
-  chats,
-  addChat,
-  isSidebarOpen,
-  toggleSidebar,
-}: SidebarProps) {
+export function Sidebar(props: SidebarProps) {
+  const { sessionId, addChat, isSidebarOpen, toggleSidebar } = props;
+
   const handleCreateNewChat = async () => {
     try {
       const newChat = await createChat({
@@ -35,11 +30,11 @@ export function Sidebar({
         <SidebarHeader toggleSidebar={toggleSidebar} />
         <button
           onClick={handleCreateNewChat}
-          className="w-full p-2 text-left border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="w-full p-2 text-center text-sm border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
         >
           Create new chat
         </button>
-        <SidebarChatList chats={chats} />
+        <SidebarChatList {...props} />
       </div>
       <SidebarFooter />
     </div>

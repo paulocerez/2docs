@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../header/Header";
 import Chat from "./Chat";
 import { Sidebar } from "../sidebar/Sidebar";
@@ -10,18 +10,29 @@ import { ChatLayoutProps } from "@/types/types";
 export default function ChatLayout({
   sessionId,
   initialChats,
+  initialChatId,
 }: ChatLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [chats, setChats] = useState<SelectChat[]>(initialChats);
   const [currentChatId, setCurrentChatId] = useState<string | undefined>(
     undefined
   );
+  const [currentChatTopic, setCurrentChatTopic] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (initialChatId) {
+      setCurrentChatId(initialChatId);
+    }
+  }, [initialChatId]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const addChat = (newChat: SelectChat) => {
     setChats((prevChats) => [...prevChats, newChat]);
     setCurrentChatId(newChat.id);
+    setCurrentChatTopic(newChat.prompt);
   };
 
   return (
@@ -32,13 +43,20 @@ export default function ChatLayout({
         addChat={addChat}
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
+        setCurrentChatId={setCurrentChatId}
+        currentChatId={currentChatId}
       />
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
-        <Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Header
+          currentChatId={currentChatId}
+          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+          currentChatTopic={currentChatTopic}
+        />
         <Chat sessionId={sessionId} currentChatId={currentChatId} />
       </div>
     </div>

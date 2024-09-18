@@ -1,23 +1,19 @@
-// import { signOut } from "@/auth";
-// import { Button } from "../ui/button";
+import { signOut } from "@/auth";
+import { IoLogOutOutline } from "react-icons/io5";
 
-// export function SignOut() {
-//   return (
-//     <div className="w-full">
-//       <form
-//         action={async () => {
-//           "use server";
-//           await signOut();
-//         }}
-//       >
-//         <Button
-//           type="submit"
-//           variant="outline"
-//           className="w-full sm:w-40 flex items-center justify-center"
-//         >
-//           Sign out
-//         </Button>
-//       </form>
-//     </div>
-//   );
-// }
+export function SignOut() {
+  return (
+    <form
+      action={async () => {
+        await signOut();
+      }}
+    >
+      <button
+        type="submit"
+        className="flex items-center justify-center border p-2.5 rounded-md hover:bg-gray-100 bg-white dark:bg-black"
+      >
+        <IoLogOutOutline />
+      </button>
+    </form>
+  );
+}

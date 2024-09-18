@@ -1,14 +1,15 @@
+import { HeaderProps } from "@/types/types";
 import React from "react";
 import { FiSidebar } from "react-icons/fi";
 
-interface HeaderProps {
-  isSidebarOpen: boolean;
-  toggleSidebar: () => void;
-}
-
-export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
+export default function Header({
+  isSidebarOpen,
+  toggleSidebar,
+  currentChatId,
+  currentChatTopic,
+}: HeaderProps) {
   return (
-    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100">
+    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100 dark:border-gray-700">
       <div className="flex items-center">
         {!isSidebarOpen && (
           <button
@@ -20,8 +21,12 @@ export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
         )}
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
-      <h1 className="text-sm font-semibold">New chat</h1>
-      <h1 className="text-sm">Id #12324</h1>
+      <h1 className="text-sm font-semibold">
+        {currentChatTopic || "New topic"}
+      </h1>
+      <h1 className="text-sm">
+        {currentChatId ? `Chat: ${currentChatId.slice(-5)}` : "New id"}
+      </h1>
     </div>
   );
 }

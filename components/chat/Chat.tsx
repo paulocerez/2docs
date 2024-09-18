@@ -2,18 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { SelectChat } from "@/db/schema/chats";
-
-interface ChatProps {
-  sessionId: string;
-  currentChatId?: string;
-}
-
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "ai";
-  timestamp: Date;
-}
+import { ChatProps, Message } from "@/types/types";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -104,21 +93,34 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
           </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit} className="flex items-center">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          className="p-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600"
+      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto">
+        <p className="text-gray-500 text-xs">Insert a prompt to get started</p>
+        <form
+          className="mt-4 relative flex flex-row items-center"
+          onSubmit={handleSubmit}
         >
-          <FaArrowRight />
-        </button>
-      </form>
+          <textarea
+            placeholder="What should the workflow do?"
+            className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12 dark:bg-transparent"
+            rows={1}
+            onChange={(e) => setInputMessage(e.target.value)}
+          />
+          <button
+            type="submit"
+            className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-black border p-2 rounded-full transition-transform duration-100 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95 ${
+              inputMessage.trim() ? "dark:border-gray-700" : "border-none"
+            }`}
+          >
+            <FaArrowRight
+              className={`${
+                inputMessage.trim()
+                  ? "text-gray-500 dark:text-gray-400"
+                  : "text-gray-300 dark:text-gray-700"
+              }`}
+            />
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -10,5 +10,9 @@ export async function createChat(chatData: InsertChat) {
 
   export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
 	return await db.select().from(chats).where(eq(chats.userId, userId))
-  }
+}
+
+export async function getChatById(chatId: string): Promise<SelectChat[] | null> {
+	return await db.select().from(chats).where(eq(chats.id, chatId))
+}
 

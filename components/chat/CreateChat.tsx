@@ -11,7 +11,7 @@ export default async function CreateChat() {
     <div>
       <button
         className="w-full p-2 text-left border rounded-md hover:bg-gray-100"
-        onClick={() => createChat("New chat")}
+        onClick={() => createChat()}
       >
         Create new chat
       </button>
