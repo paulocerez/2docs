@@ -34,7 +34,9 @@ export interface SidebarChatListProps {
 }
 
 export interface SidebarHeaderProps {
-	toggleSidebar: () => void
+	toggleSidebar: () => void;
+	userName?: string;
+	userImage?: string;
 }
 
 export interface ChatProps {

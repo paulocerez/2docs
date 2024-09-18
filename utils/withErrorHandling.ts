@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export default function withErrorHandling(
-  handler: (request: NextRequest) => Promise<NextResponse>
+	handler: (...args: any[]) => Promise<NextResponse>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     try {

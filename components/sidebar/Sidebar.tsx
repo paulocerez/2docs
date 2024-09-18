@@ -3,9 +3,11 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import { createChat } from "@/db/queries/chat";
 import SidebarChatList from "../chat/SidebarChatList";
+import { auth } from "@/auth";
 
-export function Sidebar(props: SidebarProps) {
+export default async function Sidebar(props: SidebarProps) {
   const { sessionId, addChat, isSidebarOpen, toggleSidebar } = props;
+  const session = await auth();
 
   const handleCreateNewChat = async () => {
     try {
@@ -27,7 +29,11 @@ export function Sidebar(props: SidebarProps) {
         bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700`}
     >
       <div className="space-y-4">
-        <SidebarHeader toggleSidebar={toggleSidebar} />
+        <SidebarHeader
+          toggleSidebar={toggleSidebar}
+          userName={session?.user?.name || "User"}
+          userImage={session?.user?.image || undefined}
+        />
         <button
           onClick={handleCreateNewChat}
           className="w-full p-2 text-center text-xs border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"

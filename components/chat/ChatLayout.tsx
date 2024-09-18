@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Header from "../header/Header";
 import Chat from "./Chat";
-import { Sidebar } from "../sidebar/Sidebar";
 import { SelectChat } from "@/db/schema/chats";
 import { ChatLayoutProps } from "@/types/types";
+import Sidebar from "../sidebar/Sidebar";
 
 export default function ChatLayout({
   sessionId,

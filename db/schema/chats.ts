@@ -17,10 +17,10 @@ export const messages = pgTable("message", {
 	id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  sessionId: text("session_id")
+  chatId: text("chat_id")
     .notNull()
     .references(() => chats.id, { onDelete: "cascade" }),
-  sender: text("sender").notNull(),
+  role: text("role").notNull(),
   content: text("content").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
@@ -29,7 +29,7 @@ export const scrapes = pgTable("scrape", {
 	id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  sessionId: text("session_id")
+	chatId: text("chat_id")
     .notNull()
     .references(() => chats.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
