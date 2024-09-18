@@ -7,7 +7,7 @@ export default function SidebarFooter() {
   return (
     <div className="p-2 flex justify-between items-center">
       <ModeToggle />
-      <SignOut />
+      {/* <SignOut /> */}
     </div>
   );
 }

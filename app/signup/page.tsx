@@ -1,3 +1,4 @@
+"use client";
 import EmailLogin from "@/components/auth/EmailLogin";
 import EmailSignup from "@/components/auth/EmailSignup";
 import { useState } from "react";

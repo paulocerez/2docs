@@ -16,10 +16,15 @@ async function getAllChatsHandler (request: NextRequest): Promise<NextResponse> 
 } 
 
 async function postChatHandler (request: NextRequest): Promise<NextResponse> {
-	const data = request.json()
-		const result = await createChat(data)
-		return NextResponse.json({ }, {status: 200})
+	const data = await request.json()
+
+	if (!data.userId || !data.prompt) {
+		return NextResponse.json({ error: "userId and prompt are required" }, { status: 400 });
+	  }
+
+	const result = await createChat(data)
+	return NextResponse.json(result, {status: 200})
 }
 
 export const GET = withErrorHandling(getAllChatsHandler)
-// export const POST = withErrorHandling(postChatHandler)
+export const POST = withErrorHandling(postChatHandler)

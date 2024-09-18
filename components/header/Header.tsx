@@ -25,7 +25,7 @@ export default function Header({
         {currentChatTopic || "New topic"}
       </h1>
       <h1 className="text-sm">
-        {currentChatId ? `Chat: ${currentChatId.slice(-5)}` : "New id"}
+        {currentChatId ? `Id: ${currentChatId.slice(-5)}` : "New id"}
       </h1>
     </div>
   );
