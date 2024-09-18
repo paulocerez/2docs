@@ -1,116 +1,124 @@
 "use client";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
-import { RiAddLargeFill } from "react-icons/ri";
-import { TiFlowSwitch } from "react-icons/ti";
-import { v4 as uuidv4 } from "uuid";
-import { useSidebar } from "@/lib/hooks/use-sidebar";
+import { SelectChat } from "@/db/schema/chats";
 
-export default function Chat() {
-  const { isSidebarOpen } = useSidebar();
-  const [additionalInputFields, setAdditionalInputFields] = useState<number>(0);
-  const [userInputs, setUserInputs] = useState<string[]>(["", ""]);
-  const [prompt, setPrompt] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [chatResponse, setChatResponse] = useState<string>("");
+interface ChatProps {
+  sessionId: string;
+  currentChatId?: string;
+}
 
-  const addInputField = () => {
-    setUserInputs([...userInputs, ""]);
-    setAdditionalInputFields((prev) => prev + 1);
+interface Message {
+  id: string;
+  content: string;
+  sender: "user" | "ai";
+  timestamp: Date;
+}
+
+export default function Chat({ sessionId, currentChatId }: ChatProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (currentChatId) {
+      // Fetch messages for current chat
+      fetchMessages(currentChatId);
+    }
+  }, [currentChatId]);
+
+  const fetchMessages = async (chatId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/chats/${chatId}/messages`);
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data);
+      } else {
+        console.error("Failed to fetch messages");
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const sessionId = uuidv4();
+    if (!inputMessage.trim() || !currentChatId) return;
 
-    setTimeout(async () => {
-      const response = "This is a generated response based on your prompt.";
-      setChatResponse(response);
-      setLoading(false);
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: inputMessage,
+      sender: "user",
+      timestamp: new Date(),
+    };
 
-      // Store the session in the database
-      const session = {
-        id: sessionId,
-        userInputs,
-        prompt,
-        response,
-      };
-      await fetch("/api/sessions", {
+    setMessages((prev) => [...prev, newMessage]);
+    setInputMessage("");
+
+    try {
+      const response = await fetch(`/api/chats/${currentChatId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(session),
+        body: JSON.stringify({ content: inputMessage, userId: sessionId }),
       });
-    }, 2000);
+
+      if (response.ok) {
+        const aiResponse = await response.json();
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            content: aiResponse.content,
+            sender: "ai",
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        console.error("Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
-  const handleInputChange = (index: number, value: string) => {
-    const newInputs = [...userInputs];
-    newInputs[index] = value;
-    setUserInputs(newInputs);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return <div>Loading messages...</div>;
   }
 
   return (
-    <div className="flex flex-col p-4 h-full text-center items-center justify-between space-y-4">
-      <div
-        className={`flex flex-col justify-center items-center space-y-12 h-full max-w-3xl w-full mx-auto px-4 ${
-          !isSidebarOpen ? "md:px-16 lg:px-24" : "lg:px-8"
-        }`}
-      >
-        <TiFlowSwitch className="text-4xl" />
-        <div className="w-full">
-          <h1 className="font-medium lg:font-semibold md:text-2xl leading-6 lg:leading-8">
-            Combine two or more API&apos;s into seamless code workflows by
-            inserting their API Doc links and defining a prompt.
-          </h1>
-        </div>
-
-        <div className="flex flex-col items-center space-y-8 w-full">
-          {userInputs.map((input, index) => (
-            <input
-              key={index}
-              type="text"
-              value={input}
-              onChange={(e) => handleInputChange(index, e.target.value)}
-              placeholder="Insert API Doc link here"
-              className="p-2 text-xs rounded-md w-full border border-gray-100"
-            />
-          ))}
-          <button
-            onClick={addInputField}
-            className="rounded-full p-1 border hover:bg-gray-100"
+    <div className="flex flex-col h-full p-4">
+      <div className="flex-1 overflow-y-auto mb-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`mb-2 p-2 rounded ${
+              message.sender === "user" ? "bg-blue-100 ml-auto" : "bg-gray-100"
+            }`}
           >
-            <RiAddLargeFill />
-          </button>
-        </div>
+            {message.content}
+          </div>
+        ))}
       </div>
-
-      <div className="rounded-lg border border-gray-100 p-4 w-full max-w-3xl mx-auto">
-        <p className="text-gray-500 text-xs">Insert a prompt to get started</p>
-        <form
-          className="mt-4 relative flex flex-row items-center"
-          onSubmit={handleSubmit}
+      <form onSubmit={handleSubmit} className="flex items-center">
+        <input
+          type="text"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="p-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600"
         >
-          <textarea
-            placeholder="What should the workflow do?"
-            className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12"
-            rows={1}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black border p-2 rounded-full transition-transform duration-100 hover:bg-gray-100 active:scale-95"
-          >
-            <FaArrowRight />
-          </button>
-        </form>
-      </div>
+          <FaArrowRight />
+        </button>
+      </form>
     </div>
   );
 }

@@ -5,3 +5,8 @@
 ## Waitlist
 
 👋🏼 Sign up for the waitlist here: www.2docs.de
+
+## TODO Render all chats in sidebar
+
+    TODO Dynamic routes based on chatId assignment
+    TODO finish auth setup

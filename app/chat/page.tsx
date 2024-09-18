@@ -1,19 +1,16 @@
 import { auth } from "@/auth";
-import ChatLayout from "@/components/sidebar/ChatLayout";
-import { redirect } from "next/navigation";
+import ChatLayout from "@/components/chat/ChatLayout";
+import { getAllChatsByUserId } from "@/db/queries/chat";
+import { SelectChat } from "@/db/schema/chats";
 
-export default async function ChatInterface() {
+export default async function ChatPage() {
   const session = await auth();
-  const user = session?.user?.email;
+  const userId = session?.user?.id;
 
-  if (!session?.user) {
-    redirect("/api/auth/signin?callbackUrl=/chat");
+  if (userId) {
+    const chats: SelectChat[] = await getAllChatsByUserId(userId);
+    return <ChatLayout sessionId={userId} initialChats={chats} />;
   }
-  console.log(session.user);
 
-  return (
-    <div className="flex flex-col">
-      <ChatLayout />
-    </div>
-  );
+  return <div>User is not logged in</div>;
 }

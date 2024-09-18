@@ -15,11 +15,11 @@ async function getAllChatsHandler (request: NextRequest): Promise<NextResponse> 
 	return NextResponse.json(result)
 } 
 
-// async function postChatHandler (request: NextRequest): Promise<NextResponse> {
-// 	const data = request.json()
-// 		const result = await createChat(data)
-// 		return NextResponse.json({ }, {status: 200})
-// }
+async function postChatHandler (request: NextRequest): Promise<NextResponse> {
+	const data = request.json()
+		const result = await createChat(data)
+		return NextResponse.json({ }, {status: 200})
+}
 
 export const GET = withErrorHandling(getAllChatsHandler)
 // export const POST = withErrorHandling(postChatHandler)

@@ -1,8 +1,12 @@
-import { useSidebar } from "@/lib/hooks/use-sidebar";
+import React from "react";
 import { FiSidebar } from "react-icons/fi";
 
-export default function Header() {
-  const { isSidebarOpen, toggleSidebar } = useSidebar();
+interface HeaderProps {
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
+}
+
+export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
   return (
     <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100">
       <div className="flex items-center">
@@ -14,7 +18,6 @@ export default function Header() {
             <FiSidebar />
           </button>
         )}
-        {/* Placeholder to maintain spacing when sidebar is open */}
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
       <h1 className="text-sm font-semibold">New chat</h1>

@@ -1,77 +1,47 @@
-"use client";
-import * as React from "react";
-import Link from "next/link";
-import { useSidebar } from "@/lib/hooks/use-sidebar";
-import { SelectChat } from "@/db/schema";
-import AccountSelect from "./AccountSelect";
 import { ModeToggle } from "../mode-toggle";
+import { SidebarProps } from "@/types/types";
+import SidebarHeader from "./SidebarHeader";
+import SidebarFooter from "./SidebarFooter";
+import { createChat } from "@/db/queries/chat";
+import SidebarChatList from "../chat/SidebarChatList";
 
-interface SidebarProps extends React.ComponentProps<"div"> {
-  sessionId: string;
-  initialChats: SelectChat[];
-}
-
-export function Sidebar({ className, sessionId, initialChats }: SidebarProps) {
-  const { isSidebarOpen, toggleSidebar } = useSidebar();
-  const [chats, setChats] = React.useState<SelectChat[]>(initialChats);
-
-  const createChat = React.useCallback(
-    async (prompt: string) => {
-      if (sessionId) {
-        try {
-          const response = await fetch("/api/chats", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: sessionId, prompt }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to create chat");
-          }
-
-          const newChat: SelectChat = await response.json();
-          setChats((prevChats) => [...prevChats, newChat]);
-
-          return newChat;
-        } catch (error) {
-          console.error("Error creating chat session:", error);
-        }
-      }
-    },
-    [sessionId]
-  );
+export function Sidebar({
+  sessionId,
+  chats,
+  addChat,
+  isSidebarOpen,
+  toggleSidebar,
+}: SidebarProps) {
+  const handleCreateNewChat = async () => {
+    try {
+      const newChat = await createChat({
+        userId: sessionId,
+        prompt: "New chat",
+      });
+      addChat(newChat);
+    } catch (error) {
+      console.error("Error creating new chat:", error);
+    }
+  };
 
   return (
     <div
-      className={`flex flex-col justify-between p-4 h-full w-full ${className}`}
+      className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+        transition-transform duration-300 ease-in-out 
+        bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700`}
     >
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <AccountSelect />
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-slate-50"
-          >
-            {/* Add sidebar toggle icon */}
-          </button>
-        </div>
+        <SidebarHeader toggleSidebar={toggleSidebar} />
         <button
-          className="w-full p-2 text-left border rounded-md hover:bg-gray-100"
-          onClick={() => createChat("New chat")}
+          onClick={handleCreateNewChat}
+          className="w-full p-2 text-left border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           Create new chat
         </button>
-        <ul className="space-y-2">
-          {chats.map((chat) => (
-            <li key={chat.id} className="hover:bg-gray-100 rounded-md">
-              <Link href={`/chat/${chat.id}`} className="block p-2">
-                {chat.prompt}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <SidebarChatList chats={chats} />
       </div>
-      <ModeToggle />
+      <SidebarFooter />
     </div>
   );
 }
