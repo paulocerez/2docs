@@ -1,20 +1,33 @@
 import { SidebarProps } from "@/types/types";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
-import { createChat } from "@/db/queries/chat";
 import SidebarChatList from "../chat/SidebarChatList";
 import { auth } from "@/auth";
 
 export default async function Sidebar(props: SidebarProps) {
-  const { sessionId, addChat, isSidebarOpen, toggleSidebar } = props;
+  const {
+    sessionId,
+    addChat,
+    isSidebarOpen,
+    toggleSidebar,
+    setCurrentChatId,
+    currentChatId,
+  } = props;
   const session = await auth();
 
   const handleCreateNewChat = async () => {
     try {
-      const newChat = await createChat({
-        userId: sessionId,
-        prompt: "New chat",
+      const response = await fetch("/api/chats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: sessionId, prompt: "New chat" }),
       });
+      if (!response.ok) {
+        throw new Error("Failed to create new chat");
+      }
+      const newChat = await response.json();
       addChat(newChat);
     } catch (error) {
       console.error("Error creating new chat:", error);
@@ -40,7 +53,11 @@ export default async function Sidebar(props: SidebarProps) {
         >
           Create new chat
         </button>
-        <SidebarChatList {...props} />
+        <SidebarChatList
+          sessionId={sessionId}
+          setCurrentChatId={setCurrentChatId}
+          currentChatId={currentChatId}
+        />
       </div>
       <SidebarFooter />
     </div>

@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import Header from "../header/Header";
-import Chat from "./Chat";
 import { SelectChat } from "@/db/schema/chats";
 import { ChatLayoutProps } from "@/types/types";
 import Sidebar from "../sidebar/Sidebar";
+import Chat from "./Chat";
 
 export default function ChatLayout({
   sessionId,
@@ -17,14 +17,14 @@ export default function ChatLayout({
     undefined
   );
   const [currentChatTopic, setCurrentChatTopic] = useState<string | undefined>(
-    undefined
+    initialChats.find((chat) => chat.id === initialChatId)?.prompt
   );
 
   useEffect(() => {
-    if (initialChatId) {
+    if (initialChatId && !currentChatId) {
       setCurrentChatId(initialChatId);
     }
-  }, [initialChatId]);
+  }, [initialChatId, currentChatId]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -56,7 +56,9 @@ export default function ChatLayout({
           isSidebarOpen={isSidebarOpen}
           currentChatTopic={currentChatTopic}
         />
-        <Chat sessionId={sessionId} currentChatId={currentChatId} />
+        {currentChatId && (
+          <Chat sessionId={sessionId} currentChatId={currentChatId} />
+        )}
       </div>
     </div>
   );

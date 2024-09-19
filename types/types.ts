@@ -1,4 +1,4 @@
-import { InsertChat, SelectChat } from "@/db/schema/chats";
+import { InsertChat, SelectChat, SelectMessage } from "@/db/schema/chats";
 
 export interface SidebarProps {
 	sessionId: string;
@@ -28,7 +28,7 @@ export interface SidebarWrapperProps {
 
 
 export interface SidebarChatListProps {
-  chats: SelectChat[]
+  sessionId: string;
   setCurrentChatId: (id: string) => void;
   currentChatId?: string;
 }
@@ -55,4 +55,21 @@ export interface ChatProps {
 	toggleSidebar: () => void;
 	currentChatId?: string;
 	currentChatTopic?: string;
+  }
+
+  export interface ChatDataFetcherProps {
+	currentChatId: string | undefined;
+	sessionId: string;
+	onMessagesLoaded: (messages: Message[]) => void;
+	onError: (error: string) => void;
+	onLoadingChange: (isLoading: boolean) => void;
+  }
+
+  export interface ChatUIProps {
+	messages: Message[];
+	inputMessage: string;
+	setInputMessage: (message: string) => void;
+	handleSubmit: (e: React.FormEvent) => void;
+	isLoading: boolean;
+	error: string | null;
   }

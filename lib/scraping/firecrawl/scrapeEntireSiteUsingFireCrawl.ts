@@ -16,4 +16,4 @@ export async function tryCrawler(url: string) {
     console.error("Scraping ran into an error: ", error);
   }
 }
-tryCrawler("https://developers.notion.com/");
+tryCrawler("https://mochi.cards/docs/api/");
