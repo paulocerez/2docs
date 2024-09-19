@@ -1,18 +1,12 @@
 import { SidebarProps } from "@/types/types";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
-import SidebarChatList from "../chat/SidebarChatList";
+import SidebarChatList from "./SidebarChatList";
 import { auth } from "@/auth";
 
 export default async function Sidebar(props: SidebarProps) {
-  const {
-    sessionId,
-    addChat,
-    isSidebarOpen,
-    toggleSidebar,
-    setCurrentChatId,
-    currentChatId,
-  } = props;
+  const { sessionId, addChat, toggleSidebar, setCurrentChatId, currentChatId } =
+    props;
   const session = await auth();
 
   const handleCreateNewChat = async () => {

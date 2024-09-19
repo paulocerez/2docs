@@ -3,9 +3,9 @@ import React from "react";
 import { FiSidebar } from "react-icons/fi";
 
 export default function Header({
+  currentChatId,
   isSidebarOpen,
   toggleSidebar,
-  currentChatId,
   currentChatTopic,
 }: HeaderProps) {
   return (

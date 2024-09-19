@@ -36,15 +36,15 @@ export default function ChatLayout({
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      <Sidebar
-        sessionId={sessionId}
-        chats={chats}
-        addChat={addChat}
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        setCurrentChatId={setCurrentChatId}
-        currentChatId={currentChatId}
-      />
+      {isSidebarOpen && (
+        <Sidebar
+          chats={chats}
+          sessionId={sessionId}
+          currentChatId={currentChatId}
+          setCurrentChatId={setCurrentChatId}
+          addChat={addChat}
+        />
+      )}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "ml-64" : "ml-0"

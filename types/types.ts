@@ -17,7 +17,7 @@ export interface SidebarProps {
   }
 
 export interface ChatListProps {
-  chats: SelectChat[]
+  userId: string;
 }
 
 export interface SidebarWrapperProps {
