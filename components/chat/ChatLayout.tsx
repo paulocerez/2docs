@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Header from "../header/Header";
 import Chat from "./Chat";

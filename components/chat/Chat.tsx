@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
-import { SelectChat } from "@/db/schema/chats";
 import { ChatProps, Message } from "@/types/types";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
@@ -11,29 +10,31 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
   useEffect(() => {
     if (currentChatId) {
-      // Fetch messages for current chat
       fetchMessages(currentChatId);
     }
   }, [currentChatId]);
 
-  const fetchMessages = async (chatId: string) => {
+  const fetchMessages = (chatId: string) => {
     setIsLoading(true);
-    try {
-      const response = await fetch(`/api/chats/${chatId}/messages`);
-      if (response.ok) {
-        const data = await response.json();
+    fetch(`/api/chats/${chatId}/messages`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Failed to fetch messages");
+      })
+      .then((data) => {
         setMessages(data);
-      } else {
-        console.error("Failed to fetch messages");
-      }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    } finally {
-      setIsLoading(false);
-    }
+      })
+      .catch((error) => {
+        console.error("Error fetching messages:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim() || !currentChatId) return;
 
@@ -47,17 +48,20 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     setMessages((prev) => [...prev, newMessage]);
     setInputMessage("");
 
-    try {
-      const response = await fetch(`/api/chats/${currentChatId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: inputMessage, userId: sessionId }),
-      });
-
-      if (response.ok) {
-        const aiResponse = await response.json();
+    fetch(`/api/chats/${currentChatId}/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: inputMessage, userId: sessionId }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Failed to send message");
+      })
+      .then((aiResponse) => {
         setMessages((prev) => [
           ...prev,
           {
@@ -67,12 +71,10 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
             timestamp: new Date(),
           },
         ]);
-      } else {
-        console.error("Failed to send message");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
   };
 
   if (isLoading) {
@@ -100,6 +102,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
           onSubmit={handleSubmit}
         >
           <textarea
+            value={inputMessage}
             placeholder="What should the workflow do?"
             className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12 dark:bg-transparent"
             rows={1}
