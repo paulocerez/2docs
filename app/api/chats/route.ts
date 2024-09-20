@@ -1,5 +1,4 @@
 import { createChat, getAllChatsByUserId } from "@/db/queries/chat";
-import withErrorHandling from "@/utils/withErrorHandling";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET (request: NextRequest): Promise<NextResponse> {

@@ -10,8 +10,17 @@ export async function GET(
   if (!chatId) {
     return NextResponse.json({ error: "Chat Id is not provided" }, { status: 400 });
   }
-  const result = await getAllMessagesForChat(chatId);
-  return NextResponse.json(result, { status: 200 });
+
+  try {
+	  const result = await getAllMessagesForChat(chatId);
+	  if (result.length === 0) {
+		return NextResponse.json({ messages: [], message: "No messages found for this chat" }, { status: 200 });
+	  }
+	  return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+	console.error("Error fetching messages:", error);
+    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+  }
 }
 
 export async function POST(
@@ -19,11 +28,17 @@ export async function POST(
   { params }: { params: { chatId: string } }
 ): Promise<NextResponse> {
   const chatId = params.chatId;
-  const data = await request.json();
+  try {
+	  const data = await request.json();
 
-  if (!chatId || !data.content || !data.role) {
-    return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
-  }
-  const result = await createMessage({ ...data, chatId });
-  return NextResponse.json(result, { status: 201 });
+	  if (!chatId || !data.content || !data.role) {
+		return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
+	  }
+		const result = await createMessage({ ...data, chatId });
+		return NextResponse.json(result, { status: 201 });
+
+  } catch (error) {
+	console.error("Error creating message:", error);
+    return NextResponse.json({ error: "Failed to create message" }, { status: 500 });
+}
 }

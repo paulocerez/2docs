@@ -1,23 +1,37 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, KeyboardEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaArrowRight } from "react-icons/fa";
 import { ChatProps, Message } from "@/types/types";
 import { SelectChat } from "@/db/schema/chats";
 import MessageList from "./message-list";
+import { MessageLoadingScreen } from "../state/messages-loading";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [inputMessage, setInputMessage] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: messages, isLoading } = useQuery<Message[]>({
+  const {
+    data: messages,
+    isLoading,
+    error,
+  } = useQuery<Message[]>({
     queryKey: ["messages", currentChatId],
-    queryFn: () =>
-      currentChatId.startsWith("temp-")
-        ? Promise.resolve([])
-        : fetch(`/api/chats/${currentChatId}/messages`).then((res) =>
-            res.json()
-          ),
+    queryFn: async () => {
+      if (currentChatId.startsWith("temp-")) {
+        return [];
+      }
+      const response = await fetch(`/api/chats/${currentChatId}/messages`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch messages");
+      }
+      const data = await response.json();
+      if (!data.messages || !Array.isArray(data.messages)) {
+        console.error("Expected array of messages, got:", data);
+        return [];
+      }
+      return data.messages;
+    },
     enabled: !!currentChatId,
   });
 
@@ -67,15 +81,23 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!inputMessage.trim() || !currentChatId) return;
 
     sendMessageMutation.mutate(inputMessage);
     setInputMessage("");
   };
 
-  if (isLoading) return <div>Loading messages...</div>;
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  if (isLoading) return <MessageLoadingScreen />;
+  if (error) return <div>Error loading messages: {error.toString()}</div>;
 
   return (
     <div className="flex flex-col justify-between h-full p-4">
@@ -87,16 +109,26 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         >
           <textarea
             value={inputMessage}
-            placeholder="Type your message..."
+            placeholder="Insert a prompt to get started"
             className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12 dark:bg-transparent"
             rows={1}
             onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button
             type="submit"
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black border p-2 rounded-full transition-transform duration-100 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95"
+            className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-black border p-2 rounded-full transition-all duration-200 ${
+              inputMessage.trim()
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+            disabled={!inputMessage.trim()}
           >
-            <FaArrowRight className="text-gray-500 dark:text-gray-400" />
+            <FaArrowRight
+              className={`${
+                inputMessage.trim() ? "text-white" : "text-gray-500"
+              }`}
+            />
           </button>
         </form>
       </div>

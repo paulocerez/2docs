@@ -5,6 +5,7 @@ import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
 import Chat from "./Chat";
 import { ChatLayoutProps } from "@/types/types";
+
 const queryClient = new QueryClient();
 
 export default function ChatLayout({
