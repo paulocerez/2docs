@@ -2,8 +2,7 @@ import { getAllChatsByUserId } from "@/db/queries/chat";
 import { ChatListProps } from "@/types/types";
 
 export async function ChatList({ userId }: ChatListProps) {
-  //   const chats = await getAllChatsByUserId(userId);
-  const chats = ["1", "2", "3", "4"];
+  const chats = await getAllChatsByUserId(userId);
 
   if (!chats || "error" in chats) {
     return <div>Error loading chats</div>;

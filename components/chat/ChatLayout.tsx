@@ -1,65 +1,50 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Header from "../header/Header";
-import { SelectChat } from "@/db/schema/chats";
-import { ChatLayoutProps } from "@/types/types";
 import Sidebar from "../sidebar/Sidebar";
 import Chat from "./Chat";
+import { ChatLayoutProps } from "@/types/types";
+const queryClient = new QueryClient();
 
 export default function ChatLayout({
   sessionId,
-  initialChats,
   initialChatId,
+  initialChats,
 }: ChatLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [chats, setChats] = useState<SelectChat[]>(initialChats);
   const [currentChatId, setCurrentChatId] = useState<string | undefined>(
-    undefined
+    initialChatId
   );
-  const [currentChatTopic, setCurrentChatTopic] = useState<string | undefined>(
-    initialChats.find((chat) => chat.id === initialChatId)?.prompt
-  );
-
-  useEffect(() => {
-    if (initialChatId && !currentChatId) {
-      setCurrentChatId(initialChatId);
-    }
-  }, [initialChatId, currentChatId]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const addChat = (newChat: SelectChat) => {
-    setChats((prevChats) => [...prevChats, newChat]);
-    setCurrentChatId(newChat.id);
-    setCurrentChatTopic(newChat.prompt);
-  };
-
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      {isSidebarOpen && (
-        <Sidebar
-          chats={chats}
-          sessionId={sessionId}
-          currentChatId={currentChatId}
-          setCurrentChatId={setCurrentChatId}
-          addChat={addChat}
-        />
-      )}
-      <div
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        }`}
-      >
-        <Header
-          currentChatId={currentChatId}
-          toggleSidebar={toggleSidebar}
-          isSidebarOpen={isSidebarOpen}
-          currentChatTopic={currentChatTopic}
-        />
-        {currentChatId && (
-          <Chat sessionId={sessionId} currentChatId={currentChatId} />
+    <QueryClientProvider client={queryClient}>
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+        {isSidebarOpen && (
+          <Sidebar
+            sessionId={sessionId}
+            currentChatId={currentChatId}
+            setCurrentChatId={setCurrentChatId}
+            toggleSidebar={toggleSidebar}
+          />
         )}
+        <div
+          className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? "ml-64" : "ml-0"
+          }`}
+        >
+          <Header
+            currentChatId={currentChatId}
+            toggleSidebar={toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
+          />
+          {currentChatId && (
+            <Chat sessionId={sessionId} currentChatId={currentChatId} />
+          )}
+        </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 }

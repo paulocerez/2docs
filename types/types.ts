@@ -1,36 +1,20 @@
-import { InsertChat, SelectChat, SelectMessage } from "@/db/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 
 export interface SidebarProps {
 	sessionId: string;
-	chats: SelectChat[];
-	addChat: (chat: SelectChat) => void;
-	isSidebarOpen: boolean;
 	toggleSidebar: () => void;
 	setCurrentChatId: (id: string) => void;
 	currentChatId?: string;
   }
-  
+
   export interface ChatLayoutProps {
 	sessionId: string;
-	initialChats: SelectChat[];
 	initialChatId?: string;
+	initialChats?: SelectChat[]
   }
 
 export interface ChatListProps {
   userId: string;
-}
-
-export interface SidebarWrapperProps {
-  isSidebarOpen: boolean;
-  toggleSidebar: () => void;
-  sessionId: string;
-}
-
-
-export interface SidebarChatListProps {
-  sessionId: string;
-  setCurrentChatId: (id: string) => void;
-  currentChatId?: string;
 }
 
 export interface SidebarHeaderProps {
@@ -41,7 +25,7 @@ export interface SidebarHeaderProps {
 
 export interface ChatProps {
 	sessionId: string;
-	currentChatId?: string;
+	currentChatId: string;
   }
   
   export interface Message {
@@ -55,21 +39,4 @@ export interface ChatProps {
 	toggleSidebar: () => void;
 	currentChatId?: string;
 	currentChatTopic?: string;
-  }
-
-  export interface ChatDataFetcherProps {
-	currentChatId: string | undefined;
-	sessionId: string;
-	onMessagesLoaded: (messages: Message[]) => void;
-	onError: (error: string) => void;
-	onLoadingChange: (isLoading: boolean) => void;
-  }
-
-  export interface ChatUIProps {
-	messages: Message[];
-	inputMessage: string;
-	setInputMessage: (message: string) => void;
-	handleSubmit: (e: React.FormEvent) => void;
-	isLoading: boolean;
-	error: string | null;
   }
