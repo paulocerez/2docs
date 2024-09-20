@@ -1,30 +1,24 @@
 import React from "react";
-import { Message } from "@/types/types";
-
-interface MessageListProps {
-  messages: Message[] | undefined;
-}
+import { Message, MessageListProps } from "@/types/types";
 
 export default function MessageList({ messages }: MessageListProps) {
-  if (!messages || messages.length === 0) {
-    return <div>No messages yet.</div>;
-  }
-
   return (
-    <div className="flex-1 overflow-y-auto mb-4">
+    <div className="flex-1 space-y-2 overflow-y-auto mb-4">
       {Array.isArray(messages) && messages.length > 0 ? (
         messages.map((message, index) => (
           <div
             key={index}
-            className={`mb-2 p-2 rounded ${
-              message.sender === "user" ? "bg-blue-100 ml-auto" : "bg-gray-100"
+            className={`flex flex-row text-sm items-center justify-end mb-2 p-2 rounded ${
+              message.sender === "user" ? "justify-end" : "justify-start"
             }`}
           >
             {message.content}
           </div>
         ))
       ) : (
-        <div>No messages yet.</div>
+        <div className="flex flex-row justify-center">
+          <p>No messages yet.</p>
+        </div>
       )}
     </div>
   );

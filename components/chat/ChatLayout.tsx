@@ -10,7 +10,6 @@ const queryClient = new QueryClient();
 export default function ChatLayout({
   sessionId,
   initialChatId,
-  initialChats,
 }: ChatLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [currentChatId, setCurrentChatId] = useState<string | undefined>(

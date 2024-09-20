@@ -78,7 +78,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   if (isLoading) return <div>Loading messages...</div>;
 
   return (
-    <div className="flex flex-col h-full p-4">
+    <div className="flex flex-col justify-between h-full p-4">
       <MessageList messages={messages} />
       <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto">
         <form

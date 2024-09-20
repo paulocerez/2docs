@@ -43,3 +43,7 @@ export interface ChatProps {
 	currentChatId?: string;
 	currentChatTopic?: string;
   }
+
+  export interface MessageListProps {
+	messages: Message[] | undefined;
+  }

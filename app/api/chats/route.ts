@@ -2,7 +2,7 @@ import { createChat, getAllChatsByUserId } from "@/db/queries/chat";
 import withErrorHandling from "@/utils/withErrorHandling";
 import { NextRequest, NextResponse } from "next/server";
 
-async function getAllChatsHandler (request: NextRequest): Promise<NextResponse> {
+export async function GET (request: NextRequest): Promise<NextResponse> {
 	// API route expects userId query parameter -> passes that parameter to the query function as an argument
 	const { searchParams } = new URL(request.url);
 	const userId = searchParams.get("userId")
@@ -15,7 +15,7 @@ async function getAllChatsHandler (request: NextRequest): Promise<NextResponse> 
 	return NextResponse.json(result)
 } 
 
-async function postChatHandler (request: NextRequest): Promise<NextResponse> {
+export async function POST (request: NextRequest): Promise<NextResponse> {
 	const data = await request.json()
 
 	if (!data.userId || !data.prompt) {
@@ -26,5 +26,3 @@ async function postChatHandler (request: NextRequest): Promise<NextResponse> {
 	return NextResponse.json(result, {status: 200})
 }
 
-export const GET = withErrorHandling(getAllChatsHandler)
-export const POST = withErrorHandling(postChatHandler)

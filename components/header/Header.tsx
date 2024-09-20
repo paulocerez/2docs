@@ -9,7 +9,7 @@ export default function Header({
   currentChatTopic,
 }: HeaderProps) {
   return (
-    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-100 dark:border-gray-700">
+    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-200 dark:border-gray-700">
       <div className="flex items-center">
         {!isSidebarOpen && (
           <button
