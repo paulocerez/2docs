@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, KeyboardEvent } from "react";
+import React, { useState, KeyboardEvent, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaArrowRight } from "react-icons/fa";
 import { ChatProps, Message } from "@/types/types";
@@ -10,6 +10,14 @@ import { MessageLoadingScreen } from "../state/messages-loading";
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [inputMessage, setInputMessage] = useState("");
   const queryClient = useQueryClient();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [inputMessage]);
 
   const {
     data: messages,
@@ -108,9 +116,10 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
           onSubmit={handleSubmit}
         >
           <textarea
+            ref={textareaRef}
             value={inputMessage}
             placeholder="Insert a prompt to get started"
-            className="w-full text-sm p-4 border rounded-full resize-none focus:outline-none pr-12 dark:bg-transparent"
+            className="w-full text-sm p-4 pr-12 border rounded-2xl resize-none focus:outline-none dark:bg-transparent"
             rows={1}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
