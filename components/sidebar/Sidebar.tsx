@@ -4,6 +4,8 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import { SelectChat } from "@/db/schema/chats";
 import { SidebarProps } from "@/types/types";
+import { ChatList } from "../chat/chat-list";
+import { useState } from "react";
 
 export default function Sidebar({
   sessionId,
@@ -12,35 +14,23 @@ export default function Sidebar({
   currentChatId,
 }: SidebarProps) {
   const queryClient = useQueryClient();
-
-  // Fetch chats
-  const { data: chats, isLoading } = useQuery<SelectChat[]>({
-    queryKey: ["chats", sessionId],
-    queryFn: () =>
-      fetch(`/api/chats?userId=${sessionId}`).then((res) => res.json()),
-  });
-
-  // Create new chat mutation
-  const createChatMutation = useMutation({
-    mutationFn: () =>
-      fetch("/api/chats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: sessionId, prompt: "New chat" }),
-      }).then((res) => res.json()),
-    onSuccess: (newChat) => {
-      queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
-        oldChats ? [...oldChats, newChat] : [newChat]
-      );
-      setCurrentChatId(newChat.id);
-    },
-  });
+  const [temporaryChatId, setTemporaryChatId] = useState<string | null>(null);
 
   const handleCreateNewChat = () => {
-    createChatMutation.mutate();
-  };
+    const newTempChat: SelectChat = {
+      id: `temp-${Date.now()}`,
+      prompt: "New chat",
+      userId: sessionId,
+      createdAt: new Date(),
+    };
 
-  if (isLoading) return <div>Loading chats...</div>;
+    queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
+      oldChats ? [newTempChat, ...oldChats] : [newTempChat]
+    );
+
+    setTemporaryChatId(newTempChat.id);
+    setCurrentChatId(newTempChat.id);
+  };
 
   return (
     <div
@@ -56,19 +46,12 @@ export default function Sidebar({
         >
           Create new chat
         </button>
-        <div className="space-y-2 px-2">
-          {chats?.map((chat) => (
-            <div
-              key={chat.id}
-              className={`p-2 text-xs hover:bg-gray-100 rounded cursor-pointer ${
-                chat.id === currentChatId ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setCurrentChatId(chat.id)}
-            >
-              {chat.prompt}
-            </div>
-          ))}
-        </div>
+        <ChatList
+          sessionId={sessionId}
+          currentChatId={currentChatId}
+          setCurrentChatId={setCurrentChatId}
+          temporaryChatId={temporaryChatId}
+        />
       </div>
       <SidebarFooter />
     </div>

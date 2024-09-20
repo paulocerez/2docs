@@ -8,8 +8,7 @@ export const chats = pgTable("chat", {
 	userId: text("userId")
 	.notNull()
 	.references(() => users.id, { onDelete: "cascade" }),
-  startedAt: timestamp("started_at").notNull().defaultNow(),
-  endedAt: timestamp("ended_at"),
+  createdAt: timestamp("started_at").notNull().defaultNow(),
   prompt: text("prompt").notNull(),
 });
 

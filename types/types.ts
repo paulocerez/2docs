@@ -13,9 +13,12 @@ export interface SidebarProps {
 	initialChats?: SelectChat[]
   }
 
-export interface ChatListProps {
-  userId: string;
-}
+  export interface ChatListProps {
+	sessionId: string;
+	currentChatId: string | undefined;
+	setCurrentChatId: (id: string) => void;
+	temporaryChatId: string | null;
+  }
 
 export interface SidebarHeaderProps {
 	toggleSidebar: () => void;

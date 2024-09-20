@@ -22,7 +22,7 @@ export default function Header({
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
       <h1 className="text-sm font-semibold">
-        {currentChatTopic || "New topic"}
+        {currentChatTopic || "Chat topic"}
       </h1>
       <h1 className="text-sm">
         {currentChatId ? `Id: ${currentChatId.slice(-5)}` : "New id"}
