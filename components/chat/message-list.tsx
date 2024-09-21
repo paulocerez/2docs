@@ -6,7 +6,7 @@ export default function MessageList({ messages }: MessageListProps) {
   return (
     <div className="flex-1 flex-col space-y-2 overflow-y-auto mb-4">
       {Array.isArray(messages) && messages.length > 0 ? (
-        messages.map((message: Message, index) => (
+        messages.map((message: Partial<Message>, index) => (
           <div
             key={index}
             className={`flex p-2 ${
@@ -14,7 +14,7 @@ export default function MessageList({ messages }: MessageListProps) {
             }`}
           >
             <div className="text-sm p-2 rounded shadow-sm max-w-[70%] bg-white">
-              {message.content}
+              {message.content || "No content"}
             </div>
           </div>
         ))

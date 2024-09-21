@@ -56,8 +56,21 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
             role: "user",
           }),
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to create new chat");
+        }
+
         const newChat = await response.json();
-        return { chatId: newChat.id, message: { content, role: "user" } };
+        return {
+          chatId: newChat.id,
+          message: {
+            content,
+            role: "user",
+            id: newChat.messageId,
+            timestamp: new Date(),
+          },
+        };
       } else {
         // Send message to existing chat
         const response = await fetch(`/api/chats/${currentChatId}/messages`, {
@@ -71,7 +84,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         }
 
         const data = await response.json();
-        return data;
+        return { chatId: currentChatId, message: data };
       }
     },
     onSuccess: (data) => {
@@ -94,8 +107,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
       // Update the messages for the chat
       queryClient.setQueryData<Message[]>(
         ["messages", data.chatId],
-        (oldMessages) =>
-          oldMessages ? [...oldMessages, data.message] : [data.message]
+        (oldMessages = []) => [...oldMessages, data.message]
       );
     },
   });
@@ -104,7 +116,12 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     e?.preventDefault();
     if (!inputMessage.trim() || !currentChatId) return;
 
-    sendMessageMutation.mutate(inputMessage);
+    sendMessageMutation.mutate(inputMessage, {
+      onError: (error) => {
+        console.error("Failed to send message:", error);
+        throw new Error("Message could not been sent");
+      },
+    });
     setInputMessage("");
   };
 

@@ -34,9 +34,10 @@ export interface ChatProps {
   
   export interface Message {
 	id: string;
+	chatId: string;
 	content: string;
 	role: "user" | "ai";
-	timestamp: Date;
+	timestamp: Date | string;
   }
   export interface HeaderProps {
 	isSidebarOpen: boolean;
