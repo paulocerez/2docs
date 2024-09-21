@@ -115,35 +115,37 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   return (
     <div className="flex flex-col justify-between h-full p-4">
       <MessageList messages={messages || []} />
-      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto bg-red-300">
+      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto">
         <form
-          className="mt-4 relative flex flex-row items-center bg-red-500"
+          className="mt-4 relative flex flex-row items-center rounded-2xl bg-white px-4"
           onSubmit={handleSubmit}
         >
           <textarea
             ref={textareaRef}
             value={inputMessage}
             placeholder="Insert a prompt to get started"
-            className="w-full text-sm p-4 pr-12 border rounded-2xl resize-none focus:outline-none dark:bg-transparent bg-red-700"
+            className="w-full text-sm p-4 resize-none focus:outline-none dark:bg-transparent"
             rows={1}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <button
-            type="submit"
-            className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-black border p-2 rounded-full transition-all duration-200 ${
-              inputMessage.trim()
-                ? "bg-blue-500 hover:bg-blue-600"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-            disabled={!inputMessage.trim()}
-          >
-            <FaArrowRight
-              className={`${
-                inputMessage.trim() ? "text-white" : "text-gray-500"
+          <div className="border-">
+            <button
+              type="submit"
+              className={`text-black border p-2 rounded-full transition-all duration-200 ${
+                inputMessage.trim()
+                  ? "bg-blue-500 hover:bg-blue-600"
+                  : "bg-gray-200 hover:bg-gray-300"
               }`}
-            />
-          </button>
+              disabled={!inputMessage.trim()}
+            >
+              <FaArrowRight
+                className={`${
+                  inputMessage.trim() ? "text-white" : "text-gray-500"
+                }`}
+              />
+            </button>
+          </div>
         </form>
       </div>
     </div>

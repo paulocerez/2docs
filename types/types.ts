@@ -5,6 +5,7 @@ export interface SidebarProps {
 	toggleSidebar: () => void;
 	setCurrentChatId: (id: string) => void;
 	currentChatId?: string;
+	isSidebarOpen: boolean;
   }
 
   export interface ChatLayoutProps {

@@ -12,6 +12,7 @@ export default function Sidebar({
   toggleSidebar,
   setCurrentChatId,
   currentChatId,
+  isSidebarOpen,
 }: SidebarProps) {
   const queryClient = useQueryClient();
   const [temporaryChatId, setTemporaryChatId] = useState<string | null>(null);
@@ -34,9 +35,10 @@ export default function Sidebar({
 
   return (
     <div
-      className="flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
-      transition-transform duration-300 ease-in-out 
-      bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+      className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
+	transition-transform duration-300 ease-in-out 
+	bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-50
+	${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="space-y-4">
         <SidebarHeader toggleSidebar={toggleSidebar} />

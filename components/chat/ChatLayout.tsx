@@ -24,6 +24,7 @@ export default function ChatLayout({
       <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
         {isSidebarOpen && (
           <Sidebar
+            isSidebarOpen={isSidebarOpen}
             sessionId={sessionId}
             currentChatId={currentChatId}
             setCurrentChatId={setCurrentChatId}
