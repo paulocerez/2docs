@@ -34,7 +34,7 @@ export interface ChatProps {
   export interface Message {
 	id: string;
 	content: string;
-	sender: "user" | "ai";
+	role: "user" | "ai";
 	timestamp: Date;
   }
   export interface HeaderProps {

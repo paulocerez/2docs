@@ -34,11 +34,11 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         throw new Error("Failed to fetch messages");
       }
       const data = await response.json();
-      if (!data.messages || !Array.isArray(data.messages)) {
+      if (!Array.isArray(data)) {
         console.error("Expected array of messages, got:", data);
         return [];
       }
-      return data.messages;
+      return data;
     },
     enabled: !!currentChatId,
   });
@@ -104,22 +104,27 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     }
   };
 
-  if (isLoading) return <MessageLoadingScreen />;
+  if (isLoading)
+    return (
+      <div className="p-4">
+        <MessageLoadingScreen />
+      </div>
+    );
   if (error) return <div>Error loading messages: {error.toString()}</div>;
 
   return (
     <div className="flex flex-col justify-between h-full p-4">
-      <MessageList messages={messages} />
-      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto">
+      <MessageList messages={messages || []} />
+      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto bg-red-300">
         <form
-          className="mt-4 relative flex flex-row items-center"
+          className="mt-4 relative flex flex-row items-center bg-red-500"
           onSubmit={handleSubmit}
         >
           <textarea
             ref={textareaRef}
             value={inputMessage}
             placeholder="Insert a prompt to get started"
-            className="w-full text-sm p-4 pr-12 border rounded-2xl resize-none focus:outline-none dark:bg-transparent"
+            className="w-full text-sm p-4 pr-12 border rounded-2xl resize-none focus:outline-none dark:bg-transparent bg-red-700"
             rows={1}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}

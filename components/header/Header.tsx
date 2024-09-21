@@ -14,14 +14,14 @@ export default function Header({
         {!isSidebarOpen && (
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-slate-50"
+            className="p-2 rounded-md hover:bg-slate-50 dark:hover:bg-black"
           >
             <FiSidebar />
           </button>
         )}
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
-      <h1 className="text-sm font-semibold">
+      <h1 className="text-sm font-medium">
         {currentChatTopic || "Chat topic"}
       </h1>
       <h1 className="text-sm">

@@ -16,7 +16,10 @@ export async function GET(
 	  if (result.length === 0) {
 		return NextResponse.json({ messages: [], message: "No messages found for this chat" }, { status: 200 });
 	  }
-	  return NextResponse.json(result, { status: 200 });
+	  if (result.length === 1) {
+		return NextResponse.json({ result, message: "Only a prompt" }, { status: 200 });
+	  }
+	  return NextResponse.json(result, { status: 200 }); // returns Array containing multiple SelectMessage objects
   } catch (error) {
 	console.error("Error fetching messages:", error);
     return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
