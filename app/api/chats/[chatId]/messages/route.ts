@@ -13,12 +13,6 @@ export async function GET(
 
   try {
 	  const result = await getAllMessagesForChat(chatId);
-	  if (result.length === 0) {
-		return NextResponse.json({ messages: [], message: "No messages found for this chat" }, { status: 200 });
-	  }
-	  if (result.length === 1) {
-		return NextResponse.json({ result, message: "Only a prompt" }, { status: 200 });
-	  }
 	  return NextResponse.json(result, { status: 200 }); // returns Array containing multiple SelectMessage objects
   } catch (error) {
 	console.error("Error fetching messages:", error);
@@ -33,8 +27,9 @@ export async function POST(
   const chatId = params.chatId;
   try {
 	  const data = await request.json();
+	  console.log(data)
 
-	  if (!chatId || !data.content || !data.role) {
+	  if (!chatId || !data.content) {
 		return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
 	  }
 		const result = await createMessage({ ...data, chatId });

@@ -50,17 +50,28 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         const response = await fetch("/api/chats", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: sessionId, prompt: content }),
+          body: JSON.stringify({
+            userId: sessionId,
+            prompt: content,
+            role: "user",
+          }),
         });
         const newChat = await response.json();
-        return { chatId: newChat.id, message: { content, sender: "user" } };
+        return { chatId: newChat.id, message: { content, role: "user" } };
       } else {
         // Send message to existing chat
-        return fetch(`/api/chats/${currentChatId}/messages`, {
+        const response = await fetch(`/api/chats/${currentChatId}/messages`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content, userId: sessionId }),
-        }).then((res) => res.json());
+          body: JSON.stringify({ content, userId: sessionId, role: "user" }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to send message");
+        }
+
+        const data = await response.json();
+        return data;
       }
     },
     onSuccess: (data) => {
