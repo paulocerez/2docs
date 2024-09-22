@@ -13,7 +13,7 @@ export default function MessageList({ messages }: MessageListProps) {
               message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            <div className="text-sm p-2 rounded shadow-sm max-w-[70%] bg-white">
+            <div className="text-sm p-2 rounded shadow-md max-w-[70%] bg-white">
               {message.content || "No content"}
             </div>
           </div>

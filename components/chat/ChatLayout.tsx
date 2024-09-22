@@ -21,7 +21,7 @@ export default function ChatLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="flex h-screen dark:bg-gray-900">
         {isSidebarOpen && (
           <Sidebar
             isSidebarOpen={isSidebarOpen}

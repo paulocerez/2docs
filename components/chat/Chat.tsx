@@ -141,26 +141,26 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   if (error) return <div>Error loading messages: {error.toString()}</div>;
 
   return (
-    <div className="flex flex-col justify-between h-full p-4">
+    <div className="flex flex-col h-full p-4">
       <MessageList messages={messages || []} />
-      <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-4 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col w-full bg-transparent px-12 py-4 justify-center space-x-4 items-center fixed bottom-0">
         <form
-          className="mt-4 relative flex flex-row items-center rounded-2xl bg-white px-4"
+          className="flex flex-row items-center space-x-2 rounded-2xl px-4 max-w-2xl bg-white w-full border border-gray-100 shadow-md"
           onSubmit={handleSubmit}
         >
           <textarea
             ref={textareaRef}
             value={inputMessage}
             placeholder="Insert a prompt to get started"
-            className="w-full text-sm p-4 resize-none focus:outline-none dark:bg-transparent"
+            className="w-full text-sm p-4 resize-none focus:outline-none dark:bg-transparent bg-white"
             rows={1}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <div className="border-">
+          <div className="">
             <button
               type="submit"
-              className={`text-black border p-2 rounded-full transition-all duration-200 ${
+              className={`text-black border p-1 rounded-full transition-all duration-200 ${
                 inputMessage.trim()
                   ? "bg-blue-500 hover:bg-blue-600"
                   : "bg-gray-200 hover:bg-gray-300"
