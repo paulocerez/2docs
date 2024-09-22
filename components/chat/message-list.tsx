@@ -10,7 +10,7 @@ export default function MessageList({ messages }: MessageListProps) {
           <div
             key={index}
             className={`flex p-2 ${
-              message.role === "user" ? "justify-end" : "justify-start"
+              message.role === "user" ? "justify-end" : "justify-center"
             }`}
           >
             <div className="text-sm p-2 rounded shadow-md max-w-[70%] bg-white">
