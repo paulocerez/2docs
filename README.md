@@ -1,12 +1,23 @@
-# 2docs
+# API-Docs based workflow generator
 
-🔥 Combine the power of two or more API's without worrying about integrations. Works best for API's Zapier didn't cover yet.
+Provide the links to the API docs for the services you want to utilize, and let the system do the rest. Works best for all the integrations, Zapier didn't care about yet.
 
-## Waitlist
+## Features
 
-👋🏼 Sign up for the waitlist here: www.2docs.de
+Currently under construction 🔨
 
-## TODO Render all chats in sidebar
+## Database
 
-    TODO Dynamic routes based on chatId assignment
-    TODO finish auth setup
+Currently under construction 🔨
+
+## Security
+
+Currently under construction 🔨
+
+## Architecture
+
+Currently under construction 🔨
+
+## Roadmap
+
+Currently under construction 🔨
