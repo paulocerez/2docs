@@ -6,6 +6,7 @@ import { SelectChat } from "@/db/schema/chats";
 import { SidebarProps } from "@/types/types";
 import { ChatList } from "../chat/chat-list";
 import { useState } from "react";
+import StoredWorkflows from "./StoredWorkflows";
 
 export default function Sidebar({
   sessionId,
@@ -46,6 +47,7 @@ export default function Sidebar({
           isLoading={isLoading}
         />
       </div>
+      {/* <StoredWorkflows /> */}
       <SidebarFooter />
     </div>
   );

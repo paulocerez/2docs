@@ -6,11 +6,15 @@ import { ChatProps, Message } from "@/types/types";
 import { SelectChat } from "@/db/schema/chats";
 import MessageList from "./message-list";
 import { MessageLoadingScreen } from "../state/messages-loading";
+import { useMessageMutation } from "@/hooks/useMessageMutation";
+import { useMessages } from "@/hooks/useMessages";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [inputMessage, setInputMessage] = useState("");
-  const queryClient = useQueryClient();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const { data: messages, isLoading, error } = useMessages(currentChatId);
+  const sendMessageMutation = useMessageMutation(sessionId, currentChatId);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -18,99 +22,6 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [inputMessage]);
-
-  const {
-    data: messages,
-    isLoading,
-    error,
-  } = useQuery<Message[]>({
-    queryKey: ["messages", currentChatId],
-    queryFn: async () => {
-      if (currentChatId.startsWith("temp-")) {
-        return [];
-      }
-      const response = await fetch(`/api/chats/${currentChatId}/messages`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch messages");
-      }
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        console.error("Expected array of messages, got:", data);
-        return [];
-      }
-      return data;
-    },
-    enabled: !!currentChatId,
-  });
-
-  const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      if (currentChatId.startsWith("temp-")) {
-        // Create a new chat and send the first message
-        const response = await fetch("/api/chats", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: sessionId,
-            prompt: content,
-            role: "user",
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to create new chat");
-        }
-
-        const newChat = await response.json();
-        return {
-          chatId: newChat.id,
-          message: {
-            content,
-            role: "user",
-            id: newChat.messageId,
-            timestamp: new Date(),
-          },
-        };
-      } else {
-        // Send message to existing chat
-        const response = await fetch(`/api/chats/${currentChatId}/messages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content, userId: sessionId, role: "user" }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to send message");
-        }
-
-        const data = await response.json();
-        return { chatId: currentChatId, message: data };
-      }
-    },
-    onSuccess: (data) => {
-      if (currentChatId.startsWith("temp-")) {
-        // Update the chats list with the new chat
-        queryClient.setQueryData<SelectChat[]>(
-          ["chats", sessionId],
-          (oldChats) =>
-            oldChats
-              ? oldChats.map((chat) =>
-                  chat.id === currentChatId
-                    ? { ...chat, id: data.chatId }
-                    : chat
-                )
-              : []
-        );
-        // Update the current chat ID
-        queryClient.setQueryData(["currentChatId"], data.chatId);
-      }
-      // Update the messages for the chat
-      queryClient.setQueryData<Message[]>(
-        ["messages", data.chatId],
-        (oldMessages = []) => [...oldMessages, data.message]
-      );
-    },
-  });
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
