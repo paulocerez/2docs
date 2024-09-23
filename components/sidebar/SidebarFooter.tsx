@@ -6,7 +6,7 @@ import AccountSelect from "./AccountSelect";
 
 export default function SidebarFooter() {
   return (
-    <div className="p-2 flex justify-between items-center">
+    <div className="py-2 flex justify-between items-center">
       <ModeToggle />
       <AccountSelect />
     </div>

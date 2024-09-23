@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, KeyboardEvent, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaArrowRight } from "react-icons/fa";
-import { ChatProps, Message } from "@/types/types";
-import { SelectChat } from "@/db/schema/chats";
+import { ChatProps } from "@/types/types";
 import MessageList from "./message-list";
 import { MessageLoadingScreen } from "../state/messages-loading";
 import { useMessageMutation } from "@/hooks/useMessageMutation";

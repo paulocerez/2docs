@@ -47,8 +47,10 @@ export default function Sidebar({
           isLoading={isLoading}
         />
       </div>
-      {/* <StoredWorkflows /> */}
-      <SidebarFooter />
+      <div>
+        <StoredWorkflows />
+        <SidebarFooter />
+      </div>
     </div>
   );
 }
