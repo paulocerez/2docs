@@ -10,3 +10,7 @@ export async function createUser(data: InsertUser) {
 export async function getUserById(userId: string) {
 	await db.select().from(users).where(eq(users.id, userId))
 }
+
+export async function getUserNameAndImageByUserId(userId: string) {
+	await db.select({ id: users.id, name: users.name, image: users.image}).from(users).where(eq(users.id, userId))
+}

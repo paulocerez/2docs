@@ -11,10 +11,10 @@ export async function GET (request: NextRequest): Promise<NextResponse> {
 	}
 
 	const result = await getAllChatsByUserId(userId);
-	return NextResponse.json(result)
+	return NextResponse.json(result, { status: 200 })
 } 
 
-export async function POST (request: NextRequest): Promise<NextResponse> {
+export async function POST (request: NextRequest): Promise<NextResponse> {
 	const data = await request.json()
 
 	if (!data.userId || !data.prompt) {
@@ -22,6 +22,6 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
 	  }
 
 	const result = await createChat(data)
-	return NextResponse.json(result, {status: 200})
+	return NextResponse.json(result, {status: 201 })
 }
 

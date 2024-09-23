@@ -19,7 +19,7 @@ export function ChatList({
         <Link key={chat.id} href={`/chat/${chat.id}`} passHref>
           <div
             className={`p-2 flex flex-row items-center justify-between text-xs hover:bg-gray-100 rounded cursor-pointer ${
-              chat.id === currentChatId ? "bg-gray-200" : ""
+              chat.id === currentChatId ? "bg-gray-100" : ""
             }`}
             onClick={() => setCurrentChatId(chat.id)}
           >
