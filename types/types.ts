@@ -28,8 +28,7 @@ export interface SidebarProps {
 
 export interface SidebarHeaderProps {
 	toggleSidebar: () => void;
-	userName?: string;
-	userImage?: string;
+	sessionId: string;
 }
 
 export interface ChatProps {

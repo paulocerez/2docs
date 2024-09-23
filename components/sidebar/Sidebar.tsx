@@ -1,11 +1,9 @@
 "use client";
-import { useQueryClient } from "@tanstack/react-query";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import { SelectChat } from "@/db/schema/chats";
 import { SidebarProps } from "@/types/types";
 import { ChatList } from "../chat/chat-list";
-import { useState } from "react";
 import StoredWorkflows from "./StoredWorkflows";
 
 export default function Sidebar({
@@ -32,7 +30,7 @@ export default function Sidebar({
 	${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="space-y-4">
-        <SidebarHeader toggleSidebar={toggleSidebar} />
+        <SidebarHeader toggleSidebar={toggleSidebar} sessionId={sessionId} />
         <button
           onClick={handleCreateNewChat}
           className="w-full p-2 text-center text-xs border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"

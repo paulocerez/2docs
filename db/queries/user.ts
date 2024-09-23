@@ -12,5 +12,5 @@ export async function getUserById(userId: string) {
 }
 
 export async function getUserNameAndImageByUserId(userId: string) {
-	await db.select({ id: users.id, name: users.name, image: users.image}).from(users).where(eq(users.id, userId))
+	return await db.select({ id: users.id, name: users.name, image: users.image}).from(users).where(eq(users.id, userId)).then(res => res[0])
 }
