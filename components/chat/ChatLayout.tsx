@@ -5,47 +5,66 @@ import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
 import Chat from "./Chat";
 import { ChatLayoutProps } from "@/types/types";
+import { useChats } from "@/hooks/useChats";
+import { useCurrentChat } from "@/hooks/useCurrentChat";
 
 const queryClient = new QueryClient();
 
-export default function ChatLayout({
-  sessionId,
-  initialChatId,
-}: ChatLayoutProps) {
+function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [currentChatId, setCurrentChatId] = useState<string | undefined>(
-    initialChatId
-  );
+  const {
+    chats,
+    isLoading,
+    setCurrentChat,
+    createTemporaryChat,
+    temporaryChatId,
+  } = useChats(sessionId, queryClient);
+  const currentChat = useCurrentChat(queryClient);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="flex h-screen dark:bg-gray-900">
-        {isSidebarOpen && (
-          <Sidebar
-            isSidebarOpen={isSidebarOpen}
+    <div className="flex h-screen dark:bg-gray-900">
+      {isSidebarOpen && (
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          sessionId={sessionId}
+          currentChatId={currentChat?.id}
+          setCurrentChatId={setCurrentChat}
+          toggleSidebar={toggleSidebar}
+          chats={chats}
+          isLoading={isLoading}
+          createTemporaryChat={createTemporaryChat}
+          temporaryChatId={temporaryChatId}
+        />
+      )}
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "ml-64" : "ml-0"
+        }`}
+      >
+        <Header
+          currentChatId={currentChat?.id}
+          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+          currentChatTopic={currentChat?.prompt}
+        />
+        {currentChat && (
+          <Chat
             sessionId={sessionId}
-            currentChatId={currentChatId}
-            setCurrentChatId={setCurrentChatId}
-            toggleSidebar={toggleSidebar}
+            currentChatId={currentChat.id}
+            isTemporary={currentChat.id === temporaryChatId}
           />
         )}
-        <div
-          className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? "ml-64" : "ml-0"
-          }`}
-        >
-          <Header
-            currentChatId={currentChatId}
-            toggleSidebar={toggleSidebar}
-            isSidebarOpen={isSidebarOpen}
-          />
-          {currentChatId && (
-            <Chat sessionId={sessionId} currentChatId={currentChatId} />
-          )}
-        </div>
       </div>
+    </div>
+  );
+}
+
+export default function ChatLayout(props: ChatLayoutProps) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChatLayoutContent {...props} />
     </QueryClientProvider>
   );
 }

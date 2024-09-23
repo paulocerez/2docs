@@ -6,6 +6,10 @@ export interface SidebarProps {
 	setCurrentChatId: (id: string) => void;
 	currentChatId?: string;
 	isSidebarOpen: boolean;
+	chats: SelectChat[]| undefined;
+	isLoading: boolean;
+	createTemporaryChat: () => string;
+	temporaryChatId: string | null;
   }
 
   export interface ChatLayoutProps {
@@ -15,7 +19,8 @@ export interface SidebarProps {
   }
 
   export interface ChatListProps {
-	sessionId: string;
+	chats: SelectChat[] | undefined;
+	isLoading: boolean;
 	currentChatId: string | undefined;
 	setCurrentChatId: (id: string) => void;
 	temporaryChatId: string | null;
@@ -30,6 +35,7 @@ export interface SidebarHeaderProps {
 export interface ChatProps {
 	sessionId: string;
 	currentChatId: string;
+	isTemporary: boolean;
   }
   
   export interface Message {

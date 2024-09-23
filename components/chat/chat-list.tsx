@@ -6,17 +6,12 @@ import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
 
 export function ChatList({
-  sessionId,
+  chats,
+  isLoading,
   currentChatId,
   setCurrentChatId,
   temporaryChatId,
 }: ChatListProps) {
-  const { data: chats, isLoading } = useQuery<SelectChat[]>({
-    queryKey: ["chats", sessionId],
-    queryFn: () =>
-      fetch(`/api/chats?userId=${sessionId}`).then((res) => res.json()),
-  });
-
   if (isLoading) return <ChatLoadingScreen />;
   return (
     <div className="space-y-2 px-2">

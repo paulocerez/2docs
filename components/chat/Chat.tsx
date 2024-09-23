@@ -147,7 +147,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
           <MessageList messages={messages || []} />
         </div>
       </div>
-      <div className="fixed bottom-0 left-0 right-0 p-6 pt-0 bg-white">
+      <div className="fixed bottom-0 p-6 pt-0 bg-white w-full">
         <div className="max-w-2xl mx-auto">
           <form
             className="flex flex-row items-center space-x-2 rounded-2xl px-4 bg-white w-full border border-gray-100 shadow-md"

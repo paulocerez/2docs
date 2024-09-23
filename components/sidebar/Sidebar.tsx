@@ -13,24 +13,14 @@ export default function Sidebar({
   setCurrentChatId,
   currentChatId,
   isSidebarOpen,
+  chats,
+  isLoading,
+  createTemporaryChat,
+  temporaryChatId,
 }: SidebarProps) {
-  const queryClient = useQueryClient();
-  const [temporaryChatId, setTemporaryChatId] = useState<string | null>(null);
-
   const handleCreateNewChat = () => {
-    const newTempChat: SelectChat = {
-      id: `temp-${Date.now()}`,
-      prompt: "New chat",
-      userId: sessionId,
-      createdAt: new Date(),
-    };
-
-    queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
-      oldChats ? [newTempChat, ...oldChats] : [newTempChat]
-    );
-
-    setTemporaryChatId(newTempChat.id);
-    setCurrentChatId(newTempChat.id);
+    const newChatId = createTemporaryChat();
+    setCurrentChatId(newChatId);
   };
 
   return (
@@ -49,10 +39,11 @@ export default function Sidebar({
           Create new chat
         </button>
         <ChatList
-          sessionId={sessionId}
+          chats={chats}
           currentChatId={currentChatId}
           setCurrentChatId={setCurrentChatId}
           temporaryChatId={temporaryChatId}
+          isLoading={isLoading}
         />
       </div>
       <SidebarFooter />

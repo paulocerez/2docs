@@ -13,7 +13,6 @@ export async function GET(
 
   try {
 	  const result = await getAllMessagesForChat(chatId);
-	  console.log("Messages fetched from database:", result);
 	  return NextResponse.json(result, { status: 200 }); // returns Array containing multiple SelectMessage objects
   } catch (error) {
 	console.error("Error fetching messages:", error);
