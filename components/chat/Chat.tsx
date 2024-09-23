@@ -6,6 +6,7 @@ import MessageList from "./message-list";
 import { MessageLoadingScreen } from "../state/messages-loading";
 import { useMessageMutation } from "@/hooks/useMessageMutation";
 import { useMessages } from "@/hooks/useMessages";
+import LinkInputs from "./LinkInputs";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [inputMessage, setInputMessage] = useState("");
@@ -41,6 +42,12 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     }
   };
 
+  const handleLinkSubmit = (links: string[]) => {
+    // Mutate links to backend here
+    // ...
+    console.log("Submitted links:", links);
+  };
+
   if (isLoading)
     return (
       <div className="p-4">
@@ -52,11 +59,17 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-grow overflow-y-auto pb-24">
-        <div className="max-w-2xl mx-auto p-4">
-          <MessageList messages={messages || []} />
+        <div className="max-w-2xl mx-auto p-4 h-full flex flex-col">
+          {messages && messages.length > 0 ? (
+            <MessageList messages={messages} />
+          ) : (
+            <div className="flex-grow flex items-center justify-center">
+              <LinkInputs onSubmit={handleLinkSubmit} />
+            </div>
+          )}
         </div>
       </div>
-      <div className="fixed bottom-0 p-6 pt-0 bg-white w-full">
+      <div className="fixed bottom-0 p-12 pt-0 bg-white w-full">
         <div className="max-w-2xl mx-auto">
           <form
             className="flex flex-row items-center space-x-2 rounded-2xl px-4 bg-white w-full border border-gray-100 shadow-md"

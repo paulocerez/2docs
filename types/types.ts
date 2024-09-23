@@ -54,3 +54,7 @@ export interface ChatProps {
   export interface MessageListProps {
 	messages: Message[] | undefined;
   }
+
+  export interface LinkInputsProps {
+	onSubmit: (links: string[]) => void;
+  }

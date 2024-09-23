@@ -73,3 +73,10 @@
     radial-gradient(circle at 80% 70%, #669ae8, transparent 20%),
     linear-gradient(to right, #0b3ceb, #669ae8);
 }
+
+@media (max-width: 768px) {
+  .blur-background {
+    filter: blur(10px);
+    transition: filter 0.1s ease-in-out;
+  }
+}

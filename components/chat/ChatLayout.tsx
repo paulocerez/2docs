@@ -40,7 +40,7 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
       )}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "ml-64" : "ml-0"
+          isSidebarOpen ? "sm:ml-24 blur-background" : "ml-0"
         }`}
       >
         <Header
