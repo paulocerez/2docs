@@ -12,7 +12,7 @@ export default function CreateChatButton({
   return (
     <button
       onClick={handleCreateNewChat}
-      className="flex flex-row space-x-2 items-center p-2 text-xs font-medium hover:bg-gray-100 w-full"
+      className="flex flex-row space-x-2 items-center p-2 text-xs font-medium hover:bg-gray-100 w-full rounded-sm"
     >
       <MdChatBubbleOutline />
       <p>Create new chat</p>
