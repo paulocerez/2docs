@@ -1,10 +1,11 @@
 "use client";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
-import { SelectChat } from "@/db/schema/chats";
 import { SidebarProps } from "@/types/types";
 import { ChatList } from "../chat/chat-list";
 import StoredWorkflows from "./StoredWorkflows";
+import { MdChatBubbleOutline } from "react-icons/md";
+import CreateChatButton from "./CreateChatButton";
 
 export default function Sidebar({
   sessionId,
@@ -17,11 +18,6 @@ export default function Sidebar({
   createTemporaryChat,
   temporaryChatId,
 }: SidebarProps) {
-  const handleCreateNewChat = () => {
-    const newChatId = createTemporaryChat();
-    setCurrentChatId(newChatId);
-  };
-
   return (
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
@@ -31,12 +27,13 @@ export default function Sidebar({
     >
       <div className="space-y-4">
         <SidebarHeader toggleSidebar={toggleSidebar} sessionId={sessionId} />
-        <button
-          onClick={handleCreateNewChat}
-          className="w-full p-2 text-center text-xs border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
-        >
-          Create new chat
-        </button>
+        <div className="flex flex-col space-y-1">
+          <CreateChatButton
+            setCurrentChatId={setCurrentChatId}
+            createTemporaryChat={createTemporaryChat}
+          />
+          <StoredWorkflows />
+        </div>
         <ChatList
           chats={chats}
           currentChatId={currentChatId}
@@ -45,10 +42,7 @@ export default function Sidebar({
           isLoading={isLoading}
         />
       </div>
-      <div>
-        <StoredWorkflows />
-        <SidebarFooter />
-      </div>
+      <SidebarFooter />
     </div>
   );
 }

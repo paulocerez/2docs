@@ -58,3 +58,8 @@ export interface ChatProps {
   export interface LinkInputsProps {
 	onSubmit: (links: string[]) => void;
   }
+
+  export interface CreateChatProps {
+	setCurrentChatId: (id: string) => void;
+	createTemporaryChat: () => string;
+  }
