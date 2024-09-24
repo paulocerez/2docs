@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SelectUser } from "@/db/schema/users";
 import Link from "next/link";
 import { IoIosArrowDown } from "react-icons/io";
+import { useTheme } from "next-themes";
 
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 
@@ -15,6 +16,7 @@ export default function SidebarHeader({
   sessionId,
 }: SidebarHeaderProps) {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const { theme, setTheme } = useTheme();
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", sessionId],
     queryFn: () => fetch(`/api/users/${sessionId}`).then((res) => res.json()),
@@ -59,6 +61,12 @@ export default function SidebarHeader({
             >
               Account Settings
             </Link>
+            <button
+              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? "Light" : "Dark"} Mode
+            </button>
             <Link
               href="/api/auth/logout"
               className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"

@@ -1,4 +1,5 @@
 import { CreateChatProps } from "@/types/types";
+import { useHotkeys } from "react-hotkeys-hook";
 import { MdChatBubbleOutline } from "react-icons/md";
 
 export default function CreateChatButton({
@@ -9,6 +10,8 @@ export default function CreateChatButton({
     const newChatId = createTemporaryChat();
     setCurrentChatId(newChatId);
   };
+
+  useHotkeys("c", () => handleCreateNewChat());
   return (
     <button
       onClick={handleCreateNewChat}

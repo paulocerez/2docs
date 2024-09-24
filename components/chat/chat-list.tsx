@@ -15,6 +15,7 @@ export function ChatList({
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   if (isLoading) return <ChatLoadingScreen />;
+
   return (
     <div>
       {chats?.map((chat) => (
@@ -27,8 +28,11 @@ export function ChatList({
           <Link
             href={`/chat/${chat.id}`}
             passHref
-            className="w-full"
-            onClick={() => setCurrentChatId(chat.id)}
+            className="w-full text-left"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentChatId(chat.id);
+            }}
           >
             {chat.id === temporaryChatId
               ? `${chat.prompt} (unsaved)`
