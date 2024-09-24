@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: "./.env.local" });
 import OpenAI from "openai";
-const apiKey = process.env.OPENAI_API_KEY!;
+const apiKey = "sk-quqi68yuMO7hTugSdbymcy5bXtCXoObAoi3AEhMg-9T3BlbkFJ2oBryA186fEjaazV1IvbvxzYSKpzgU0Mt8qbZlW6MA";
 
 if (!apiKey) {
   throw new Error("OPENAI_API_KEY is not set in the environment variables");
