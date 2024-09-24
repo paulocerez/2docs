@@ -22,7 +22,9 @@ export function ChatList({
         <div
           key={chat.id}
           className={`flex flex-row items-center justify-between p-2 text-xs hover:bg-gray-100 rounded cursor-pointer ${
-            chat.id === currentChatId ? "bg-gray-100" : ""
+            chat.id === currentChatId || chat.id === temporaryChatId
+              ? "bg-gray-100"
+              : ""
           }`}
         >
           <Link

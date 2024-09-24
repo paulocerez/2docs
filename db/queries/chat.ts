@@ -15,4 +15,3 @@ export async function getChatById(chatId: string): Promise<SelectChat | null> {
 	const [result] = await db.select().from(chats).where(eq(chats.id, chatId));
   	return result || null;
 }
-

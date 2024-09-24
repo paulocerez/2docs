@@ -13,12 +13,15 @@ export default function CreateChatButton({
 
   useHotkeys("c", () => handleCreateNewChat());
   return (
-    <button
-      onClick={handleCreateNewChat}
-      className="flex flex-row space-x-2 items-center p-2 text-xs font-medium hover:bg-gray-100 w-full rounded-sm"
-    >
-      <MdChatBubbleOutline />
-      <p>Create new chat</p>
-    </button>
+    <div className="flex flex-row items-center justify-between p-2 text-xs font-normal hover:bg-gray-100 rounded-sm">
+      <button
+        onClick={handleCreateNewChat}
+        className="flex flex-row space-x-2 items-center text-xs font-normal hover:bg-gray-100 w-full rounded-sm"
+      >
+        <MdChatBubbleOutline />
+        <p>Create new chat</p>
+      </button>
+      <div className="text-gray-600 shadow-md border rounded-sm px-1.5">c</div>
+    </div>
   );
 }

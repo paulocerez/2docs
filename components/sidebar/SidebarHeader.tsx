@@ -68,7 +68,7 @@ export default function SidebarHeader({
               {theme === "dark" ? "Light" : "Dark"} Mode
             </button>
             <Link
-              href="/api/auth/logout"
+              href="/api/auth/signout"
               className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               Logout
