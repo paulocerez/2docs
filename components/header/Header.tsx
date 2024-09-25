@@ -24,9 +24,11 @@ export default function Header({
       <h1 className="text-sm font-medium">
         {currentChatTopic || "Chat topic"}
       </h1>
-      <h1 className="text-sm">
+      {/* Space blocker */}
+      <div></div>
+      {/* <h1 className="text-sm">
         {currentChatId ? `Id: ${currentChatId.slice(-5)}` : "New id"}
-      </h1>
+      </h1> */}
     </div>
   );
 }

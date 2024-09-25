@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GrStorage } from "react-icons/gr";
+import Hotkey from "../ui/hotkey";
 
 export default function StoredWorkflows() {
   return (
@@ -8,7 +9,7 @@ export default function StoredWorkflows() {
         <GrStorage />
         <Link href="/workflows">My stored workflows</Link>
       </div>
-      <div className="text-gray-600 shadow-md border rounded-sm px-1">w</div>
+      <Hotkey letter="w" />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { CreateChatProps } from "@/types/types";
 import { useHotkeys } from "react-hotkeys-hook";
 import { MdChatBubbleOutline } from "react-icons/md";
+import Hotkey from "../ui/hotkey";
 
 export default function CreateChatButton({
   setCurrentChatId,
@@ -21,7 +22,7 @@ export default function CreateChatButton({
         <MdChatBubbleOutline />
         <p>Create new chat</p>
       </button>
-      <div className="text-gray-600 shadow-md border rounded-sm px-1.5">c</div>
+      <Hotkey letter="c" />
     </div>
   );
 }

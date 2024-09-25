@@ -8,6 +8,7 @@ import { SelectUser } from "@/db/schema/users";
 import Link from "next/link";
 import { IoIosArrowDown } from "react-icons/io";
 import { useTheme } from "next-themes";
+import Hotkey from "../ui/hotkey";
 
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 
@@ -15,7 +16,8 @@ export default function SidebarHeader({
   toggleSidebar,
   sessionId,
 }: SidebarHeaderProps) {
-  const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
+  const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(true);
   const { theme, setTheme } = useTheme();
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", sessionId],
@@ -26,7 +28,7 @@ export default function SidebarHeader({
     <div className="flex justify-between items-center">
       <button
         className="flex items-center space-x-2 relative hover:bg-gray-100 p-1 rounded-md"
-        onClick={() => setShowTooltip((prev) => !prev)}
+        onClick={() => setShowAccountTooltip((prev) => !prev)}
       >
         {isLoading ? (
           <div className="text-xs">Loading...</div>
@@ -46,14 +48,14 @@ export default function SidebarHeader({
             </p>
             <div
               className={`transition-transform duration-300 ease-in-out ${
-                showTooltip ? "rotate-180" : ""
+                showAccountTooltip ? "rotate-180" : ""
               }`}
             >
               <IoIosArrowDown />
             </div>
           </>
         )}
-        {showTooltip && (
+        {showAccountTooltip && (
           <div className="absolute text-left top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg p-2 z-10 text-xs">
             <Link
               href="/settings"
@@ -78,9 +80,17 @@ export default function SidebarHeader({
       </button>
       <button
         onClick={toggleSidebar}
-        className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+        onMouseEnter={() => setShowSidebarTooltip(true)}
+        // onMouseLeave={() => setShowSidebarTooltip(false)}
+        className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative"
       >
         <IoIosClose className="text-2xl" />
+        {showSidebarTooltip && (
+          <div className="flex flex-row  items-center justify-between space-x-2 absolute p-2 bg-gray-100 text-gray-500 border shadow-sm text-xs rounded whitespace-nowrap">
+            <p>Toggle Sidebar</p>
+            <Hotkey letter="s" />
+          </div>
+        )}
       </button>
     </div>
   );
