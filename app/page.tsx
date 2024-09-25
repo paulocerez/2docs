@@ -1,8 +1,16 @@
+import { auth } from "@/auth";
 import AuthForm from "@/components/auth/AuthForm";
-import SignIn from "@/components/auth/sign-in";
 import { ModeToggle } from "@/components/mode-toggle";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (userId) {
+    redirect("/chat");
+  }
+
   return (
     <main className="flex flex-col p-8 items-center space-y-12 sm:space-y-24 min-h-screen">
       <div className="w-full flex flex-row justify-between items-center">

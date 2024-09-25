@@ -11,15 +11,17 @@ const openai = new OpenAI({
 });
 
 export async function callLlm() {
-  const completion = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       { role: "system", content: "You are a helpful assistant." },
       { role: "user", content: "Write a definition of API's" },
     ],
+	stream: true,
   });
-  console.log(completion.choices[0].message);
-  return completion;
+  for await (const chunk of stream) {
+	process.stdout.write(chunk.choices[0]?.delta?.content || '')
+  }
 }
 
 callLlm();
