@@ -29,12 +29,8 @@ export function ChatList({
         >
           <Link
             href={`/chat/${chat.id}`}
-            passHref
             className="w-full text-left"
-            onClick={(e) => {
-              e.preventDefault();
-              setCurrentChatId(chat.id);
-            }}
+            onClick={() => setCurrentChatId(chat.id)}
           >
             {chat.id === temporaryChatId
               ? `${chat.prompt} (unsaved)`

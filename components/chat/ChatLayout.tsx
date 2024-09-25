@@ -23,14 +23,8 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
   const currentChat = useCurrentChat(queryClient);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const closeSidebar = () => setIsSidebarOpen(false);
 
   useHotkeys("s", () => toggleSidebar());
-
-  const handleChatSelect = (chatId: string) => {
-    setCurrentChat(chatId);
-    closeSidebar();
-  };
 
   return (
     <div className="flex h-screen dark:bg-gray-900">
@@ -39,7 +33,7 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
           isSidebarOpen={isSidebarOpen}
           sessionId={sessionId}
           currentChatId={currentChat?.id}
-          setCurrentChatId={handleChatSelect}
+          setCurrentChatId={setCurrentChat}
           toggleSidebar={toggleSidebar}
           chats={chats}
           isLoading={isLoading}
