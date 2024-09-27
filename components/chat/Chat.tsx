@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, KeyboardEvent, useEffect, useRef } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { ChatProps } from "@/types/types";
@@ -21,6 +22,8 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [inputMessage]);
+
+  useEffect;
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -59,18 +62,27 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-grow overflow-y-auto pb-24">
-        <div className="max-w-2xl mx-auto p-4 h-full flex flex-col">
+        <div className="flex flex-col justify-center h-full max-w-2xl mx-auto">
           {messages && messages.length > 0 ? (
             <MessageList messages={messages} />
           ) : (
-            <div className="flex-grow flex items-center justify-center">
+            <div className="flex flex-col items-center py-4 space-y-12 w-full">
+              <div className="p-4 text-gray-500 h-fit leading-loose">
+                <p>
+                  Welcome to your new chat! To generate a workflow, insert two
+                  or more links to the API Docs that are involved and specify
+                  the workflow with as much precision as possible in the prompt
+                  field.
+                </p>
+              </div>
               <LinkInputs onSubmit={handleLinkSubmit} />
             </div>
           )}
         </div>
       </div>
       <div className="fixed bottom-0 p-12 pt-0 bg-white w-full">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-2">
+          <p className="text-xs text-gray-400 text-right">*Required</p>
           <form
             className="flex flex-row items-center space-x-2 rounded-2xl px-4 bg-white w-full border border-gray-100 shadow-md"
             onSubmit={handleSubmit}

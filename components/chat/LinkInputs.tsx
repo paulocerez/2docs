@@ -27,17 +27,19 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col items-center space-y-8 w-full"
+      className="flex flex-col items-center space-y-8 w-full p-8"
     >
       {userInputs.map((input, index) => (
-        <input
-          key={index}
-          type="text"
-          value={input}
-          onChange={(e) => handleInputChange(index, e.target.value)}
-          placeholder="Insert API Doc link here"
-          className="p-2 text-xs rounded-md w-full border border-gray-100 max-w-lg"
-        />
+        <div key={index} className="max-w-lg w-full space-y-2">
+          <p className="text-xs text-gray-400 text-right">*Required</p>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => handleInputChange(index, e.target.value)}
+            placeholder="Insert API Doc link here"
+            className="p-2 text-sm rounded-md w-full border border-gray-100 h-auto"
+          />
+        </div>
       ))}
       <button
         type="button"
