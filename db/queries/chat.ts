@@ -15,3 +15,8 @@ export async function getChatById(chatId: string): Promise<SelectChat | null> {
 	const [result] = await db.select().from(chats).where(eq(chats.id, chatId));
   	return result || null;
 }
+
+export async function deleteChatById(chatId: string): Promise<SelectChat | undefined> {
+	const [deletedChat] = await db.delete(chats).where(eq(chats.id, chatId)).returning();
+	return deletedChat;
+}

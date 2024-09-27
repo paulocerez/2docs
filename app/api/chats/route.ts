@@ -25,3 +25,6 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
 	return NextResponse.json(result, {status: 201 })
 }
 
+// export async function DELETE (request: NextRequest): Promise<NextResponse> {
+// 	const 
+// }

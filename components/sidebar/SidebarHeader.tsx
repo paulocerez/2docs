@@ -1,12 +1,13 @@
 "use client";
+
 import React, { useState } from "react";
 import { SidebarHeaderProps } from "@/types/types";
 import { IoIosClose } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { SelectUser } from "@/db/schema/users";
 import Link from "next/link";
-import { IoIosArrowDown } from "react-icons/io";
 import { useTheme } from "next-themes";
 import Hotkey from "../ui/hotkey";
 
@@ -17,7 +18,7 @@ export default function SidebarHeader({
   sessionId,
 }: SidebarHeaderProps) {
   const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
-  const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(true);
+  const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", sessionId],
@@ -27,7 +28,7 @@ export default function SidebarHeader({
   return (
     <div className="flex justify-between items-center">
       <button
-        className="flex items-center space-x-2 relative hover:bg-gray-100 p-1 rounded-md"
+        className="flex items-center space-x-2 relative hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-md transition-colors duration-200"
         onClick={() => setShowAccountTooltip((prev) => !prev)}
       >
         {isLoading ? (
@@ -59,19 +60,19 @@ export default function SidebarHeader({
           <div className="absolute text-left top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg p-2 z-10 text-xs">
             <Link
               href="/settings"
-              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               Account Settings
             </Link>
             <button
-              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors duration-200"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               {theme === "dark" ? "Light" : "Dark"} Mode
             </button>
             <Link
               href="/api/auth/signout"
-              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               Logout
             </Link>
@@ -81,16 +82,21 @@ export default function SidebarHeader({
       <button
         onClick={toggleSidebar}
         onMouseEnter={() => setShowSidebarTooltip(true)}
-        // onMouseLeave={() => setShowSidebarTooltip(false)}
-        className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative"
+        onMouseLeave={() => setShowSidebarTooltip(false)}
+        className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative transition-colors duration-200"
+        aria-label="Toggle Sidebar"
       >
         <IoIosClose className="text-2xl" />
-        {showSidebarTooltip && (
-          <div className="flex flex-row  items-center justify-between space-x-2 absolute p-2 bg-gray-100 text-gray-500 border shadow-sm text-xs rounded whitespace-nowrap">
-            <p>Toggle Sidebar</p>
-            <Hotkey letter="s" />
-          </div>
-        )}
+        <div
+          className={`flex flex-row items-center justify-between space-x-2 absolute p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border dark:border-gray-600 shadow-sm text-xs rounded whitespace-nowrap mt-3 -ml-1 transition-all duration-200 ease-in-out ${
+            showSidebarTooltip
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-1 pointer-events-none"
+          }`}
+        >
+          <p>Toggle Sidebar</p>
+          <Hotkey letter="s" />
+        </div>
       </button>
     </div>
   );

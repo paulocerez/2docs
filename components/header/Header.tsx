@@ -1,6 +1,7 @@
 import { HeaderProps } from "@/types/types";
-import React from "react";
+import React, { useState } from "react";
 import { FiSidebar } from "react-icons/fi";
+import Hotkey from "../ui/hotkey";
 
 export default function Header({
   currentChatId,
@@ -8,15 +9,34 @@ export default function Header({
   toggleSidebar,
   currentChatTopic,
 }: HeaderProps) {
+  const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
+
   return (
     <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-200 dark:border-gray-700">
-      <div className="flex items-center">
+      <div className="flex items-center relative">
         {!isSidebarOpen && (
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-slate-50 dark:hover:bg-black"
+            onMouseEnter={() => setShowSidebarTooltip(true)}
+            onMouseLeave={() => setShowSidebarTooltip(false)}
+            className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            aria-label="Toggle Sidebar"
           >
-            <FiSidebar />
+            <FiSidebar className="w-5 h-5" />
+            <div
+              className={`absolute left-0 top-full mt-2 z-50 ${
+                showSidebarTooltip
+                  ? "opacity-100 visible"
+                  : "opacity-0 invisible"
+              } transition-all duration-200 ease-in-out transform ${
+                showSidebarTooltip ? "translate-y-0" : "-translate-y-1"
+              }`}
+            >
+              <div className="flex flex-row items-center justify-between space-x-2 p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border dark:border-gray-600 shadow-sm text-xs rounded whitespace-nowrap">
+                <p>Toggle Sidebar</p>
+                <Hotkey letter="s" />
+              </div>
+            </div>
           </button>
         )}
         {isSidebarOpen && <div className="w-8"></div>}
@@ -24,11 +44,7 @@ export default function Header({
       <h1 className="text-sm font-medium">
         {currentChatTopic || "Chat topic"}
       </h1>
-      {/* Space blocker */}
-      <div></div>
-      {/* <h1 className="text-sm">
-        {currentChatId ? `Id: ${currentChatId.slice(-5)}` : "New id"}
-      </h1> */}
+      <div className="w-8"></div>
     </div>
   );
 }
