@@ -37,7 +37,7 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
             value={input}
             onChange={(e) => handleInputChange(index, e.target.value)}
             placeholder="Insert API Doc link here"
-            className="p-2 text-sm rounded-md w-full border border-gray-100 h-auto"
+            className="p-3 sm:p-4 text-sm rounded-md w-full border border-gray-100 h-auto"
           />
         </div>
       ))}

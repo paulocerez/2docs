@@ -64,5 +64,12 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  safelist: [
+    'markdown',
+    {
+      pattern: /^markdown/,
+    },
+  ],
+  
 };
 export default config;

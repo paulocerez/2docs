@@ -2,43 +2,13 @@
 
 import React, { useState, KeyboardEvent, useEffect, useRef } from "react";
 import { FaArrowRight } from "react-icons/fa";
-import { ChatProps, Message } from "@/types/types";
+import { ChatProps } from "@/types/types";
 import { MessageLoadingScreen } from "../state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
 import { useMessages } from "@/hooks/useMessages";
 import LinkInputs from "./LinkInputs";
-
-function MessageList({ messages }: { messages: Partial<Message>[] }) {
-  return (
-    <div className="flex flex-col space-y-6 p-4 max-w-3xl mx-auto">
-      {messages.map((message, index) => (
-        <div
-          key={index}
-          className={`flex ${
-            message.role === "user" ? "justify-end" : "justify-start"
-          }`}
-        >
-          <div
-            className={`max-w-[80%] p-4 rounded-lg shadow-sm ${
-              message.role === "user"
-                ? "bg-blue-500 text-white"
-                : "bg-white border border-gray-200"
-            }`}
-          >
-            <p
-              className={`text-sm ${
-                message.role === "user" ? "text-white" : "text-gray-800"
-              }`}
-            >
-              {message.content || "No content"}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+import MessageList from "./message-list";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [inputMessage, setInputMessage] = useState("");
@@ -74,7 +44,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         { role: "user", content: inputMessage },
       ]);
     } catch (error) {
-      console.error("Failed to send message or generate AI response:", error);
+      console.error("Failed to send message or generate workflow:", error);
     } finally {
       setIsAiResponding(false);
     }
@@ -107,28 +77,15 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <header className="bg-white shadow-sm p-4">
-        <h1 className="text-xl font-semibold text-gray-800">Chat</h1>
-      </header>
       <div className="flex-grow overflow-y-auto pt-4 pb-32">
         {messages && messages.length > 0 ? (
           <MessageList messages={messages} />
         ) : (
           <div className="flex flex-col items-center py-8 space-y-8 w-full">
-            <div className="p-6 bg-white rounded-lg shadow-md text-gray-700 leading-relaxed max-w-2xl">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                Welcome to Your New Chat!
-              </h2>
-              <p className="mb-4">
-                To generate a workflow, please follow these steps:
-              </p>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>Insert two or more links to the relevant API Docs</li>
-                <li>
-                  Specify the workflow with as much precision as possible in the
-                  prompt field
-                </li>
-              </ol>
+            <div className="mx-4 p-4 text-gray-700 leading-relaxed max-w-lg">
+              Insert two or more links of the API Docs you want to include in
+              your workflow. Specify the workflow with as much context and
+              precision as possible in the prompt field.
             </div>
             <div className="w-full max-w-2xl">
               <LinkInputs onSubmit={handleLinkSubmit} />
@@ -138,7 +95,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         {isAiResponding && (
           <div className="flex justify-start p-4 max-w-3xl mx-auto">
             <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-              <p className="text-sm text-gray-500">AI is typing...</p>
+              <p className="text-sm text-gray-500">Workflow is generated...</p>
             </div>
           </div>
         )}
