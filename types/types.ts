@@ -41,7 +41,7 @@ export interface ChatProps {
 	id: string;
 	chatId: string;
 	content: string;
-	role: "user" | "ai";
+	role: "user" | "assistant" | "system";
 	timestamp: Date | string;
   }
   export interface HeaderProps {

@@ -4,7 +4,6 @@ import { SidebarProps } from "@/types/types";
 import { ChatList } from "../chat/chat-list";
 import StoredWorkflows from "./StoredWorkflows";
 import CreateChatButton from "./CreateChatButton";
-import { useState } from "react";
 
 export default function Sidebar({
   sessionId,

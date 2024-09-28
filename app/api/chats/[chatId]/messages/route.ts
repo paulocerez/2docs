@@ -13,7 +13,8 @@ export async function GET(
 
   try {
 	  const result = await getAllMessagesForChat(chatId);
-	  return NextResponse.json(result, { status: 200 }); // returns Array containing multiple SelectMessage objects
+	  const validMessages = result.filter(message => message != null);
+    return NextResponse.json(validMessages, { status: 200 });
   } catch (error) {
 	console.error("Error fetching messages:", error);
     return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
@@ -29,7 +30,7 @@ export async function POST(
 	  const data = await request.json();
 	  console.log(data)
 
-	  if (!chatId || !data.content) {
+	  if (!chatId || !data.content || !data.role) {
 		return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
 	  }
 		const result = await createMessage({ ...data, chatId });

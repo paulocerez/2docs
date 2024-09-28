@@ -17,7 +17,7 @@ export function useMessages(currentChatId: string) {
         console.error("Expected array of messages, got:", data);
         return [];
       }
-      return data;
+	  return data.filter((message): message is Message => message != null);
     },
     enabled: !!currentChatId,
   });

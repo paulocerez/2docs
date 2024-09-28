@@ -3,23 +3,35 @@ import { Message, MessageListProps } from "@/types/types";
 
 export default function MessageList({ messages }: MessageListProps) {
   return (
-    <div className="flex-1 flex-col space-y-2 overflow-y-auto mb-4">
+    <div className="flex flex-col space-y-6 p-4 max-w-3xl mx-auto">
       {Array.isArray(messages) && messages.length > 0 ? (
         messages.map((message: Partial<Message>, index) => (
           <div
             key={index}
-            className={`flex p-2 ${
-              message.role === "user" ? "justify-end" : "justify-center"
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            <div className="text-sm p-2 rounded border max-w-[70%] bg-white">
-              {message.content || "No content"}
+            <div
+              className={`max-w-[80%] p-4 rounded-lg shadow-sm ${
+                message.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white border border-gray-200"
+              }`}
+            >
+              <p
+                className={`text-sm ${
+                  message.role === "user" ? "text-white" : "text-gray-800"
+                }`}
+              >
+                {message.content || "No content"}
+              </p>
             </div>
           </div>
         ))
       ) : (
-        <div className="flex flex-row justify-center">
-          <p>No messages yet.</p>
+        <div className="flex justify-center items-center h-32">
+          <p className="text-gray-500 text-sm">No messages yet.</p>
         </div>
       )}
     </div>
