@@ -87,6 +87,19 @@
   word-break: break-word;
 }
 
+.markdown-body pre {
+  margin-bottom: 1em;
+}
+
+.markdown-body code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.markdown-body .linenumber {
+  display: none;
+}
+
 .markdown > *:first-child {
   margin-top: 0;
 }

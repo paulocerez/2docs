@@ -12,17 +12,17 @@ export default function Header({
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-row h-16 items-center p-4 w-full md:w-full justify-between border-b border-slate-200 dark:border-gray-700">
+    <div className="flex flex-row items-center p-4 w-full justify-start space-x-4 fixed bg-gray-50">
       <div className="flex items-center relative">
         {!isSidebarOpen && (
           <button
             onClick={toggleSidebar}
             onMouseEnter={() => setShowSidebarTooltip(true)}
             onMouseLeave={() => setShowSidebarTooltip(false)}
-            className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
             aria-label="Toggle Sidebar"
           >
-            <FiSidebar className="w-5 h-5" />
+            <FiSidebar className="w-4 h-4" />
             <div
               className={`absolute left-0 top-full mt-2 z-50 ${
                 showSidebarTooltip
@@ -41,7 +41,7 @@ export default function Header({
         )}
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
-      <h1 className="text-sm font-medium">
+      <h1 className="text-sm text-gray-800 dark:text-gray-200">
         {currentChatTopic || "Chat topic"}
       </h1>
       <div className="w-8"></div>

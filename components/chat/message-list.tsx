@@ -2,6 +2,30 @@ import React from "react";
 import { Message, MessageListProps } from "@/types/types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import "./MessageList.module.css";
+
+const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
+  const match = /language-(\w+)/.exec(className || "");
+  return !inline && match ? (
+    <SyntaxHighlighter
+      style={vscDarkPlus}
+      language={match[1]}
+      PreTag="div"
+      className="rounded-md"
+      {...props}
+    >
+      {String(children).replace(/\n$/, "")}
+    </SyntaxHighlighter>
+  ) : (
+    <code className={className} {...props}>
+      {children}
+    </code>
+  );
+};
 
 export default function MessageList({ messages }: MessageListProps) {
   return (
@@ -25,7 +49,11 @@ export default function MessageList({ messages }: MessageListProps) {
                 >
                   <Markdown
                     remarkPlugins={[remarkGfm]}
-                    className={`text-sm ${
+                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                    components={{
+                      code: CodeBlock,
+                    }}
+                    className={`text-sm markdown-content ${
                       message.role === "user" ? "text-black" : "text-gray-600"
                     }`}
                   >

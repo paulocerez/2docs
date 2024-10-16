@@ -1,0 +1,23 @@
+.markdown-content pre {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+}
+
+.markdown-content code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.markdown-content pre > div {
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+.markdown-content pre {
+  background: none !important;
+  padding: 0 !important;
+}

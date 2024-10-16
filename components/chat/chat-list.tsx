@@ -65,26 +65,6 @@ export function ChatList({
               : ""
           }`}
         >
-          {/* {editingChatId === chat.id ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleRenameSubmit(chat.id);
-              }}
-              className="w-full flex"
-            >
-              <input
-                type="text"
-                value={editedPrompt}
-                onChange={(e) => setEditedPrompt(e.target.value)}
-                className="w-full p-1 text-xs border rounded"
-                autoFocus
-              />
-              <button type="submit" className="ml-2 text-blue-500">
-                Save
-              </button>
-            </form>
-          ) : ( */}
           <Link
             href={`/chat/${chat.id}`}
             className="w-full text-left"
