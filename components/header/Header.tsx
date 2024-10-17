@@ -12,7 +12,7 @@ export default function Header({
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-row items-center p-4 w-full justify-start space-x-4 fixed bg-gray-50">
+    <div className="flex flex-row items-center p-3 w-full justify-start space-x-4 fixed backdrop-blur-lg bg-white/50 dark:bg-black/50 md:bg-transparent md:backdrop-blur-none">
       <div className="flex items-center relative">
         {!isSidebarOpen && (
           <button

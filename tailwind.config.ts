@@ -70,6 +70,5 @@ const config: Config = {
       pattern: /^markdown/,
     },
   ],
-  
 };
 export default config;

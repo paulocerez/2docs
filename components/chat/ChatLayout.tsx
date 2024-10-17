@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
 import Chat from "./Chat";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChatLayoutProps } from "@/types/types";
 import { useChats } from "@/hooks/useChats";
 import { useCurrentChat } from "@/hooks/useCurrentChat";
@@ -23,7 +23,6 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
   const currentChat = useCurrentChat(queryClient);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
   useHotkeys("s", () => toggleSidebar());
 
   return (
