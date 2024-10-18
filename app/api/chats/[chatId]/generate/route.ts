@@ -1,4 +1,5 @@
-import { createMessage } from "@/db/queries/messages";
+
+import { createMessage } from "@/db/queries/message";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 import { NextRequest, NextResponse } from "next/server";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";

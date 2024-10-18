@@ -13,7 +13,6 @@ export function ChatList({
   setCurrentChatId,
   temporaryChatId,
 }: ChatListProps) {
-  const queryClient = useQueryClient();
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [editedPrompt, setEditedPrompt] = useState<string>("");
@@ -67,15 +66,13 @@ export function ChatList({
         >
           <Link
             href={`/chat/${chat.id}`}
-            className="w-full text-left"
+            className="w-full text-left truncate"
             onClick={() => setCurrentChatId(chat.id)}
           >
             {chat.id === temporaryChatId
               ? `${chat.prompt} (unsaved)`
               : chat.prompt}
           </Link>
-          {/* )} */}
-
           <div className="relative">
             <button
               className="p-1 rounded-sm hover:bg-gray-300 w-fit"

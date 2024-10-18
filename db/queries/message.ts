@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { eq } from "drizzle-orm";
-import { InsertMessage, messages, SelectMessage } from "../schema/chats";
+import { chats, InsertMessage, messages, SelectMessage } from "../schema/chats";
 
 export async function getAllMessagesForChat(chatId: string): Promise<SelectMessage[]> {
   try {
@@ -18,11 +18,11 @@ export async function getAllMessagesForChat(chatId: string): Promise<SelectMessa
 }
 
 export async function createMessage(messageData: InsertMessage): Promise<SelectMessage> {
-  try {
-    const [result] = await db.insert(messages).values(messageData).returning();
-    return result;
-  } catch (error) {
-    console.error("Error creating message:", error);
-    throw new Error("Failed to create message");
+	try {
+	  const [result] = await db.insert(messages).values(messageData).returning();
+	  return result;
+	} catch (error) {
+	  console.error("Error creating message:", error);
+	  throw new Error("Failed to create message");
+	}
   }
-}

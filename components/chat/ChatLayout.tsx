@@ -2,7 +2,7 @@
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
 import Chat from "./Chat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChatLayoutProps } from "@/types/types";
 import { useChats } from "@/hooks/useChats";
@@ -11,7 +11,11 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 const queryClient = new QueryClient();
 
-function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
+function ChatLayoutContent({
+  sessionId,
+  initialChatId,
+  createNewChat,
+}: ChatLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const {
     chats,
@@ -20,7 +24,21 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
     createTemporaryChat,
     temporaryChatId,
   } = useChats(sessionId, queryClient);
+
   const currentChat = useCurrentChat(queryClient);
+
+  useEffect(() => {
+    if (createNewChat && !currentChat && !temporaryChatId) {
+      const newChatId = createTemporaryChat();
+      setCurrentChat(newChatId);
+    }
+  }, [
+    createNewChat,
+    currentChat,
+    temporaryChatId,
+    createTemporaryChat,
+    setCurrentChat,
+  ]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   useHotkeys("s", () => toggleSidebar());
@@ -31,7 +49,7 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
         <Sidebar
           isSidebarOpen={isSidebarOpen}
           sessionId={sessionId}
-          currentChatId={currentChat?.id}
+          currentChatId={currentChat?.id || temporaryChatId}
           setCurrentChatId={setCurrentChat}
           toggleSidebar={toggleSidebar}
           chats={chats}
@@ -46,16 +64,16 @@ function ChatLayoutContent({ sessionId, initialChatId }: ChatLayoutProps) {
         }`}
       >
         <Header
-          currentChatId={currentChat?.id}
+          currentChatId={currentChat?.id || temporaryChatId}
           toggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
           currentChatTopic={currentChat?.prompt}
         />
-        {currentChat && (
+        {(currentChat || temporaryChatId) && (
           <Chat
             sessionId={sessionId}
-            currentChatId={currentChat.id}
-            isTemporary={currentChat.id === temporaryChatId}
+            currentChatId={currentChat?.id || temporaryChatId}
+            isTemporary={!currentChat?.id || currentChat.id === temporaryChatId}
           />
         )}
       </div>

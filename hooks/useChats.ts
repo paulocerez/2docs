@@ -16,6 +16,7 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
       prompt: "New chat",
       userId: sessionId,
       createdAt: new Date(),
+      lastActivityAt: new Date(),
     };
 
     queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
@@ -28,8 +29,21 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
 
   const setCurrentChat = (chatId: string) => {
     const currentChat = chats?.find((chat) => chat.id === chatId) ||
-      (chatId === temporaryChatId ? { id: chatId, prompt: "New chat" } : undefined);
-    queryClient.setQueryData(["currentChat"], currentChat);
+      (chatId === temporaryChatId ? { id: chatId, prompt: "New chat", lastActivityAt: new Date() } : undefined);
+    
+    if (currentChat) {
+      queryClient.setQueryData(["currentChat"], currentChat);
+      
+      queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) => {
+        if (!oldChats) return oldChats;
+        const updatedChats = oldChats.map(chat => 
+          chat.id === chatId ? { ...chat, lastActivityAt: new Date() } : chat
+        );
+        return updatedChats.sort((a, b) => 
+          new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime()
+        );
+      });
+    }
   };
 
   return { chats, isLoading, setCurrentChat, createTemporaryChat, temporaryChatId };

@@ -10,6 +10,7 @@ export const chats = pgTable("chat", {
 	.references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("started_at").notNull().defaultNow(),
   prompt: text("prompt").notNull(),
+  lastActivityAt: timestamp("last_activity_at").notNull().defaultNow(),
 });
 
 export const messages = pgTable("message", {

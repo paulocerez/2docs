@@ -20,5 +20,6 @@ export function useMessages(currentChatId: string) {
 	  return data.filter((message): message is Message => message != null);
     },
     enabled: !!currentChatId,
+	
   });
 }
