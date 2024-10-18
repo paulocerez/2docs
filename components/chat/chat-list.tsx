@@ -16,6 +16,7 @@ export function ChatList({
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [editedPrompt, setEditedPrompt] = useState<string>("");
+  const [chatToBeDeleted, setChatToBeDeleted] = useState<string>("");
 
   //   const handleChatRenameClick = (chatId: string, currentPrompt: string) => {
   //     setEditingChatId(chatId);
@@ -46,6 +47,8 @@ export function ChatList({
   //       },
   //     }
   //   );
+
+  const deleteChat = (chatId: string) => {};
 
   //   I need two states -> one storing the edited prompt, one storing the id of the chat that is being renamed
   //   one function to set the values of these two + remove tooltip

@@ -79,7 +79,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
         </div>
       </div>
       {messages && messages.length > 0 && (
-        <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt onSubmit={handleSubmit} isAiResponding={isAiResponding} />
           </div>

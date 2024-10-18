@@ -14,7 +14,7 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
           <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
             What can I help you build?
           </h1>
-          <p className="text-gray-400 text-sm max-w-md leading-relaxed">
+          <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
             Insert two or more links of the API Docs you want to include in your
             workflow. Specify the workflow with as much context and precision as
             possible in the prompt field.
