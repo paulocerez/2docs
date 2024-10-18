@@ -59,7 +59,7 @@ function ChatLayoutContent({
         />
       )}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out bg-red-500 ${
           isSidebarOpen ? "sm:ml-24 blur-background" : "ml-0"
         }`}
       >

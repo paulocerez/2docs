@@ -57,21 +57,12 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex-grow overflow-y-auto pt-4 pb-32">
-        <div className="max-w-3xl mx-auto px-4">
+      <div className="flex-grow overflow-y-auto pt-4 pb-32 bg-red-300">
+        <div className="bg-red-500 mx-auto px-4">
           {messages && messages.length > 0 ? (
             <MessageList messages={messages} />
           ) : (
-            <div className="flex flex-col items-center py-8 space-y-8 w-full">
-              <div className="mx-4 p-4 text-gray-700 leading-relaxed max-w-lg">
-                Insert two or more links of the API Docs you want to include in
-                your workflow. Specify the workflow with as much context and
-                precision as possible in the prompt field.
-              </div>
-              <div className="w-full max-w-2xl">
-                <LinkInputs onSubmit={handleLinkSubmit} />
-              </div>
-            </div>
+            <DefaultView />
           )}
           {isAiResponding && (
             <div className="flex justify-start p-4 max-w-3xl mx-auto">
