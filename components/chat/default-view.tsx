@@ -9,12 +9,12 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
   };
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-2xl px-4 py-8 space-y-8">
-        <div className="flex flex-col items-center space-y-4 text-center">
+      <div className="w-full max-w-2xl px-4 py-8 space-y-16">
+        <div className="flex flex-col items-center space-y-8 text-center">
           <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
             What can I help you build?
           </h1>
-          <p className="text-gray-400 text-sm max-w-md">
+          <p className="text-gray-400 text-sm max-w-md leading-relaxed">
             Insert two or more links of the API Docs you want to include in your
             workflow. Specify the workflow with as much context and precision as
             possible in the prompt field.

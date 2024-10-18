@@ -55,7 +55,11 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   return (
     <div className="flex flex-col h-full bg-gray-50">
       <div className="flex-grow overflow-y-auto pt-4 pb-16">
-        <div className="max-w-2xl mx-auto px-4 w-full">
+        <div
+          className={`mx-auto px-4 w-full ${
+            messages && messages.length > 0 ? "max-w-2xl" : "max-w-4xl"
+          }`}
+        >
           {messages && messages.length > 0 ? (
             <>
               <MessageList messages={messages} />
