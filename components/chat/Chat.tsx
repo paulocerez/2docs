@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChatProps } from "@/types/types";
 import { MessageLoadingScreen } from "../state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
@@ -7,9 +6,12 @@ import { useMessages } from "@/hooks/useMessages";
 import LinkInputs from "./LinkInputs";
 import MessageList from "./message-list";
 import Prompt from "./prompt";
+import DefaultView from "./default-view";
+import { ChatProps } from "@/types/types";
+import LoadingSpinner from "../ui/loading-spinner";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
-  const [isAiResponding, setIsAiResponding] = useState(false);
+  const [isAiResponding, setIsAiResponding] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, isLoading, error } = useMessages(currentChatId!);
@@ -37,11 +39,6 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     }
   };
 
-  const handleLinkSubmit = (links: string[]) => {
-    // Mutate links to backend here
-    console.log("Submitted links:", links);
-  };
-
   if (isLoading)
     return (
       <div className="flex items-center justify-center h-full">
@@ -57,20 +54,19 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex-grow overflow-y-auto pt-4 pb-32 bg-red-300">
-        <div className="bg-red-500 mx-auto px-4">
+      <div className="flex-grow overflow-y-auto pt-4 pb-32 overflow-x-hidden">
+        <div className="max-w-3xl mx-auto px-4 w-full">
           {messages && messages.length > 0 ? (
             <MessageList messages={messages} />
           ) : (
             <DefaultView />
           )}
           {isAiResponding && (
-            <div className="flex justify-start p-4 max-w-3xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                <p className="text-sm text-gray-500">
-                  Workflow is generated...
-                </p>
-              </div>
+            <div className="flex flex-row justify-start items-center space-x-2">
+              <LoadingSpinner />
+              <p className="text-sm text-gray-400 flex items-center">
+                Workflow is generated...
+              </p>
             </div>
           )}
           <div ref={messagesEndRef} />

@@ -2,20 +2,21 @@ import React from "react";
 import { Message, MessageListProps } from "@/types/types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Light, Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import "./MessageList.module.css";
+import { lightfair } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   const match = /language-(\w+)/.exec(className || "");
   return !inline && match ? (
     <SyntaxHighlighter
-      style={vscDarkPlus}
+      style={lightfair}
       language={match[1]}
       PreTag="div"
-      className="rounded-md"
+      className="rounded-md my-4 border border-gray-200"
       {...props}
     >
       {String(children).replace(/\n$/, "")}
@@ -29,7 +30,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
 
 export default function MessageList({ messages }: MessageListProps) {
   return (
-    <div className="flex flex-col space-y-6 p-4 max-w-3xl mx-auto">
+    <div className="flex flex-col space-y-10 w-full">
       {Array.isArray(messages) && messages.length > 0 ? (
         messages.map(
           (message: Partial<Message> | null, index) =>
@@ -41,10 +42,10 @@ export default function MessageList({ messages }: MessageListProps) {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] p-4 rounded-lg shadow-md ${
+                  className={`rounded-lg overflow-hidden ${
                     message.role === "user"
-                      ? "bg-gray-100 border border-gray-200"
-                      : "bg-gray-50 border border-gray-200"
+                      ? "bg-gray-100 border border-gray-200 shadow-sm p-3"
+                      : "bg-transparent"
                   }`}
                 >
                   <Markdown
@@ -53,7 +54,7 @@ export default function MessageList({ messages }: MessageListProps) {
                     components={{
                       code: CodeBlock,
                     }}
-                    className={`text-sm markdown-content ${
+                    className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
                       message.role === "user" ? "text-black" : "text-gray-600"
                     }`}
                   >

@@ -35,7 +35,7 @@ export default function Prompt({ onSubmit, isAiResponding }: PromptProps) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-8 pb-6">
-      <div className="max-w-3xl mx-auto px-4">
+      <div className="max-w-3xl mx-auto px-4 w-full">
         <form
           className="flex flex-row items-center space-x-2 rounded-lg bg-white w-full border border-gray-200 shadow-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200"
           onSubmit={handleSubmit}
