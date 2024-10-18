@@ -1,5 +1,6 @@
 "use client";
 import { LinkInputsProps } from "@/types/types";
+import { Plus, Zap } from "lucide-react";
 import { useState } from "react";
 import { IoIosAdd, IoIosLink } from "react-icons/io";
 
@@ -45,39 +46,23 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-4">
       {userInputs.map((input, index) => (
         <div key={index} className="relative">
           <button
-            type="button"
-            onClick={() => toggleLinkInsertionTooltip(index)}
-            className="w-24 h-24 flex flex-row items-center justify-center text-xs bg-red-300"
-          ></button>
-          <div className="w-24 h-24 border rounded-md p-2 flex flex-col">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => handleInputChange(index, e.target.value)}
-              placeholder="Enter URL"
-              className="text-xs mb-2"
-            />
-            <button
-              type="button"
-              onClick={() => handleLinkInsert(index)}
-              className="text-xs mt-auto"
-            >
-              Insert
-            </button>
-          </div>
+            className="flex flex-row justify-center items-center gap-2 px-4 py-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            onClick={() => handleLinkInsert(index)}
+          >
+            <Zap className="w-4 h-4 text-indigo-500" />
+            <span className="text-xs font-medium">API {index + 1}</span>
+          </button>
         </div>
       ))}
       <button
-        type="button"
+        className="p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         onClick={addInputField}
-        className="w-24 h-24 flex flex-col items-center justify-center text-xs"
       >
-        <IoIosAdd className="text-2xl mb-1" />
-        Add More
+        <Plus className="w-4 h-4 text-gray-400" />
       </button>
     </form>
   );
