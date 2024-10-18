@@ -64,3 +64,8 @@ export interface ChatProps {
 	setCurrentChatId: (id: string) => void;
 	createTemporaryChat: () => string;
   }
+
+  export interface PromptProps {
+	onSubmit: (message: string) => void;
+	isAiResponding: boolean;
+  }

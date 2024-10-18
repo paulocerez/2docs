@@ -11,7 +11,7 @@ import { ChatProps } from "@/types/types";
 import LoadingSpinner from "../ui/loading-spinner";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
-  const [isAiResponding, setIsAiResponding] = useState(true);
+  const [isAiResponding, setIsAiResponding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, isLoading, error } = useMessages(currentChatId!);
@@ -54,25 +54,33 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex-grow overflow-y-auto pt-4 pb-32 overflow-x-hidden">
-        <div className="max-w-3xl mx-auto px-4 w-full">
+      <div className="flex-grow overflow-y-auto pt-4 pb-16">
+        <div className="max-w-2xl mx-auto px-4 w-full">
           {messages && messages.length > 0 ? (
-            <MessageList messages={messages} />
+            <>
+              <MessageList messages={messages} />
+              {isAiResponding && (
+                <div className="flex flex-row justify-start items-center space-x-2 mt-4">
+                  <LoadingSpinner />
+                  <p className="text-sm text-gray-400 flex items-center">
+                    Workflow is generated...
+                  </p>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </>
           ) : (
-            <DefaultView />
+            <DefaultView onSubmit={handleSubmit} isAiResponding={false} />
           )}
-          {isAiResponding && (
-            <div className="flex flex-row justify-start items-center space-x-2">
-              <LoadingSpinner />
-              <p className="text-sm text-gray-400 flex items-center">
-                Workflow is generated...
-              </p>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
         </div>
       </div>
-      <Prompt onSubmit={handleSubmit} isAiResponding={isAiResponding} />
+      {messages && messages.length > 0 && (
+        <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
+          <div className="max-w-2xl mx-auto px-4 w-full">
+            <Prompt onSubmit={handleSubmit} isAiResponding={isAiResponding} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
