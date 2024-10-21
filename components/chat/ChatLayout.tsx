@@ -31,6 +31,8 @@ function ChatLayoutContent({
     if (createNewChat && !currentChat && !temporaryChatId) {
       const newChatId = createTemporaryChat();
       setCurrentChat(newChatId);
+    } else if (initialChatId) {
+      setCurrentChat(initialChatId);
     }
   }, [
     createNewChat,
@@ -38,6 +40,7 @@ function ChatLayoutContent({
     temporaryChatId,
     createTemporaryChat,
     setCurrentChat,
+    initialChatId,
   ]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);

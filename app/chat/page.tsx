@@ -10,5 +10,11 @@ export default async function ChatPage() {
     redirect("/api/auth/signin?callbackUrl=/chat");
   }
 
-  return <ChatLayout sessionId={userId} createNewChat={true} />;
+  return (
+    <ChatLayout
+      sessionId={userId}
+      createNewChat={true}
+      initialChatId={undefined}
+    />
+  );
 }

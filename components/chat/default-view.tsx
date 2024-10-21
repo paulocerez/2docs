@@ -1,5 +1,5 @@
 import { PromptProps } from "@/types/types";
-import LinkInputs from "./LinkInputs";
+import LinkInputs from "./link-inputs";
 import Prompt from "./prompt";
 
 export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {

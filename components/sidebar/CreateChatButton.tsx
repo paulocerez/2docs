@@ -15,7 +15,8 @@ export default function CreateChatButton({
 
   const router = useRouter();
   const redirectToNewChat = () => {
-    router.push("/chat");
+    const newChatId = createTemporaryChat();
+    router.push(`/chat/${newChatId}`);
   };
 
   useHotkeys("c", () => handleCreateNewChat());

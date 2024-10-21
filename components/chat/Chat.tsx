@@ -3,7 +3,7 @@ import { MessageLoadingScreen } from "../state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
 import { useMessages } from "@/hooks/useMessages";
-import LinkInputs from "./LinkInputs";
+import LinkInputs from "./link-inputs";
 import MessageList from "./message-list";
 import Prompt from "./prompt";
 import DefaultView from "./default-view";
