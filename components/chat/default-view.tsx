@@ -22,10 +22,10 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
         </div>
         <div className="flex flex-col space-y-2">
           <div className="inline-flex gap-2">
-            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100">
+            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
               Automatically map Linear issues to Notion database
             </button>
-            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100">
+            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
               Create Flashcards in Notion
             </button>
           </div>
