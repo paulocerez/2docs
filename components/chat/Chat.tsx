@@ -27,6 +27,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
 
     try {
       await userMessageMutation.mutateAsync(inputMessage);
+      console.log(inputMessage);
       setIsAiResponding(true);
 
       await aiResponseMutation.mutateAsync([

@@ -25,7 +25,7 @@ export default function CreateChatButton({
     <div className="flex flex-row items-center justify-between p-2 text-xs font-normal hover:bg-gray-100 rounded-sm">
       <button
         onClick={redirectToNewChat}
-        className="flex flex-row space-x-2 items-center text-xs font-normal hover:bg-gray-100 w-full rounded-sm"
+        className="flex flex-row space-x-2 items-center text-[13px] font-normal hover:bg-gray-100 w-full rounded-sm"
       >
         <MdChatBubbleOutline />
         <p>Create new chat</p>

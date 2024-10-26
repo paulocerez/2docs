@@ -32,6 +32,7 @@ export default function Sidebar({
           />
           <StoredWorkflows />
         </div>
+        <div className="border-t-2 border-gray-200 dark:border-gray-700"></div>
         <ChatList
           chats={chats}
           currentChatId={currentChatId}

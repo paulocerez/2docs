@@ -30,7 +30,7 @@ export function ChatList({
         {chats?.map((chat) => (
           <div
             key={chat.id}
-            className={`flex flex-row items-center justify-between p-2 text-xs hover:bg-gray-100 rounded cursor-pointer transition-colors duration-200 ${
+            className={`group flex flex-row items-center justify-between px-2 py-1 text-[13px] hover:bg-gray-100 rounded cursor-pointer transition-all duration-200 ${
               chat.id === currentChatId || chat.id === temporaryChatId
                 ? "bg-gray-100"
                 : ""
@@ -38,24 +38,25 @@ export function ChatList({
           >
             <Link
               href={`/chat/${chat.id}`}
-              className="w-full text-left truncate"
+              className="w-full text-left truncate text-clip mr-2"
               onClick={() => setCurrentChatId(chat.id)}
             >
               {chat.id === temporaryChatId
                 ? `${chat.prompt} (unsaved)`
                 : chat.prompt}
             </Link>
-            <div className="relative">
+            <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button
-                className="p-1 rounded-sm hover:bg-gray-300 w-fit"
-                onClick={() =>
-                  setActiveTooltip(activeTooltip === chat.id ? null : chat.id)
-                }
+                className="p-1.5 rounded-sm hover:bg-gray-200 transition-colors duration-200"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTooltip(activeTooltip === chat.id ? null : chat.id);
+                }}
               >
                 <BsThreeDots />
               </button>
               {activeTooltip === chat.id && (
-                <div className="absolute top-full bg-white right-0 mt-2 w-32 dark:bg-gray-800 rounded-md shadow-lg p-2 z-30 text-xs">
+                <div className="absolute top-full bg-white right-0 mt-2 w-32 dark:bg-gray-800 rounded-md shadow-lg p-1 z-30 text-xs">
                   <button className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left">
                     Rename
                   </button>
