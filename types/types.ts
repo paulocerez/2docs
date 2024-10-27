@@ -62,7 +62,7 @@ export interface ChatProps {
 
   export interface CreateChatProps {
 	setCurrentChatId: (id: string) => void;
-	createTemporaryChat: () => string;
+	createTemporaryChat: (chatTitle: string) => string;
   }
 
   export interface PromptProps {

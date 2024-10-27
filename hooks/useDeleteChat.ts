@@ -3,7 +3,6 @@ import { useState } from "react"
 
 export function useDeleteChat() {
 	const [chatToDelete, setChatToDelete] = useState<string | null>(null)
-	const queryClient = useQueryClient();
 
 	const confirmDelete = async () => {
 		if (chatToDelete) {
@@ -12,7 +11,6 @@ export function useDeleteChat() {
 					method: "DELETE"
 				})
 				if (response.ok) {
-					// queryClient.invalidateQueries(["chats"])
 				} else { 
 					// 
 				}

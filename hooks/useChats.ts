@@ -10,21 +10,21 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
     queryFn: () => fetch(`/api/chats?userId=${sessionId}`).then((res) => res.json()),
   });
 
-  const createTemporaryChat = () => {
-    const newTempChat: SelectChat = {
-      id: `temp-${Date.now()}`,
-      prompt: "New chat",
-      userId: sessionId,
-      createdAt: new Date(),
-      lastActivityAt: new Date(),
-    };
-
-    queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
-      oldChats ? [newTempChat, ...oldChats] : [newTempChat]
-    );
-
-    setTemporaryChatId(newTempChat.id);
-    return newTempChat.id;
+  const createTemporaryChat = (chatTitle: string) => {
+	const newTempChat: SelectChat = {
+	  id: `temp-${Date.now()}`,
+	  prompt: chatTitle,
+	  userId: sessionId,
+	  createdAt: new Date(),
+	  lastActivityAt: new Date(),
+	};
+  
+	queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
+	  oldChats ? [newTempChat, ...oldChats] : [newTempChat]
+	);
+  
+	setTemporaryChatId(newTempChat.id);
+	return newTempChat.id;
   };
 
   const setCurrentChat = (chatId: string) => {

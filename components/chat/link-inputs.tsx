@@ -1,11 +1,11 @@
 "use client";
 import { LinkInputsProps } from "@/types/types";
-import { Plus, Zap } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function LinkInputs({ onSubmit }: LinkInputsProps) {
   const [linkInputs, setLinkInputs] = useState<string[]>(["", ""]);
-  const [showLinkTooltip, setShowLinkTooltip] = useState<number | null>(null);
+  const [activeInput, setActiveInput] = useState<number | null>(null);
 
   const handleInputChange = (index: number, value: string) => {
     const newInputs = [...linkInputs];
@@ -17,56 +17,53 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
     setLinkInputs([...linkInputs, ""]);
   };
 
-  const handleLinkInsert = (index: number) => {
-    setShowLinkTooltip(showLinkTooltip === index ? null : index);
-  };
-
-  const handleLinkInputChange = (index: number, value: string) => {
-    const newLinkInputs = [...linkInputs];
-    newLinkInputs[index] = value;
-    setLinkInputs(newLinkInputs);
+  const toggleInput = (index: number) => {
+    setActiveInput(activeInput === index ? null : index);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nonEmptyLinks = linkInputs.filter((link) => link.trim() !== "");
-    // TODO Add link validation here
     onSubmit(nonEmptyLinks);
-    setShowLinkTooltip(null);
+    setActiveInput(null);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-4">
-      {linkInputs.map((input, index) => (
-        <div key={index} className="relative">
-          <button
-            type="button"
-            className="flex flex-row justify-center items-center gap-2 p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            onClick={() => handleLinkInsert(index)}
-          >
-            <div className="rounded-full w-4 h-4 bg-indigo-500"></div>
-            <span className="text-xs font-medium">API {index + 1}</span>
-          </button>
-          {showLinkTooltip === index && (
-            <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10">
-              <input
-                type="text"
-                value={linkInputs[index]}
-                onChange={(e) => handleLinkInputChange(index, e.target.value)}
-                placeholder="Enter API link"
-                className="w-full p-2 border rounded-md text-sm"
-              />
-            </div>
-          )}
-        </div>
-      ))}
-      <button
-        type="button"
-        className="p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        onClick={addInputField}
-      >
-        <Plus className="w-4 h-4 text-gray-400" />
-      </button>
+    <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+      <div className="flex flex-wrap items-center gap-4">
+        {linkInputs.map((input, index) => (
+          <div key={index} className="relative">
+            <button
+              type="button"
+              className={`flex flex-row justify-center items-center gap-2 p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
+                activeInput === index ? "w-64" : "w-auto"
+              }`}
+              onClick={() => toggleInput(index)}
+            >
+              <div className="rounded-full w-4 h-4 bg-indigo-500"></div>
+              {activeInput === index ? (
+                <input
+                  type="text"
+                  value={linkInputs[index]}
+                  onChange={(e) => handleInputChange(index, e.target.value)}
+                  placeholder="Enter API link"
+                  className="w-full bg-transparent focus:outline-none text-sm"
+                  autoFocus
+                />
+              ) : (
+                <span className="text-xs font-medium">API {index + 1}</span>
+              )}
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={addInputField}
+        >
+          <Plus className="w-4 h-4 text-gray-400" />
+        </button>
+      </div>
     </form>
   );
 }

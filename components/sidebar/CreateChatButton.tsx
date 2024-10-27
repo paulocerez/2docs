@@ -8,14 +8,11 @@ export default function CreateChatButton({
   setCurrentChatId,
   createTemporaryChat,
 }: CreateChatProps) {
-  const handleCreateNewChat = () => {
-    const newChatId = createTemporaryChat();
-    setCurrentChatId(newChatId);
-  };
-
   const router = useRouter();
-  const redirectToNewChat = () => {
-    const newChatId = createTemporaryChat();
+
+  const handleCreateNewChat = () => {
+    const newChatId = createTemporaryChat("New chat");
+    setCurrentChatId(newChatId);
     router.push(`/chat/${newChatId}`);
   };
 
@@ -24,7 +21,7 @@ export default function CreateChatButton({
   return (
     <div className="flex flex-row items-center justify-between p-2 text-xs font-normal hover:bg-gray-100 rounded-sm">
       <button
-        onClick={redirectToNewChat}
+        onClick={handleCreateNewChat}
         className="flex flex-row space-x-2 items-center text-[13px] font-normal hover:bg-gray-100 w-full rounded-sm"
       >
         <MdChatBubbleOutline />

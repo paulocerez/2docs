@@ -1,13 +1,15 @@
 import { SelectChat } from "@/db/schema/chats";
 import { Message } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-export function useUserMessageMutation(sessionId: string, currentChatId: string) {
+export function useUserMessageMutation(sessionId: string, currentChatId: string | null) {
   const queryClient = useQueryClient();
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async (content: string) => {
-      if (currentChatId.startsWith("temp-")) {
+      if (!currentChatId || currentChatId.startsWith("temp-")) {
         // Create a new chat and send the first message
         const response = await fetch("/api/chats", {
           method: "POST",
@@ -32,6 +34,7 @@ export function useUserMessageMutation(sessionId: string, currentChatId: string)
             id: newChat.messageId,
             timestamp: new Date(),
           },
+          isNewChat: true,
         };
       } else {
         // Send message to existing chat
@@ -46,31 +49,42 @@ export function useUserMessageMutation(sessionId: string, currentChatId: string)
         }
 
         const data = await response.json();
-        return { chatId: currentChatId, message: data };
+        return { chatId: currentChatId, message: data, isNewChat: false };
       }
     },
     onSuccess: (data) => {
-      if (currentChatId.startsWith("temp-")) {
+      if (data.isNewChat) {
         // Update the chats list with the new chat
         queryClient.setQueryData<SelectChat[]>(
           ["chats", sessionId],
-          (oldChats) =>
-            oldChats
-              ? oldChats.map((chat) =>
-                  chat.id === currentChatId
-                    ? { ...chat, id: data.chatId }
-                    : chat
-                )
-              : []
+          (oldChats = []) => [
+            { 
+              id: data.chatId, 
+              prompt: data.message.content, 
+              userId: sessionId,
+              createdAt: new Date(),
+              lastActivityAt: new Date()
+            },
+            ...oldChats.filter(chat => chat.id !== currentChatId)
+          ]
         );
-        // Update the current chat ID
+
+		// Set the messages for the new chat
+        queryClient.setQueryData<Message[]>(
+			["messages", data.chatId],
+			[data.message]
+		  );
+
+        // Update currentChatId
         queryClient.setQueryData(["currentChatId"], data.chatId);
-      }
-      // Update the messages for the chat
-      queryClient.setQueryData<Message[]>(
+		router.replace(`/chat/${data.chatId}`)
+      } else {
+        // Update the messages for the chat
+        queryClient.setQueryData<Message[]>(
         ["messages", data.chatId],
         (oldMessages = []) => [...oldMessages, data.message]
       );
+	}
     },
   });
 }

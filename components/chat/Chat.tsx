@@ -9,6 +9,7 @@ import Prompt from "./prompt";
 import DefaultView from "./default-view";
 import { ChatProps } from "@/types/types";
 import LoadingSpinner from "../ui/loading-spinner";
+import { useRouter } from "next/navigation";
 
 export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
@@ -18,6 +19,12 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const userMessageMutation = useUserMessageMutation(sessionId, currentChatId!);
   const aiResponseMutation = useAIResponseMutation(currentChatId!);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -25,10 +32,13 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const handleSubmit = async (inputMessage: string) => {
     if (!currentChatId) return;
 
+    setIsAiResponding(true);
     try {
-      await userMessageMutation.mutateAsync(inputMessage);
-      console.log(inputMessage);
-      setIsAiResponding(true);
+      const result = await userMessageMutation.mutateAsync(inputMessage);
+      if (currentChatId.startsWith("temp-")) {
+        // Update the URL with the new chat ID
+        router.replace(`/chat/${result.chatId}`);
+      }
 
       await aiResponseMutation.mutateAsync([
         { role: "user", content: inputMessage },
@@ -54,7 +64,7 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     );
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50 pt-16">
       <div className="flex-grow overflow-y-auto pt-4 pb-16">
         <div
           className={`mx-auto px-4 w-full ${

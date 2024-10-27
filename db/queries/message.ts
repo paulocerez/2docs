@@ -9,7 +9,7 @@ export async function getAllMessagesForChat(chatId: string): Promise<SelectMessa
       .from(messages)
       .where(eq(messages.chatId, chatId))
       .orderBy(messages.timestamp);
-    
+	  
     return result;
   } catch (error) {
     console.error("Error fetching messages:", error);

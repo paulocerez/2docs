@@ -1,7 +1,7 @@
 import { Message } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useAIResponseMutation(chatId: string) {
+export function useAIResponseMutation(chatId: string | null) {
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -1,10 +1,12 @@
 "use client";
+
 import { ChatListProps } from "@/types/types";
 import { ChatLoadingScreen } from "../state/chats-loading";
 import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
-import { useState } from "react";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
+import { QueryClient } from "@tanstack/react-query";
+import ChatTooltip from "./chat-tooltip";
 
 export function ChatList({
   chats,
@@ -17,20 +19,32 @@ export function ChatList({
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [editedPrompt, setEditedPrompt] = useState<string>("");
   const [chatToBeDeleted, setChatToBeDeleted] = useState<string>("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const queryClient = new QueryClient();
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.scrollBehavior = "smooth";
+    }
+  }, []);
 
-  const deleteChat = (chatId: string) => {};
+  const sortedChats = chats?.sort(
+    (a, b) =>
+      new Date(b.lastActivityAt).getTime() -
+      new Date(a.lastActivityAt).getTime()
+  );
 
   if (isLoading) return <ChatLoadingScreen />;
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-y-auto">
-      <div className="space-y-1">
-        {chats?.map((chat) => (
+    <div className="h-[calc(100vh-64px)] flex flex-col">
+      <div
+        ref={scrollContainerRef}
+        className="flex-grow overflow-y-auto pr-2 pb-6 space-y-1 custom-scrollbar"
+      >
+        {sortedChats?.map((chat) => (
           <div
             key={chat.id}
-            className={`group flex flex-row items-center justify-between px-2 py-1 text-[13px] hover:bg-gray-100 rounded cursor-pointer transition-all duration-200 ${
+            className={`group flex flex-row items-center justify-between p-1.5 text-[13px] hover:bg-gray-100 rounded cursor-pointer ${
               chat.id === currentChatId || chat.id === temporaryChatId
                 ? "bg-gray-100"
                 : ""
@@ -38,7 +52,7 @@ export function ChatList({
           >
             <Link
               href={`/chat/${chat.id}`}
-              className="w-full text-left truncate text-clip mr-2"
+              className="w-full text-left truncate mr-2"
               onClick={() => setCurrentChatId(chat.id)}
             >
               {chat.id === temporaryChatId
@@ -47,23 +61,19 @@ export function ChatList({
             </Link>
             <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button
-                className="p-1.5 rounded-sm hover:bg-gray-200 transition-colors duration-200"
+                className="p-1 rounded-sm hover:bg-gray-200"
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveTooltip(activeTooltip === chat.id ? null : chat.id);
                 }}
               >
-                <BsThreeDots />
+                <BsThreeDots className="w-3 h-3" />
               </button>
               {activeTooltip === chat.id && (
-                <div className="absolute top-full bg-white right-0 mt-2 w-32 dark:bg-gray-800 rounded-md shadow-lg p-1 z-30 text-xs">
-                  <button className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left">
-                    Rename
-                  </button>
-                  <button className="block rounded-md p-2 text-red-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left font-medium">
-                    Delete
-                  </button>
-                </div>
+                <ChatTooltip
+                  activeTooltip={activeTooltip}
+                  editingChatId={editingChatId}
+                />
               )}
             </div>
           </div>

@@ -20,6 +20,7 @@ export default function SidebarHeader({
   const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
+
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", sessionId],
     queryFn: () => fetch(`/api/users/${sessionId}`).then((res) => res.json()),

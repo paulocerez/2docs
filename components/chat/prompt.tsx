@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
 import { PromptProps } from "@/types/types";
+import LoadingSpinner from "../ui/loading-spinner";
 
 export default function Prompt({
   onSubmit,
@@ -50,14 +51,29 @@ export default function Prompt({
         <div className="p-2">
           <button
             type="submit"
-            className={`p-2 rounded-full transition-all duration-200 ${
-              inputMessage.trim()
+            className={`p-2 rounded-full transition-all duration-200 flex items-center justify-center ${
+              inputMessage.trim() && !isAiResponding
                 ? "bg-blue-500 hover:bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
             disabled={!inputMessage.trim() || isAiResponding}
           >
-            <FaPaperPlane className="w-3 h-3" />
+            <div className="relative w-5 h-5">
+              <div
+                className={`absolute inset-0 transition-opacity duration-200 ${
+                  isAiResponding ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <LoadingSpinner />
+              </div>
+              <div
+                className={`absolute inset-0 transition-opacity duration-200 ${
+                  isAiResponding ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                <FaPaperPlane />
+              </div>
+            </div>
           </button>
         </div>
       </form>
