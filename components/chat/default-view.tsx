@@ -24,13 +24,19 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
             workflow. Specify the workflow with as much context and precision as
             possible in the prompt field.
           </p>
-          <input
-            type="text"
-            value={chatTitle}
-            onChange={(e) => setChatTitle(e.target.value)}
-            placeholder="Name your workflow"
-            className="w-full px-3 py-2 border rounded-full max-w-xs text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          />
+          <div className="max-w-sm w-full space-y-1">
+            <input
+              type="text"
+              value={chatTitle}
+              onChange={(e) => setChatTitle(e.target.value)}
+              placeholder="Name your workflow"
+              className="w-full px-3 py-2 border rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
+            <p className="text-[10px] text-gray-400">
+              &quot;Insert Google Calendar events based on a Notion
+              database&quot;
+            </p>
+          </div>
         </div>
         <div className="flex flex-col space-y-4">
           <div className="inline-flex gap-2">

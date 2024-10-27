@@ -22,10 +22,6 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
