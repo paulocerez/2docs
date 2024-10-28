@@ -8,9 +8,16 @@ export default function Prompt({
   onSubmit,
   isAiResponding,
   className = "",
+  onInputChange,
 }: PromptProps & { className?: string }) {
   const [inputMessage, setInputMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    if (onInputChange) {
+      onInputChange(inputMessage.trim() !== "");
+    }
+  }, [inputMessage, onInputChange]);
 
   useEffect(() => {
     if (textareaRef.current) {

@@ -1,11 +1,26 @@
 "use client";
-import { LinkInputsProps } from "@/types/types";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function LinkInputs({ onSubmit }: LinkInputsProps) {
+interface LinkInputsProps {
+  onSubmit: (links: string[]) => void;
+  onInputChange: (hasValidLinks: boolean) => void;
+}
+
+export default function LinkInputs({
+  onSubmit,
+  onInputChange,
+}: LinkInputsProps) {
   const [linkInputs, setLinkInputs] = useState<string[]>(["", ""]);
   const [activeInput, setActiveInput] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (onInputChange) {
+      const hasValidLinks =
+        linkInputs.filter((link) => link.trim() !== "").length >= 2;
+      onInputChange(hasValidLinks);
+    }
+  }, [linkInputs, onInputChange]);
 
   const handleInputChange = (index: number, value: string) => {
     const newInputs = [...linkInputs];

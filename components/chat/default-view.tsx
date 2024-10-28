@@ -14,6 +14,20 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
     console.log("Chat title:", chatTitle);
   };
 
+  const handleChatTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setChatTitle(e.target.value);
+    setChecklist((prev) => [newTitle.trim() !== "", prev[1], prev[2]]);
+  };
+
+  const handlePromptChange = (hasInput: boolean) => {
+    setChecklist((prev) => [prev[0], hasInput, prev[2]]);
+  };
+
+  const handleLinksChange = (hasValidLinks: boolean) => {
+    setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-2xl px-4 py-8 space-y-16">
@@ -30,7 +44,7 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
             <input
               type="text"
               value={chatTitle}
-              onChange={(e) => setChatTitle(e.target.value)}
+              onChange={handleChatTitleChange}
               placeholder="Name your workflow"
               className="w-full px-3 py-2 border rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
@@ -51,8 +65,15 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
               </button>
             </div>
             <div className="flex flex-col space-y-4">
-              <Prompt onSubmit={onSubmit} isAiResponding={isAiResponding} />
-              <LinkInputs onSubmit={handleLinkSubmit} />
+              <Prompt
+                onSubmit={onSubmit}
+                isAiResponding={isAiResponding}
+                onInputChange={handlePromptChange}
+              />
+              <LinkInputs
+                onSubmit={handleLinkSubmit}
+                onInputChange={handleLinksChange}
+              />
             </div>
           </div>
           <div className="flex flex-row bg-gray-50 w-full justify-center text-xs items-center gap-4 text-gray-400">

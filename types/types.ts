@@ -56,9 +56,6 @@ export interface ChatProps {
 	messages: Message[] | undefined;
   }
 
-  export interface LinkInputsProps {
-	onSubmit: (links: string[]) => void;
-  }
 
   export interface CreateChatProps {
 	setCurrentChatId: (id: string) => void;
@@ -68,4 +65,5 @@ export interface ChatProps {
   export interface PromptProps {
 	onSubmit: (message: string) => void;
 	isAiResponding: boolean;
+	onInputChange: (hasInput: boolean) => void;
   }
