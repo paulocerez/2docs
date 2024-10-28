@@ -28,6 +28,27 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
     setActiveInput(null);
   };
 
+  const getColorClass = (index: number) => {
+    switch (index) {
+      case 0:
+        return "bg-indigo-500";
+      case 1:
+        return "bg-blue-500";
+      case 2:
+        return "bg-slate-500";
+      case 3:
+        return "bg-amber-300";
+      case 4:
+        return "bg-lime-500";
+      case 5:
+        return "bg-green-400";
+      case 6:
+        return "bg-violet-500";
+      default:
+        return "bg-indigo-500";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
       <div className="flex flex-wrap items-center gap-4">
@@ -40,7 +61,9 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
               }`}
               onClick={() => toggleInput(index)}
             >
-              <div className="rounded-full w-4 h-4 bg-indigo-500"></div>
+              <div
+                className={`rounded-full w-4 h-4 ${getColorClass(index)}`}
+              ></div>
               {activeInput === index ? (
                 <input
                   type="text"

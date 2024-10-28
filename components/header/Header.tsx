@@ -42,7 +42,7 @@ export default function Header({
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
       <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
-        {currentChatTopic || "Chat topic"}
+        {currentChatTopic || "Building a new workflow"}
       </h1>
       <div className="w-8"></div>
     </div>
