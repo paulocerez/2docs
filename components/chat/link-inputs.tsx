@@ -20,10 +20,10 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
   const toggleInput = (index: number) => {
     setActiveInput(activeInput === index ? null : index);
   };
+  const nonEmptyLinks = linkInputs.filter((link) => link.trim() !== "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const nonEmptyLinks = linkInputs.filter((link) => link.trim() !== "");
     onSubmit(nonEmptyLinks);
     setActiveInput(null);
   };
@@ -39,10 +39,8 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
       case 3:
         return "bg-amber-300";
       case 4:
-        return "bg-lime-500";
-      case 5:
         return "bg-green-400";
-      case 6:
+      case 5:
         return "bg-violet-500";
       default:
         return "bg-indigo-500";
@@ -70,7 +68,7 @@ export default function LinkInputs({ onSubmit }: LinkInputsProps) {
                   value={linkInputs[index]}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   placeholder="Enter API link"
-                  className="w-full bg-transparent focus:outline-none text-sm"
+                  className="w-full bg-transparent focus:outline-none text-xs"
                   autoFocus
                 />
               ) : (

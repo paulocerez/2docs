@@ -2,9 +2,11 @@ import { PromptProps } from "@/types/types";
 import LinkInputs from "./link-inputs";
 import Prompt from "./prompt";
 import { useState } from "react";
+import ChecklistItem from "./ChecklistItem";
 
 export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
   const [chatTitle, setChatTitle] = useState("");
+  const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
 
   const handleLinkSubmit = (links: string[]) => {
     // Mutate links to backend here
@@ -38,17 +40,26 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
             </p>
           </div>
         </div>
-        <div className="flex flex-col space-y-4">
-          <div className="inline-flex gap-2">
-            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
-              Automatically map Linear issues to Notion database
-            </button>
-            <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
-              Create Flashcards in Notion
-            </button>
+        <div className="flex flex-col space-y-8">
+          <div className="flex flex-col space-y-4">
+            <div className="inline-flex gap-2">
+              <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
+                Automatically map Linear issues to Notion database
+              </button>
+              <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
+                Create Flashcards in Notion
+              </button>
+            </div>
+            <div className="flex flex-col space-y-4">
+              <Prompt onSubmit={onSubmit} isAiResponding={isAiResponding} />
+              <LinkInputs onSubmit={handleLinkSubmit} />
+            </div>
           </div>
-          <Prompt onSubmit={onSubmit} isAiResponding={isAiResponding} />
-          <LinkInputs onSubmit={handleLinkSubmit} />
+          <div className="flex flex-row bg-gray-50 w-full justify-center text-xs items-center gap-4 text-gray-400">
+            <ChecklistItem checked={checklist[0]} label="Workflow name" />
+            <ChecklistItem checked={checklist[1]} label="Prompt" />
+            <ChecklistItem checked={checklist[2]} label="API links" />
+          </div>
         </div>
       </div>
     </div>
