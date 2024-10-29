@@ -1,6 +1,6 @@
 import LinkInputs from "./link-inputs";
 import Prompt from "./prompt";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import ChecklistItem from "./ChecklistItem";
 import DefaultPrompt from "./default-prompt";
 import { ChevronRight } from "lucide-react";
@@ -30,22 +30,32 @@ export default function DefaultView({
     }
   };
 
-  const handleChatTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = e.target.value;
-    setChatTitle(e.target.value);
-    setChecklist((prev) => [newTitle.trim() !== "", prev[1], prev[2]]);
-  };
-
-  // Update checklist when prompt changes, keep links and title as is
-  const handlePromptChange = (newPrompt: string) => {
+  const handlePromptChange = useCallback((newPrompt: string) => {
     setPrompt(newPrompt);
     setChecklist((prev) => [prev[0], newPrompt.trim() !== "", prev[2]]);
-  };
+  }, []);
 
-  const handleLinksChange = (newLinks: string[]) => {
+  const handleChatTitleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newTitle = e.target.value;
+      setChatTitle(newTitle);
+      setChecklist((prev) => [newTitle.trim() !== "", prev[1], prev[2]]);
+    },
+    [setChatTitle]
+  );
+
+  const handleLinksChange = useCallback((newLinks: string[]) => {
     setLinks(newLinks);
     setChecklist((prev) => [prev[0], prev[1], newLinks.length >= 2]);
-  };
+  }, []);
+
+  const handlePromptInputChange = useCallback((hasInput: boolean) => {
+    setChecklist((prev) => [prev[0], hasInput, prev[2]]);
+  }, []);
+
+  const handleLinksInputChange = useCallback((hasValidLinks: boolean) => {
+    setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
+  }, []);
 
   const isFormValid = checklist.every(Boolean);
 
@@ -85,15 +95,11 @@ export default function DefaultView({
               <DefaultPrompt
                 onSubmit={handlePromptChange}
                 isAiResponding={isAiResponding}
-                onInputChange={(hasInput) =>
-                  setChecklist((prev) => [prev[0], hasInput, prev[2]])
-                }
+                onInputChange={handlePromptInputChange}
               />
               <LinkInputs
                 onSubmit={handleLinksChange}
-                onInputChange={(hasValidLinks) =>
-                  setChecklist((prev) => [prev[0], prev[1], hasValidLinks])
-                }
+                onInputChange={handleLinksInputChange}
               />
             </div>
           </div>
