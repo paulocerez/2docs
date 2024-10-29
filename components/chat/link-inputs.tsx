@@ -35,13 +35,6 @@ export default function LinkInputs({
   const toggleInput = (index: number) => {
     setActiveInput(activeInput === index ? null : index);
   };
-  const nonEmptyLinks = linkInputs.filter((link) => link.trim() !== "");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(nonEmptyLinks);
-    setActiveInput(null);
-  };
 
   const getColorClass = (index: number) => {
     switch (index) {
@@ -63,7 +56,7 @@ export default function LinkInputs({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         {linkInputs.map((input, index) => (
           <div key={index} className="relative">
@@ -99,7 +92,8 @@ export default function LinkInputs({
         >
           <Plus className="w-4 h-4 text-gray-400" />
         </button>
+        <p className="text-xs text-gray-400">Insert at least two links</p>
       </div>
-    </form>
+    </div>
   );
 }

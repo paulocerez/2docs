@@ -3,6 +3,8 @@ import Prompt from "./prompt";
 import { FormEvent, useState } from "react";
 import ChecklistItem from "./ChecklistItem";
 import DefaultPrompt from "./default-prompt";
+import { ChevronRight } from "lucide-react";
+import WorkflowRecommendations from "./workflow-recommendations";
 
 interface DefaultViewProps {
   onSubmit: (title: string, prompt: string) => void;
@@ -77,15 +79,8 @@ export default function DefaultView({
           </div>
         </div>
         <div className="flex flex-col space-y-8">
-          <div className="flex flex-col space-y-4">
-            <div className="inline-flex gap-2">
-              <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
-                Automatically map Linear issues to Notion database
-              </button>
-              <button className="border text-xs w-fit py-1 px-2 rounded-full hover:bg-gray-100 truncate max-w-64">
-                Create Flashcards in Notion
-              </button>
-            </div>
+          <div className="flex flex-col space-y-4 w-full">
+            <WorkflowRecommendations />
             <div className="flex flex-col space-y-4">
               <DefaultPrompt
                 onSubmit={handlePromptChange}
