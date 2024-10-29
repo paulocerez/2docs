@@ -112,7 +112,7 @@ export default function DefaultView({
           <button
             type="submit"
             disabled={!isFormValid || isAiResponding}
-            className="text-sm py-2 px-4 bg-blue-500 text-white rounded-full disabled:bg-gray-300"
+            className="text-sm py-2 px-4 text-white bg-blue-500 rounded-full disabled:bg-gray-300"
           >
             Create Workflow
           </button>
