@@ -1,7 +1,13 @@
-import { HeaderProps } from "@/types/types";
 import React, { useState } from "react";
 import { FiSidebar } from "react-icons/fi";
 import Hotkey from "../ui/hotkey";
+
+interface HeaderProps {
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
+  currentChatId: string | null;
+  currentChatTopic?: string;
+}
 
 export default function Header({
   currentChatId,

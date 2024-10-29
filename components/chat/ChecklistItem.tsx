@@ -13,7 +13,7 @@ export default function ChecklistItem({ checked, label }: ChecklistItemProps) {
     <div
       className={`${
         checked ? checkedStyle : uncheckedStyle
-      } flex flex-row justify-center items-center px-1.5 py-0.5 border rounded-sm space-x-1 gap-0.5`}
+      } flex flex-row justify-center items-center px-1.5 py-0.5 border rounded-full space-x-1 gap-0.5`}
     >
       <div
         className={`rounded-full w-2 h-2 ${

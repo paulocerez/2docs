@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { SidebarHeaderProps } from "@/types/types";
 import { IoIosClose } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Image from "next/image";
@@ -10,6 +9,11 @@ import { SelectUser } from "@/db/schema/users";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import Hotkey from "../ui/hotkey";
+
+export interface SidebarHeaderProps {
+  toggleSidebar: () => void;
+  sessionId: string;
+}
 
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 

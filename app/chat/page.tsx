@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import ChatLayout from "@/components/chat/ChatLayout";
+import { getAllChatsByUserId } from "@/db/queries/chat";
+import { SelectChat } from "@/db/schema/chats";
+import ChatLayout from "@/components/chat/ChatContainer";
 
 export default async function ChatPage() {
   const session = await auth();
@@ -10,11 +12,9 @@ export default async function ChatPage() {
     redirect("/api/auth/signin?callbackUrl=/chat");
   }
 
+  const chats: SelectChat[] = await getAllChatsByUserId(userId);
+
   return (
-    <ChatLayout
-      sessionId={userId}
-      createNewChat={true}
-      initialChatId={undefined}
-    />
+    <ChatLayout sessionId={userId} initialChats={chats} initialChatId="new" />
   );
 }

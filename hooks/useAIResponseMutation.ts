@@ -1,11 +1,11 @@
 import { Message } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useAIResponseMutation(chatId: string | null) {
+export function useAIResponseMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (messages: Array<{ role: string; content: string }>) => {
+    mutationFn: async ({ chatId, messages }: { chatId: string, messages: Array<{ role: string; content: string }> }) => {
       const response = await fetch(`/api/chats/${chatId}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,12 +37,12 @@ export function useAIResponseMutation(chatId: string | null) {
         }
       }
 
-      return latestMessage!;
+      return { chatId, message: latestMessage! };
     },
     onSuccess: (data) => {
       queryClient.setQueryData<Message[]>(
-        ["messages", chatId],
-        (oldMessages = []) => [...oldMessages, data]
+        ["messages", data.chatId],
+        (oldMessages = []) => [...oldMessages, data.message]
       );
     },
   });

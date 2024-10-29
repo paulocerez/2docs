@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
-import { PromptProps } from "@/types/types";
 import LoadingSpinner from "../ui/loading-spinner";
+
+export interface PromptProps {
+  onSubmit: (message: string) => void;
+  isAiResponding: boolean;
+  onInputChange: (value: boolean) => void;
+}
 
 export default function Prompt({
   onSubmit,

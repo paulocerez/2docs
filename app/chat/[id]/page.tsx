@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import ChatLayout from "@/components/chat/ChatLayout";
+import ChatLayout from "@/components/chat/ChatContainer";
 import { getAllChatsByUserId, getChatById } from "@/db/queries/chat";
 import { SelectChat } from "@/db/schema/chats";
 import { redirect } from "next/navigation";

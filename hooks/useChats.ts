@@ -1,6 +1,6 @@
 import { SelectChat } from "@/db/schema/chats";
 import { useQuery, QueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useChats(sessionId: string, queryClient: QueryClient) {
   const [temporaryChatId, setTemporaryChatId] = useState<string | null>(null);
@@ -8,28 +8,11 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
   const { data: chats, isLoading } = useQuery<SelectChat[]>({
     queryKey: ["chats", sessionId],
     queryFn: () => fetch(`/api/chats?userId=${sessionId}`).then((res) => res.json()),
+	staleTime: 1000 * 60,
   });
 
-  const createTemporaryChat = (chatTitle: string) => {
-	const newTempChat: SelectChat = {
-	  id: `temp-${Date.now()}`,
-	  prompt: chatTitle,
-	  userId: sessionId,
-	  createdAt: new Date(),
-	  lastActivityAt: new Date(),
-	};
-  
-	queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) =>
-	  oldChats ? [newTempChat, ...oldChats] : [newTempChat]
-	);
-  
-	setTemporaryChatId(newTempChat.id);
-	return newTempChat.id;
-  };
-
-  const setCurrentChat = (chatId: string) => {
-    const currentChat = chats?.find((chat) => chat.id === chatId) ||
-      (chatId === temporaryChatId ? { id: chatId, prompt: "New chat", lastActivityAt: new Date() } : undefined);
+  const setCurrentChat = useCallback((chatId: string) => {
+    const currentChat = chats?.find((chat) => chat.id === chatId)
     
     if (currentChat) {
       queryClient.setQueryData(["currentChat"], currentChat);
@@ -44,7 +27,7 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
         );
       });
     }
-  };
+  }, [chats, queryClient, sessionId]);
 
-  return { chats, isLoading, setCurrentChat, createTemporaryChat, temporaryChatId };
+  return { chats, isLoading, setCurrentChat };
 }

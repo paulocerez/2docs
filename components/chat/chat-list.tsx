@@ -1,19 +1,25 @@
 "use client";
 
-import { ChatListProps } from "@/types/types";
 import { ChatLoadingScreen } from "../state/chats-loading";
 import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { QueryClient } from "@tanstack/react-query";
 import ChatTooltip from "./chat-tooltip";
+import React from "react";
+import { SelectChat } from "@/db/schema/chats";
 
-export function ChatList({
+interface ChatListProps {
+  chats: SelectChat[] | undefined;
+  isLoading: boolean;
+  currentChatId: string | null;
+  setCurrentChatId: (id: string) => void;
+}
+
+export const ChatList = React.memo(function ChatList({
   chats,
   isLoading,
   currentChatId,
   setCurrentChatId,
-  temporaryChatId,
 }: ChatListProps) {
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
@@ -27,12 +33,6 @@ export function ChatList({
     }
   }, []);
 
-  const sortedChats = chats?.sort(
-    (a, b) =>
-      new Date(b.lastActivityAt).getTime() -
-      new Date(a.lastActivityAt).getTime()
-  );
-
   if (isLoading) return <ChatLoadingScreen />;
 
   return (
@@ -41,13 +41,11 @@ export function ChatList({
         ref={scrollContainerRef}
         className="flex-grow overflow-y-auto pr-2 pb-6 space-y-1 custom-scrollbar"
       >
-        {sortedChats?.map((chat) => (
+        {chats?.map((chat) => (
           <div
             key={chat.id}
             className={`group flex flex-row items-center justify-between p-1.5 text-[13px] hover:bg-gray-100 rounded cursor-pointer ${
-              chat.id === currentChatId || chat.id === temporaryChatId
-                ? "bg-gray-100"
-                : ""
+              chat.id === currentChatId ? "bg-gray-100" : ""
             }`}
           >
             <Link
@@ -55,9 +53,7 @@ export function ChatList({
               className="w-full text-left truncate mr-2"
               onClick={() => setCurrentChatId(chat.id)}
             >
-              {chat.id === temporaryChatId
-                ? `${chat.prompt} (unsaved)`
-                : chat.prompt}
+              {chat.prompt}
             </Link>
             <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button
@@ -81,4 +77,4 @@ export function ChatList({
       </div>
     </div>
   );
-}
+});

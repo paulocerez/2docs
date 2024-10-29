@@ -1,17 +1,31 @@
-import { PromptProps } from "@/types/types";
 import LinkInputs from "./link-inputs";
 import Prompt from "./prompt";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import ChecklistItem from "./ChecklistItem";
+import DefaultPrompt from "./default-prompt";
 
-export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
-  const [chatTitle, setChatTitle] = useState("");
+interface DefaultViewProps {
+  onSubmit: (title: string, prompt: string) => void;
+  isAiResponding: boolean;
+  chatTitle: string;
+  setChatTitle: (title: string) => void;
+}
+
+export default function DefaultView({
+  onSubmit,
+  isAiResponding,
+  chatTitle,
+  setChatTitle,
+}: DefaultViewProps) {
   const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
+  const [prompt, setPrompt] = useState("");
+  const [links, setLinks] = useState<string[]>([]);
 
-  const handleLinkSubmit = (links: string[]) => {
-    // Mutate links to backend here
-    console.log("Submitted links:", links);
-    console.log("Chat title:", chatTitle);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (chatTitle && prompt && links.length >= 2) {
+      onSubmit(chatTitle, prompt);
+    }
   };
 
   const handleChatTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,16 +34,24 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
     setChecklist((prev) => [newTitle.trim() !== "", prev[1], prev[2]]);
   };
 
-  const handlePromptChange = (hasInput: boolean) => {
-    setChecklist((prev) => [prev[0], hasInput, prev[2]]);
+  // Update checklist when prompt changes, keep links and title as is
+  const handlePromptChange = (newPrompt: string) => {
+    setPrompt(newPrompt);
+    setChecklist((prev) => [prev[0], newPrompt.trim() !== "", prev[2]]);
   };
 
-  const handleLinksChange = (hasValidLinks: boolean) => {
-    setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
+  const handleLinksChange = (newLinks: string[]) => {
+    setLinks(newLinks);
+    setChecklist((prev) => [prev[0], prev[1], newLinks.length >= 2]);
   };
+
+  const isFormValid = checklist.every(Boolean);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <form
+      onSubmit={handleSubmit}
+      className="min-h-screen flex items-center justify-center"
+    >
       <div className="w-full max-w-2xl px-4 py-8 space-y-16">
         <div className="flex flex-col items-center space-y-8 text-center">
           <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
@@ -46,7 +68,7 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
               value={chatTitle}
               onChange={handleChatTitleChange}
               placeholder="Name your workflow"
-              className="w-full px-3 py-2 border rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-3 py-2 border rounded-full text-xs  focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200"
             />
             <p className="text-[10px] text-gray-400">
               &quot;Insert Google Calendar events based on a Notion
@@ -65,14 +87,18 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
               </button>
             </div>
             <div className="flex flex-col space-y-4">
-              <Prompt
-                onSubmit={onSubmit}
+              <DefaultPrompt
+                onSubmit={handlePromptChange}
                 isAiResponding={isAiResponding}
-                onInputChange={handlePromptChange}
+                onInputChange={(hasInput) =>
+                  setChecklist((prev) => [prev[0], hasInput, prev[2]])
+                }
               />
               <LinkInputs
-                onSubmit={handleLinkSubmit}
-                onInputChange={handleLinksChange}
+                onSubmit={handleLinksChange}
+                onInputChange={(hasValidLinks) =>
+                  setChecklist((prev) => [prev[0], prev[1], hasValidLinks])
+                }
               />
             </div>
           </div>
@@ -82,7 +108,16 @@ export default function DefaultView({ onSubmit, isAiResponding }: PromptProps) {
             <ChecklistItem checked={checklist[2]} label="API links" />
           </div>
         </div>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={!isFormValid || isAiResponding}
+            className="text-sm py-2 px-4 bg-blue-500 text-white rounded-full disabled:bg-gray-300"
+          >
+            Create Workflow
+          </button>
+        </div>
       </div>
-    </div>
+    </form>
   );
 }

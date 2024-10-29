@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MessageLoadingScreen } from "../state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
@@ -7,17 +7,28 @@ import LinkInputs from "./link-inputs";
 import MessageList from "./message-list";
 import Prompt from "./prompt";
 import DefaultView from "./default-view";
-import { ChatProps } from "@/types/types";
 import LoadingSpinner from "../ui/loading-spinner";
 import { useRouter } from "next/navigation";
 
-export default function Chat({ sessionId, currentChatId }: ChatProps) {
+interface ChatProps {
+  sessionId: string;
+  currentChatId: string | null;
+  chatTitle: string;
+  setChatTitle: (title: string) => void;
+}
+
+export default function Chat({
+  sessionId,
+  currentChatId,
+  chatTitle,
+  setChatTitle,
+}: ChatProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, isLoading, error } = useMessages(currentChatId!);
-  const userMessageMutation = useUserMessageMutation(sessionId, currentChatId!);
-  const aiResponseMutation = useAIResponseMutation(currentChatId!);
+  const userMessageMutation = useUserMessageMutation(sessionId);
+  const aiResponseMutation = useAIResponseMutation();
 
   const router = useRouter();
 
@@ -25,26 +36,25 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSubmit = async (inputMessage: string) => {
-    if (!currentChatId) return;
-
-    setIsAiResponding(true);
-    try {
-      const result = await userMessageMutation.mutateAsync(inputMessage);
-      if (currentChatId.startsWith("temp-")) {
-        // Update the URL with the new chat ID
+  const handleSubmit = useCallback(
+    async (title: string, prompt: string) => {
+      setIsAiResponding(true);
+      try {
+        const result = await userMessageMutation.mutateAsync({ title, prompt });
         router.replace(`/chat/${result.chatId}`);
-      }
 
-      await aiResponseMutation.mutateAsync([
-        { role: "user", content: inputMessage },
-      ]);
-    } catch (error) {
-      console.error("Failed to send message or generate workflow:", error);
-    } finally {
-      setIsAiResponding(false);
-    }
-  };
+        await aiResponseMutation.mutateAsync({
+          chatId: result.chatId,
+          messages: [{ role: "user", content: prompt }],
+        });
+      } catch (error) {
+        console.error("Failed to send message or generate workflow:", error);
+      } finally {
+        setIsAiResponding(false);
+      }
+    },
+    [userMessageMutation, aiResponseMutation, router]
+  );
 
   if (isLoading)
     return (
@@ -81,14 +91,23 @@ export default function Chat({ sessionId, currentChatId }: ChatProps) {
               <div ref={messagesEndRef} />
             </>
           ) : (
-            <DefaultView onSubmit={handleSubmit} isAiResponding={false} />
+            <DefaultView
+              onSubmit={handleSubmit}
+              isAiResponding={false}
+              chatTitle={chatTitle}
+              setChatTitle={setChatTitle}
+            />
           )}
         </div>
       </div>
       {messages && messages.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
-            <Prompt onSubmit={handleSubmit} isAiResponding={isAiResponding} />
+            <Prompt
+              onSubmit={(prompt) => handleSubmit("", prompt)}
+              isAiResponding={isAiResponding}
+              onInputChange={() => {}}
+            />
           </div>
         </div>
       )}
