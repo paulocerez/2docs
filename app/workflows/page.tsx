@@ -1,7 +1,4 @@
-"use client";
-
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 const workflows = [

@@ -1,4 +1,4 @@
-import ChatLayout from "@/components/chat/ChatLayout";
+"use client";
 import Header from "@/components/header/Header";
 import Sidebar from "@/components/sidebar/Sidebar";
 import { SelectChat } from "@/db/schema/chats";
@@ -20,7 +20,7 @@ export interface AuthenticatedLayoutProps {
 
 const queryClient = new QueryClient();
 
-function AuthenticatedLayoutContent({
+export default function AuthenticatedLayout({
   userId,
   currentPageTitle,
   children,
@@ -70,13 +70,5 @@ function AuthenticatedLayoutContent({
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
-  );
-}
-
-export default function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthenticatedLayoutContent {...props} />
-    </QueryClientProvider>
   );
 }

@@ -6,7 +6,6 @@ import { useMessages } from "@/hooks/useMessages";
 import LinkInputs from "./link-inputs";
 import MessageList from "./message-list";
 import Prompt from "./prompt";
-import DefaultView from "./default-view";
 import LoadingSpinner from "../ui/loading-spinner";
 import { useRouter } from "next/navigation";
 
@@ -77,27 +76,18 @@ export default function Chat({
             messages && messages.length > 0 ? "max-w-2xl" : "max-w-4xl"
           }`}
         >
-          {messages && messages.length > 0 ? (
-            <>
-              <MessageList messages={messages} />
-              {isAiResponding && (
-                <div className="flex flex-row justify-start items-center space-x-2 mt-4">
-                  <LoadingSpinner />
-                  <p className="text-sm text-gray-400 flex items-center">
-                    Workflow is generated...
-                  </p>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </>
-          ) : (
-            <DefaultView
-              onSubmit={handleSubmit}
-              isAiResponding={false}
-              chatTitle={chatTitle}
-              setChatTitle={setChatTitle}
-            />
-          )}
+          <>
+            <MessageList messages={messages} />
+            {isAiResponding && (
+              <div className="flex flex-row justify-start items-center space-x-2 mt-4">
+                <LoadingSpinner />
+                <p className="text-sm text-gray-400 flex items-center">
+                  Workflow is generated...
+                </p>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </>
         </div>
       </div>
       {messages && messages.length > 0 && (

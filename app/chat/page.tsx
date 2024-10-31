@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
+import NewChatPage from "@/components/chat/new-chat";
 import { redirect } from "next/navigation";
-import ChatLayout from "@/components/chat/ChatLayout";
 
 export default async function ChatPage() {
   const session = await auth();
@@ -10,5 +10,5 @@ export default async function ChatPage() {
     redirect("/api/auth/signin?callbackUrl=/chat");
   }
 
-  return <ChatLayout userId={userId} currentChatId="new" />;
+  return <NewChatPage userId={userId} />;
 }

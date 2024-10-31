@@ -69,12 +69,12 @@ export default function SidebarHeader({
             >
               Account Settings
             </Link>
-            <button
+            <div
               className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors duration-200"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               {theme === "dark" ? "Light" : "Dark"} Mode
-            </button>
+            </div>
             <Link
               href="/api/auth/signout"
               className="block rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
