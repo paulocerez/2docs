@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import ChatLayout from "@/components/chat/ChatLayout";
 import { getChatById } from "@/db/queries/chat";
 import { redirect } from "next/navigation";
+import ChatContent from "./ChatContent";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -16,5 +16,11 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
     redirect("/chat");
   }
 
-  return <ChatLayout userId={userId} currentChatId={params.id} />;
+  return (
+    <ChatContent
+      userId={userId}
+      currentChatId={params.id}
+      currentChatTitle={currentChat.title}
+    />
+  );
 }

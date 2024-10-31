@@ -1,17 +1,22 @@
 import { SelectChat } from "@/db/schema/chats";
+import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 
-export function useUserMessageMutation(sessionId: string) {
+interface UserMessageMutationData {
+	title: string;
+	prompt: string;
+}
+
+export function useUserMessageMutation(userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({title, prompt}: {title: string, prompt: string}) => {
+    mutationFn: async ({title, prompt}: UserMessageMutationData) => {
         const response = await fetch("/api/chats", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: sessionId,
+            userId: userId,
             title,
             prompt,
             role: "user",
@@ -27,16 +32,17 @@ export function useUserMessageMutation(sessionId: string) {
     },
     onSuccess: (data, {title}) => {
 		const newChat: SelectChat = {
+			title: title,
 			id: data.chatId,
-			prompt: title,
-			userId: sessionId,
+			prompt: data.message.content,
+			userId: userId,
 			createdAt: new Date(),
 			lastActivityAt: new Date()
 		  };
 
 		// Add the new chat to the chats list
 		queryClient.setQueryData<SelectChat[]>(
-			["chats", sessionId],
+			["chats", userId],
 			(oldChats = []) => [newChat, ...oldChats]
 		  );
 	

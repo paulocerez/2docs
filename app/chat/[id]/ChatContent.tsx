@@ -1,28 +1,32 @@
+"use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { MessageLoadingScreen } from "../state/messages-loading";
+import { MessageLoadingScreen } from "@/components/state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
 import { useMessages } from "@/hooks/messages/useMessages";
-import LinkInputs from "./new-chat/link-inputs";
-import MessageList from "./message-list";
-import Prompt from "./prompt";
-import LoadingSpinner from "../ui/loading-spinner";
+import MessageList from "@/components/chat/message-list";
+import Prompt from "@/components/chat/prompt";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useRouter } from "next/navigation";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-interface ChatProps {
+const queryClient = new QueryClient();
+
+interface ChatContentProps {
   userId: string;
-  currentChatId: string | null;
-  chatTitle: string;
-  setChatTitle: (title: string) => void;
+  currentChatId: string;
+  currentChatTitle: string;
 }
 
-export default function Chat({
+function ChatContentInner({
   userId,
   currentChatId,
-  chatTitle,
-  setChatTitle,
-}: ChatProps) {
+  currentChatTitle,
+}: ChatContentProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
+  const [chatTitle, setChatTitle] = useState(currentChatTitle);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, isLoading, error } = useMessages(currentChatId);
@@ -36,14 +40,15 @@ export default function Chat({
   }, [messages]);
 
   const handleSubmit = useCallback(
-    async (title: string, prompt: string) => {
+    async (prompt: string) => {
       setIsAiResponding(true);
       try {
-        const result = await userMessageMutation.mutateAsync({ title, prompt });
-        router.replace(`/chat/${result.chatId}`);
-
+        await userMessageMutation.mutateAsync({
+          chatId,
+          prompt,
+        });
         await aiResponseMutation.mutateAsync({
-          chatId: result.chatId,
+          chatId: currentChatId,
           messages: [{ role: "user", content: prompt }],
         });
       } catch (error) {
@@ -52,7 +57,7 @@ export default function Chat({
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, router]
+    [userMessageMutation, aiResponseMutation, currentChatId]
   );
 
   if (isLoading)
@@ -69,14 +74,10 @@ export default function Chat({
     );
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 pt-16">
-      <div className="flex-grow overflow-y-auto pt-4 pb-16">
-        <div
-          className={`mx-auto px-4 w-full ${
-            messages && messages.length > 0 ? "max-w-2xl" : "max-w-4xl"
-          }`}
-        >
-          <>
+    <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>
+      <div className="flex flex-col h-full bg-gray-50 pt-16">
+        <div className="flex-grow overflow-y-auto pt-4 pb-16">
+          <div className="mx-auto px-4 w-full max-w-2xl">
             <MessageList messages={messages} />
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">
@@ -87,20 +88,26 @@ export default function Chat({
               </div>
             )}
             <div ref={messagesEndRef} />
-          </>
+          </div>
         </div>
-      </div>
-      {messages && messages.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt
-              onSubmit={(prompt) => handleSubmit("", prompt)}
+              onSubmit={handleSubmit}
               isAiResponding={isAiResponding}
               onInputChange={() => {}}
             />
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </AuthenticatedLayout>
+  );
+}
+
+export default function ChatContent(props: ChatContentProps) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChatContentInner {...props} />
+    </QueryClientProvider>
   );
 }

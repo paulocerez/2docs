@@ -1,12 +1,9 @@
 "use client";
-
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
-import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
+import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
+import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
 import LinkInputs from "@/components/chat/new-chat/link-inputs";
 import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
@@ -23,30 +20,31 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
 
-  const userMessageMutation = useUserMessageMutation(userId!);
+  const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (chatTitle && prompt && links.length >= 2) {
+  const handleSubmit = useCallback(
+    async (title: string, prompt: string) => {
       setIsAiResponding(true);
       try {
         const result = await userMessageMutation.mutateAsync({
-          title: chatTitle,
+          title,
           prompt,
         });
+        router.replace(`/chat/${result.chatId}`);
+
         await aiResponseMutation.mutateAsync({
           chatId: result.chatId,
           messages: [{ role: "user", content: prompt }],
         });
-        router.push(`/chat/${result.chatId}`);
       } catch (error) {
-        console.error("Failed to create chat:", error);
+        console.error("Failed to send message or generate workflow:", error);
       } finally {
         setIsAiResponding(false);
       }
-    }
-  };
+    },
+    [userMessageMutation, aiResponseMutation, router]
+  );
 
   const handlePromptChange = useCallback((newPrompt: string) => {
     setPrompt(newPrompt);
@@ -85,7 +83,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
           <div className="mx-auto px-4 w-full max-w-4xl">
             <form
-              onSubmit={handleSubmit}
+              onSubmit={(e) => handleSubmit(chatTitle, prompt)}
               className="min-h-screen flex items-center justify-center"
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">
@@ -140,7 +138,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
                   <button
                     type="submit"
                     disabled={!isFormValid || isAiResponding}
-                    className="text-sm py-2 px-4 text-white bg-blue-500 rounded-full disabled:bg-gray-300"
+                    className="text-sm py-2 px-4 text-white bg-gray-500 hover:bg-gray-400 transition-all duration-200 border border-gray-300 rounded-md disabled:bg-gray-300"
                   >
                     Create Workflow
                   </button>

@@ -17,11 +17,6 @@ const workflows = [
   },
 ];
 
-// const { data: workflows } = useQuery<Workflow[]>({
-//   queryKey: ["user", userId],
-//   queryFn: () => fetch(`/api/users/${userId}`).then((res) => res.json()),
-// });
-
 export default function WorkflowsPage(userId: string) {
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle="Your Workflows">

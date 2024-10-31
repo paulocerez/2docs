@@ -99,4 +99,6 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
   }
 );
 
+LinkInputs.displayName = "LinkInputs";
+
 export default LinkInputs;

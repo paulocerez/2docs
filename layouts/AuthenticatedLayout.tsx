@@ -2,7 +2,7 @@
 import Header from "@/components/header/Header";
 import Sidebar from "@/components/sidebar/Sidebar";
 import { SelectChat } from "@/db/schema/chats";
-import { useChats } from "@/hooks/useChats";
+import { useChats } from "@/hooks/chats/useChats";
 import {
   QueryClient,
   QueryClientProvider,

@@ -43,7 +43,7 @@ export default function DefaultPrompt({
         <button
           type="submit"
           disabled={isAiResponding || !inputMessage.trim()}
-          className="border-l border-gray-200 py-2 px-4 text-blue-500 disabled:text-gray-300 hover:text-gray-500 transition-all duration-200"
+          className="border-l border-gray-200 py-2 px-4 text-blue-500 disabled:text-gray-300 hover:text-blue-400 transition-all duration-200"
         >
           <FaPaperPlane />
         </button>

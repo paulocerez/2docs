@@ -1,0 +1,30 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface ChatApiLinksMutationData {
+	chatId: string;
+	links: string[];
+}
+
+export function useChatApiLinksMutation() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({ chatId, links }: ChatApiLinksMutationData) => {
+			const response = await fetch(`/api/chats/${chatId}/api-links`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ chatId, links }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to create API links");
+			}
+
+			return response.json();
+		},
+		onSuccess: (data, { chatId }) => {
+			queryClient.setQueryData(["chatApiLinks", chatId], data);
+		}
+	})
+
+}

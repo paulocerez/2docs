@@ -1,4 +1,4 @@
-import { Message } from "@/types/types";
+import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useAIResponseMutation() {

@@ -6,17 +6,10 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import "./MessageList.module.css";
 import { lightfair } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import { Message } from "@/types/message";
 
 interface MessageListProps {
   messages: Message[] | undefined;
-}
-
-interface Message {
-  id: string;
-  chatId: string;
-  content: string;
-  role: "user" | "assistant" | "system";
-  timestamp: Date | string;
 }
 
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
