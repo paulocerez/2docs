@@ -1,10 +1,10 @@
 "use client";
 import SidebarHeader from "./SidebarHeader";
-import { ChatList } from "../chat/chat-list";
 import StoredWorkflows from "./StoredWorkflows";
 import CreateChatButton from "./CreateChatButton";
 import { SelectChat } from "@/db/schema/chats";
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { ChatList } from "./chat-list";
 
 interface SidebarProps {
   isSidebarOpen: boolean;

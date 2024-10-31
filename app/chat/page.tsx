@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import NewChatPage from "@/components/chat/new-chat";
+import NewChatPage from "@/components/chat/new-chat/new-chat";
 import { redirect } from "next/navigation";
 
 export default async function ChatPage() {

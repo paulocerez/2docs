@@ -7,9 +7,9 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
-import LinkInputs from "@/components/chat/link-inputs";
-import ChecklistItem from "@/components/chat/ChecklistItem";
-import DefaultPrompt from "@/components/chat/default-prompt";
+import LinkInputs from "@/components/chat/new-chat/link-inputs";
+import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
+import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
 import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

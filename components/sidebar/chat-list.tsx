@@ -4,9 +4,9 @@ import { ChatLoadingScreen } from "../state/chats-loading";
 import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import ChatTooltip from "./chat-tooltip";
 import React from "react";
 import { SelectChat } from "@/db/schema/chats";
+import ChatTooltip from "../chat/chat-tooltip";
 
 interface ChatListProps {
   chats: SelectChat[] | undefined;

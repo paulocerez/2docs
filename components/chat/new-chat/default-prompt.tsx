@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
-import LoadingSpinner from "../ui/loading-spinner";
+import LoadingSpinner from "../../ui/loading-spinner";
 
 export interface PromptProps {
   onSubmit: (message: string) => void;

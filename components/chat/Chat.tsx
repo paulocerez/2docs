@@ -3,7 +3,7 @@ import { MessageLoadingScreen } from "../state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/useAIResponseMutation";
 import { useMessages } from "@/hooks/useMessages";
-import LinkInputs from "./link-inputs";
+import LinkInputs from "./new-chat/link-inputs";
 import MessageList from "./message-list";
 import Prompt from "./prompt";
 import LoadingSpinner from "../ui/loading-spinner";
