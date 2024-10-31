@@ -11,14 +11,14 @@ import LoadingSpinner from "../ui/loading-spinner";
 import { useRouter } from "next/navigation";
 
 interface ChatProps {
-  sessionId: string;
+  userId: string;
   currentChatId: string | null;
   chatTitle: string;
   setChatTitle: (title: string) => void;
 }
 
 export default function Chat({
-  sessionId,
+  userId,
   currentChatId,
   chatTitle,
   setChatTitle,
@@ -26,8 +26,8 @@ export default function Chat({
   const [isAiResponding, setIsAiResponding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages, isLoading, error } = useMessages(currentChatId!);
-  const userMessageMutation = useUserMessageMutation(sessionId);
+  const { data: messages, isLoading, error } = useMessages(currentChatId);
+  const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
 
   const router = useRouter();

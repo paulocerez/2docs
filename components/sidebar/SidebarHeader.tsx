@@ -12,22 +12,22 @@ import Hotkey from "../ui/hotkey";
 
 export interface SidebarHeaderProps {
   toggleSidebar: () => void;
-  sessionId: string;
+  userId: string;
 }
 
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 
 export default function SidebarHeader({
   toggleSidebar,
-  sessionId,
+  userId,
 }: SidebarHeaderProps) {
   const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
 
   const { data: user, isLoading } = useQuery<UserData>({
-    queryKey: ["user", sessionId],
-    queryFn: () => fetch(`/api/users/${sessionId}`).then((res) => res.json()),
+    queryKey: ["user", userId],
+    queryFn: () => fetch(`/api/users/${userId}`).then((res) => res.json()),
   });
 
   return (

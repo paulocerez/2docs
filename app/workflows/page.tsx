@@ -1,3 +1,7 @@
+"use client";
+
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 const workflows = [
@@ -16,23 +20,29 @@ const workflows = [
   },
 ];
 
-export default function WorkflowsPage() {
+// const { data: workflows } = useQuery<Workflow[]>({
+//   queryKey: ["user", userId],
+//   queryFn: () => fetch(`/api/users/${userId}`).then((res) => res.json()),
+// });
+
+export default function WorkflowsPage(userId: string) {
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8">
-      <h1 className="text-2xl font-bold mb-12">Your Workflows</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
-        {workflows.map((workflow, index) => (
-          <div
-            key={index}
-            className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
-          >
-            <h2 className="text-lg font-semibold text-center">
-              {workflow.title}
-            </h2>
-            <p className="text-gray-600 mt-2">{workflow.description}</p>
-          </div>
-        ))}
+    <AuthenticatedLayout userId={userId} currentPageTitle="Your Workflows">
+      <div className="flex flex-col items-center justify-center h-full p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
+          {workflows.map((workflow, index) => (
+            <div
+              key={index}
+              className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
+            >
+              <h2 className="text-lg font-semibold text-center">
+                {workflow.title}
+              </h2>
+              <p className="text-gray-600 mt-2">{workflow.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </AuthenticatedLayout>
   );
 }

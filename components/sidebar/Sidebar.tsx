@@ -4,10 +4,11 @@ import { ChatList } from "../chat/chat-list";
 import StoredWorkflows from "./StoredWorkflows";
 import CreateChatButton from "./CreateChatButton";
 import { SelectChat } from "@/db/schema/chats";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
-  sessionId: string;
+  userId: string;
   currentChatId: string | null;
   setCurrentChatId: (id: string) => void;
   toggleSidebar: () => void;
@@ -15,8 +16,10 @@ interface SidebarProps {
   isLoading: boolean;
 }
 
+const queryClient = new QueryClient();
+
 export default function Sidebar({
-  sessionId,
+  userId,
   toggleSidebar,
   setCurrentChatId,
   currentChatId,
@@ -24,6 +27,12 @@ export default function Sidebar({
   chats,
   isLoading,
 }: SidebarProps) {
+  const { data: currentChat } = useQuery<SelectChat | undefined>({
+    queryKey: ["currentChat"],
+    queryFn: () => queryClient.getQueryData(["currentChat"]),
+    enabled: !!queryClient.getQueryData(["currentChat"]),
+  });
+
   return (
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
@@ -32,7 +41,7 @@ export default function Sidebar({
 	  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="space-y-4">
-        <SidebarHeader toggleSidebar={toggleSidebar} sessionId={sessionId} />
+        <SidebarHeader toggleSidebar={toggleSidebar} userId={userId} />
         <div className="flex flex-col space-y-1">
           <CreateChatButton />
           <StoredWorkflows />

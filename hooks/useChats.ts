@@ -3,7 +3,6 @@ import { useQuery, QueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 export function useChats(sessionId: string, queryClient: QueryClient) {
-  const [temporaryChatId, setTemporaryChatId] = useState<string | null>(null);
 
   const { data: chats, isLoading } = useQuery<SelectChat[]>({
     queryKey: ["chats", sessionId],

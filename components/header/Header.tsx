@@ -5,15 +5,13 @@ import Hotkey from "../ui/hotkey";
 interface HeaderProps {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
-  currentChatId: string | null;
-  currentChatTopic?: string;
+  currentPageTitle?: string;
 }
 
 export default function Header({
-  currentChatId,
   isSidebarOpen,
   toggleSidebar,
-  currentChatTopic,
+  currentPageTitle,
 }: HeaderProps) {
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
 
@@ -48,7 +46,7 @@ export default function Header({
         {isSidebarOpen && <div className="w-8"></div>}
       </div>
       <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
-        {currentChatTopic || "Building a new workflow"}
+        {currentPageTitle || "Building a new workflow"}
       </h1>
       <div className="w-8"></div>
     </div>

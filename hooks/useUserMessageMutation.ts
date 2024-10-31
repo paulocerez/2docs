@@ -1,5 +1,4 @@
 import { SelectChat } from "@/db/schema/chats";
-import { Message } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
