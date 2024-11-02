@@ -9,6 +9,7 @@ import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
 import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 
 const queryClient = new QueryClient();
 
@@ -22,28 +23,43 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
+  const chatApiLinksMutation = useChatApiLinksMutation();
 
   const handleSubmit = useCallback(
     async (title: string, prompt: string) => {
       setIsAiResponding(true);
       try {
+        // create the chat
         const result = await userMessageMutation.mutateAsync({
           title,
           prompt,
         });
-        router.replace(`/chat/${result.chatId}`);
 
+        // create the api links
+        await chatApiLinksMutation.mutateAsync({
+          chatId: result.chatId,
+          links,
+        });
+
+        // generate the ai response
         await aiResponseMutation.mutateAsync({
           chatId: result.chatId,
           messages: [{ role: "user", content: prompt }],
         });
+        router.replace(`/chat/${result.chatId}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
       } finally {
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, router]
+    [
+      userMessageMutation,
+      chatApiLinksMutation,
+      aiResponseMutation,
+      router,
+      links,
+    ]
   );
 
   const handlePromptChange = useCallback((newPrompt: string) => {

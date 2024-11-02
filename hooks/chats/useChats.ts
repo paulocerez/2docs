@@ -1,12 +1,15 @@
-import { SelectChat } from "@/db/schema/chats";
+import { SelectChat } from "@/db/postgres/schema/chats";
 import { useQuery, QueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
-export function useChats(sessionId: string, queryClient: QueryClient) {
+export function useChats(userId: string, queryClient: QueryClient) {
 
   const { data: chats, isLoading } = useQuery<SelectChat[]>({
-    queryKey: ["chats", sessionId],
-    queryFn: () => fetch(`/api/chats?userId=${sessionId}`).then((res) => res.json()),
+    queryKey: ["chats", userId],
+    queryFn: async () => {
+		const response = await fetch(`/api/chats?userId=${userId}`)
+		return response.json()
+	},
 	staleTime: 1000 * 60,
   });
 
@@ -16,7 +19,7 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
     if (currentChat) {
       queryClient.setQueryData(["currentChat"], currentChat);
       
-      queryClient.setQueryData<SelectChat[]>(["chats", sessionId], (oldChats) => {
+      queryClient.setQueryData<SelectChat[]>(["chats", userId], (oldChats) => {
         if (!oldChats) return oldChats;
         const updatedChats = oldChats.map(chat => 
           chat.id === chatId ? { ...chat, lastActivityAt: new Date() } : chat
@@ -26,7 +29,7 @@ export function useChats(sessionId: string, queryClient: QueryClient) {
         );
       });
     }
-  }, [chats, queryClient, sessionId]);
+  }, [chats, queryClient, userId]);
 
   return { chats, isLoading, setCurrentChat };
 }

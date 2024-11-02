@@ -5,7 +5,7 @@ import { IoIosClose } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { SelectUser } from "@/db/schema/users";
+import { SelectUser } from "@/db/postgres/schema/users";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import Hotkey from "../ui/hotkey";
@@ -27,7 +27,10 @@ export default function SidebarHeader({
 
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", userId],
-    queryFn: () => fetch(`/api/users/${userId}`).then((res) => res.json()),
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${userId}`);
+      return response.json();
+    },
   });
 
   return (

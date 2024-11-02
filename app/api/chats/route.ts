@@ -1,10 +1,8 @@
-import { createChat, getAllChatsByUserId } from "@/db/queries/chat";
+import { createChat, getAllChatsByUserId } from "@/db/postgres/queries/chat";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET (request: NextRequest): Promise<NextResponse> {
-	// API route expects userId query parameter -> passes that parameter to the query function as an argument
-	const { searchParams } = new URL(request.url);
-	const userId = searchParams.get("userId")
+export async function GET (request: NextRequest, { params }: { params: { id: string}}): Promise<NextResponse> {
+	const { id: userId } = await params
 
 	if (!userId) {
 		return NextResponse.json({error: "User Id is not provided"}, { status: 400 })

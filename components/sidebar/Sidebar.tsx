@@ -2,7 +2,7 @@
 import SidebarHeader from "./SidebarHeader";
 import StoredWorkflows from "./StoredWorkflows";
 import CreateChatButton from "./CreateChatButton";
-import { SelectChat } from "@/db/schema/chats";
+import { SelectChat } from "@/db/postgres/schema/chats";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { ChatList } from "./chat-list";
 
