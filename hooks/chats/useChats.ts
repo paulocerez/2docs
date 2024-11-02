@@ -8,6 +8,9 @@ export function useChats(userId: string, queryClient: QueryClient) {
     queryKey: ["chats", userId],
     queryFn: async () => {
 		const response = await fetch(`/api/chats?userId=${userId}`)
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
 		return response.json()
 	},
 	staleTime: 1000 * 60,
