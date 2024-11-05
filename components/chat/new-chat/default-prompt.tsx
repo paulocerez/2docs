@@ -40,13 +40,6 @@ export default function DefaultPrompt({
           rows={1}
           onChange={(e) => setInputMessage(e.target.value)}
         />
-        <button
-          type="submit"
-          disabled={isAiResponding || !inputMessage.trim()}
-          className="border-l border-gray-200 py-2 px-4 text-blue-500 disabled:text-gray-300 hover:text-blue-400 transition-all duration-200"
-        >
-          <FaPaperPlane />
-        </button>
       </div>
     </div>
   );

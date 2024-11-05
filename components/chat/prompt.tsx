@@ -12,7 +12,6 @@ export interface PromptProps {
 export default function Prompt({
   onSubmit,
   isAiResponding,
-  className = "",
   onInputChange,
 }: PromptProps & { className?: string }) {
   const [inputMessage, setInputMessage] = useState("");
@@ -46,13 +45,12 @@ export default function Prompt({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className="w-full">
       <form
         className="flex flex-row items-center space-x-2 rounded-lg bg-white w-full border border-gray-200 shadow-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200"
         onSubmit={handleSubmit}
       >
         <textarea
-          ref={textareaRef}
           value={inputMessage}
           placeholder="Insert a prompt to get started..."
           className="w-full text-sm p-4 resize-none focus:outline-none bg-transparent"
@@ -60,34 +58,13 @@ export default function Prompt({
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <div className="p-2">
-          <button
-            type="submit"
-            className={`p-2 rounded-full transition-all duration-200 flex items-center justify-center ${
-              inputMessage.trim() && !isAiResponding
-                ? "bg-blue-500 hover:bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            }`}
-            disabled={!inputMessage.trim() || isAiResponding}
-          >
-            <div className="relative w-5 h-5">
-              <div
-                className={`absolute inset-0 transition-opacity duration-200 ${
-                  isAiResponding ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                <LoadingSpinner />
-              </div>
-              <div
-                className={`absolute inset-0 transition-opacity duration-200 ${
-                  isAiResponding ? "opacity-0" : "opacity-100"
-                }`}
-              >
-                <FaPaperPlane />
-              </div>
-            </div>
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={isAiResponding || !inputMessage.trim()}
+          className="border-l border-gray-200 py-2 px-4 text-blue-500 disabled:text-gray-300 hover:text-blue-400 transition-all duration-200"
+        >
+          <FaPaperPlane />
+        </button>
       </form>
       <p className="text-xs text-gray-400 mt-2 text-right">
         Press Enter to send, Shift + Enter for a new line
