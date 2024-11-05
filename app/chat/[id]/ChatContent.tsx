@@ -44,7 +44,7 @@ function ChatContentInner({
       setIsAiResponding(true);
       try {
         await userMessageMutation.mutateAsync({
-          chatId,
+          title: chatTitle,
           prompt,
         });
         await aiResponseMutation.mutateAsync({
@@ -57,7 +57,7 @@ function ChatContentInner({
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, currentChatId]
+    [userMessageMutation, aiResponseMutation, currentChatId, chatTitle]
   );
 
   if (isLoading)

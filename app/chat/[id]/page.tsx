@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import { getChatById } from "@/db/queries/chat";
 import { redirect } from "next/navigation";
 import ChatContent from "./ChatContent";
+import { getChatById } from "@/db/postgres/queries/chat";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const session = await auth();

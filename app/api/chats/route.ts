@@ -15,3 +15,14 @@ export async function GET (request: NextRequest): Promise<NextResponse> {
 		return NextResponse.json({ error: "Could not get chats"}, { status: 500 })
 	}
 } 
+export async function POST (request: NextRequest): Promise<NextResponse> {
+	const body = await request.json();
+	console.log(body)
+	try {
+		const result = await createChat(body);
+		return NextResponse.json(result, { status: 201 })
+	} catch (error) {
+		console.error("Error creating chat", error)
+		return NextResponse.json({ error: "Could not create chat"}, { status: 500 })
+	}
+}

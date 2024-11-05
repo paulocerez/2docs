@@ -45,7 +45,7 @@ export default function AuthenticatedLayout({
   //   });
 
   return (
-    <div className="flex h-screen dark:bg-gray-900">
+    <div className="flex h-screen dark:bg-gray-900 bg-gray-50">
       {isSidebarOpen && (
         <Sidebar
           isSidebarOpen={isSidebarOpen}
@@ -67,7 +67,7 @@ export default function AuthenticatedLayout({
           isSidebarOpen={isSidebarOpen}
           currentPageTitle={currentPageTitle || ""}
         />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-hidden">{children}</main>
       </div>
     </div>
   );

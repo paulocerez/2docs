@@ -24,15 +24,19 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
+  const isFormValid = checklist.every(Boolean);
 
   const handleSubmit = useCallback(
-    async (title: string, prompt: string) => {
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!isFormValid) return;
+
       setIsAiResponding(true);
       try {
         // create the chat
         const result = await userMessageMutation.mutateAsync({
-          title,
-          prompt,
+          title: chatTitle,
+          prompt: prompt,
         });
 
         // create the api links
@@ -59,6 +63,9 @@ function NewChatPageContent({ userId }: { userId: string }) {
       aiResponseMutation,
       router,
       links,
+      chatTitle,
+      prompt,
+      isFormValid,
     ]
   );
 
@@ -89,8 +96,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
     setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
   }, []);
 
-  const isFormValid = checklist.every(Boolean);
-
   if (!userId) return null;
 
   return (
@@ -99,7 +104,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
           <div className="mx-auto px-4 w-full max-w-4xl">
             <form
-              onSubmit={(e) => handleSubmit(chatTitle, prompt)}
+              onSubmit={handleSubmit}
               className="min-h-screen flex items-center justify-center"
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">

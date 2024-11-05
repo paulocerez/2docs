@@ -33,6 +33,7 @@ export default function Sidebar({
     enabled: !!queryClient.getQueryData(["currentChat"]),
   });
 
+
   return (
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 

@@ -1,4 +1,4 @@
-import { Message } from "@/types/types";
+import { Message } from "@/types/message";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useMessages(currentChatId: string | null) {
@@ -7,7 +7,7 @@ export function useMessages(currentChatId: string | null) {
   return useQuery<Message[]>({
     queryKey: ["messages", currentChatId],
     queryFn: async () => {
-      if (!currentChatId || currentChatId.startsWith("temp-")) {
+      if (!currentChatId) {
         return [];
       }
       const response = await fetch(`/api/chats/${currentChatId}/messages`);
@@ -21,7 +21,7 @@ export function useMessages(currentChatId: string | null) {
       }
       return data.filter((message): message is Message => message != null);
     },
-    enabled: !!currentChatId && !currentChatId.startsWith("temp-"),
+    enabled: !!currentChatId,
     initialData: () => {
       // Return the cached messages if available
       return currentChatId

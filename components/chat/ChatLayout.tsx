@@ -13,12 +13,14 @@ function ChatLayout({ userId, currentChatId }: ChatLayoutProps) {
 
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>
-      <Chat
-        userId={userId}
-        currentChatId={currentChatId}
-        chatTitle={chatTitle}
-        setChatTitle={setChatTitle}
-      />
+      <div className="h-full">
+        <Chat
+          userId={userId}
+          currentChatId={currentChatId}
+          chatTitle={chatTitle}
+          setChatTitle={setChatTitle}
+        />
+      </div>
     </AuthenticatedLayout>
   );
 }

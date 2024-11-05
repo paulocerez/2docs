@@ -36,15 +36,21 @@ export default function Chat({
   }, [messages]);
 
   const handleSubmit = useCallback(
-    async (title: string, prompt: string) => {
+    async (prompt: string) => {
+      if (!currentChatId) {
+        console.error("No current chat selected");
+        return;
+      }
       setIsAiResponding(true);
       try {
-        const result = await userMessageMutation.mutateAsync({ title, prompt });
-        router.replace(`/chat/${result.chatId}`);
+        await userMessageMutation.mutateAsync({
+          chatId: currentChatId,
+          prompt,
+        });
 
         await aiResponseMutation.mutateAsync({
-          chatId: result.chatId,
-          messages: [{ role: "user", content: prompt }],
+          chatId: currentChatId,
+          messages: [...(messages || []), { role: "user", content: prompt }],
         });
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
@@ -52,7 +58,7 @@ export default function Chat({
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, router]
+    [userMessageMutation, aiResponseMutation, currentChatId, messages]
   );
 
   if (isLoading)
@@ -68,9 +74,17 @@ export default function Chat({
       </div>
     );
 
+  if (!currentChatId) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>No chat selected. Please select or create a chat.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full bg-gray-50 pt-16">
-      <div className="flex-grow overflow-y-auto pt-4 pb-16">
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="flex-grow overflow-y-auto pt-20 pb-24">
         <div
           className={`mx-auto px-4 w-full ${
             messages && messages.length > 0 ? "max-w-2xl" : "max-w-4xl"
@@ -90,17 +104,15 @@ export default function Chat({
           </>
         </div>
       </div>
-      {messages && messages.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
-          <div className="max-w-2xl mx-auto px-4 w-full">
-            <Prompt
-              onSubmit={(prompt) => handleSubmit("", prompt)}
-              isAiResponding={isAiResponding}
-              onInputChange={() => {}}
-            />
-          </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
+        <div className="max-w-2xl mx-auto px-4 w-full">
+          <Prompt
+            onSubmit={handleSubmit}
+            isAiResponding={isAiResponding}
+            onInputChange={() => {}}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }

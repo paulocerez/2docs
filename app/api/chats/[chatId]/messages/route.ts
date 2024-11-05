@@ -1,11 +1,11 @@
-import { createMessage, getAllMessagesForChat } from "@/db/queries/message";
+import { createMessage, getAllMessagesForChat } from "@/db/postgres/queries/message";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { chatId: string } }
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
-  const chatId = params.chatId;
+	const { id: chatId } = await params
 
   if (!chatId) {
     return NextResponse.json({ error: "Chat Id is not provided" }, { status: 400 });
@@ -23,14 +23,13 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { chatId: string } }
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
-  const chatId = params.chatId;
+	const { id: chatId } = await params
   try {
 	  const data = await request.json();
-	  console.log(data)
 
-	  if (!chatId || !data.content || !data.role) {
+	  if (!chatId || !data.content ||!data.role) {
 		return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
 	  }
 		const result = await createMessage({ ...data, chatId });

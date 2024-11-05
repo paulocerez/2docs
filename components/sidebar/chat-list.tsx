@@ -5,9 +5,8 @@ import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
-import { SelectChat } from "@/db/schema/chats";
 import ChatTooltip from "../chat/chat-tooltip";
-
+import { SelectChat } from "@/db/postgres/schema/chats";
 interface ChatListProps {
   chats: SelectChat[] | undefined;
   isLoading: boolean;
@@ -53,7 +52,7 @@ export const ChatList = React.memo(function ChatList({
               className="w-full text-left truncate mr-2"
               onClick={() => setCurrentChatId(chat.id)}
             >
-              {chat.prompt}
+              {chat.title}
             </Link>
             <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button

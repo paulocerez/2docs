@@ -1,3 +1,4 @@
+import { SelectChat } from "@/db/postgres/schema/chats";
 import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -33,7 +34,6 @@ export function useAIResponseMutation() {
 
         for (const parsedLine of parsedLines) {
           latestMessage = parsedLine as Message;
-          // You can update UI here with each chunk if needed
         }
       }
 
@@ -43,6 +43,16 @@ export function useAIResponseMutation() {
       queryClient.setQueryData<Message[]>(
         ["messages", data.chatId],
         (oldMessages = []) => [...oldMessages, data.message]
+      );
+
+	  queryClient.setQueryData<SelectChat[]>(
+        ["chats"],
+        (oldChats = []) =>
+          oldChats.map((chat) =>
+            chat.id === data.chatId
+              ? { ...chat, lastActivityAt: new Date() }
+              : chat
+          )
       );
     },
   });

@@ -7,7 +7,7 @@ export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]>
 }
 export async function createChat(chatData: InsertChat) {
 	// destructuring the variable as returning () returns an array -> returns the first element/object of the array (that only has one element in total)
-	const [result] = await db.insert(chats).values({...chatData, lastActivityAt: new Date(),}).returning();
+	const [result] = await db.insert(chats).values(chatData).returning();
 	return result
   }
 
