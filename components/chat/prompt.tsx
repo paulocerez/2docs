@@ -44,6 +44,10 @@ export default function Prompt({
     }
   };
 
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputMessage(e.target.value);
+  };
+
   return (
     <div className="w-full">
       <form
@@ -55,8 +59,9 @@ export default function Prompt({
           placeholder="Insert a prompt to get started..."
           className="w-full text-sm p-4 resize-none focus:outline-none bg-transparent"
           rows={1}
-          onChange={(e) => setInputMessage(e.target.value)}
+          onChange={handleInput}
           onKeyDown={handleKeyDown}
+          style={{ overflow: "hidden" }}
         />
         <button
           type="submit"

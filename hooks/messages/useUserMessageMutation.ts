@@ -22,8 +22,6 @@ export function useUserMessageMutation(userId: string) {
 		  headers: { "Content-Type": "application/json" },
 		  body: JSON.stringify(body),
 		});
-
-		console.log(response)
   
 		if (!response.ok) {
 		  throw new Error(chatId ? "Failed to add message to chat" : "Failed to create new chat");
