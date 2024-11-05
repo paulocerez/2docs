@@ -6,7 +6,7 @@ import LoadingSpinner from "../../ui/loading-spinner";
 export interface PromptProps {
   onSubmit: (message: string) => void;
   isAiResponding: boolean;
-  onInputChange: (value: boolean) => void;
+  onInputChange: (newPrompt: string) => void;
 }
 
 export default function DefaultPrompt({
@@ -18,7 +18,7 @@ export default function DefaultPrompt({
 
   useEffect(() => {
     if (onInputChange) {
-      onInputChange(inputMessage.trim() !== "");
+      onInputChange(inputMessage);
     }
   }, [inputMessage, onInputChange]);
 

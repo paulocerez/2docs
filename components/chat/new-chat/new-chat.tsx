@@ -1,6 +1,6 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
@@ -35,8 +35,9 @@ function NewChatPageContent({ userId }: { userId: string }) {
       try {
         // create the chat
         const result = await userMessageMutation.mutateAsync({
-          title: chatTitle,
           prompt: prompt,
+          title: chatTitle,
+          userId: userId,
         });
 
         // create the api links
@@ -50,6 +51,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
           chatId: result.chatId,
           messages: [{ role: "user", content: prompt }],
         });
+        console.log(`/chat/${result.chatId}`);
         router.replace(`/chat/${result.chatId}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
@@ -66,12 +68,14 @@ function NewChatPageContent({ userId }: { userId: string }) {
       chatTitle,
       prompt,
       isFormValid,
+      userId,
     ]
   );
 
   const handlePromptChange = useCallback((newPrompt: string) => {
     setPrompt(newPrompt);
-    setChecklist((prev) => [prev[0], newPrompt.trim() !== "", prev[2]]);
+    const hasInput = newPrompt.trim() !== "";
+    setChecklist((prev) => [prev[0], hasInput, prev[2]]);
   }, []);
 
   const handleChatTitleChange = useCallback(
@@ -85,21 +89,18 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
   const handleLinksChange = useCallback((newLinks: string[]) => {
     setLinks(newLinks);
-    setChecklist((prev) => [prev[0], prev[1], newLinks.length >= 2]);
-  }, []);
-
-  const handlePromptInputChange = useCallback((hasInput: boolean) => {
-    setChecklist((prev) => [prev[0], hasInput, prev[2]]);
-  }, []);
-
-  const handleLinksInputChange = useCallback((hasValidLinks: boolean) => {
+    const hasValidLinks =
+      newLinks.filter((link) => link.trim() !== "").length >= 2;
     setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
   }, []);
 
   if (!userId) return null;
 
   return (
-    <AuthenticatedLayout userId={userId} currentPageTitle="Build a workflow">
+    <AuthenticatedLayout
+      userId={userId}
+      currentPageTitle={chatTitle || "Build a workflow"}
+    >
       <div className="flex flex-col h-full bg-gray-50 pt-16">
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
           <div className="mx-auto px-4 w-full max-w-4xl">
@@ -136,13 +137,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
                     <WorkflowRecommendations />
                     <div className="flex flex-col space-y-4">
                       <DefaultPrompt
-                        onSubmit={handlePromptChange}
+                        onSubmit={(value: string) => handlePromptChange(value)}
                         isAiResponding={isAiResponding}
-                        onInputChange={handlePromptInputChange}
+                        onInputChange={handlePromptChange}
                       />
                       <LinkInputs
-                        onSubmit={handleLinksChange}
-                        onInputChange={handleLinksInputChange}
+                        onSubmit={(value: string[]) => handleLinksChange(value)}
+                        onInputChange={(links: string[]) => setLinks(links)}
                       />
                     </div>
                   </div>

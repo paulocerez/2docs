@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 
 interface LinkInputsProps {
   onSubmit: (links: string[]) => void;
-  onInputChange: (hasValidLinks: boolean) => void;
+  onInputChange: (links: string[]) => void;
 }
 
 const LinkInputs: React.FC<LinkInputsProps> = React.memo(
@@ -16,7 +16,7 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
       (newLinks: string[]) => {
         setLinkInputs(newLinks);
         const validLinks = newLinks.filter((link) => link.trim() !== "");
-        onInputChange(validLinks.length >= 2);
+        onInputChange(newLinks);
         onSubmit(validLinks);
       },
       [onInputChange, onSubmit]
