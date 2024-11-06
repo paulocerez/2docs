@@ -7,20 +7,15 @@ export interface PromptProps {
   onSubmit: (message: string) => void;
   isAiResponding: boolean;
   onInputChange: (value: boolean) => void;
-  chatId: string;
-  userId: string;
 }
 
 export default function Prompt({
   onSubmit,
   isAiResponding,
   onInputChange,
-  userId,
-  chatId,
 }: PromptProps) {
   const [inputMessage, setInputMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const userMessageMutation = useUserMessageMutation(userId);
 
   useEffect(() => {
     if (onInputChange) {
@@ -35,17 +30,11 @@ export default function Prompt({
     }
   }, [inputMessage]);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputMessage.trim()) return;
-
-    try {
-      await userMessageMutation.mutateAsync({ chatId, prompt: inputMessage });
-      onSubmit(inputMessage);
-      setInputMessage("");
-    } catch (error) {
-      console.error("Error submitting prompt:", error);
-    }
+    onSubmit(inputMessage);
+    setInputMessage("");
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
