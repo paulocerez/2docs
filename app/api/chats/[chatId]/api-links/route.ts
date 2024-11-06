@@ -22,10 +22,7 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 			return NextResponse.json({ error: "Links must be a non-empty array" }, { status: 400 });
 		}
 
-		const result = data.links.map((link: string) => ({ chatId, apiLink: link }))
-		for (const link of result) {
-			await createChatApiLinks(link)
-		}
+		const result = await createChatApiLinks(chatId, data.links);
 		return NextResponse.json({ message: "API links created successfully" }, { status: 201 })
 	} catch(error) {
 		console.error("Error creating API links:", error);
