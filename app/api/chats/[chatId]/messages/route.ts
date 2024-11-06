@@ -28,7 +28,6 @@ export async function POST(
 	const { chatId } = await params;
 	try {
 		const { prompt } = await request.json();
-		console.log("data object", prompt);
 		if (!prompt) {
 		return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
 	  }

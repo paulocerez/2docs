@@ -75,7 +75,7 @@ function ChatContentInner({
 
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>
-      <div className="flex flex-col h-full bg-gray-50 pt-16">
+      <div className="flex flex-col h-full bg-gray-500 pt-16">
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
           <div className="mx-auto px-4 w-full max-w-2xl">
             <MessageList messages={messages} />

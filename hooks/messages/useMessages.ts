@@ -1,15 +1,12 @@
 import { Message } from "@/types/message";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useMessages(currentChatId: string | null) {
+export function useMessages(currentChatId: string) {
   const queryClient = useQueryClient();
 
   return useQuery<Message[]>({
     queryKey: ["messages", currentChatId],
     queryFn: async () => {
-      if (!currentChatId) {
-        return [];
-      }
       const response = await fetch(`/api/chats/${currentChatId}/messages`);
       if (!response.ok) {
         throw new Error("Failed to fetch messages");

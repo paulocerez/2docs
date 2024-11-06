@@ -37,13 +37,6 @@ export default function AuthenticatedLayout({
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   useHotkeys("s", () => toggleSidebar());
 
-  //   const enhancedChildren = React.Children.map(children, (child) => {
-  //     if (React.isValidElement(child) && child.type === ChatLayout) {
-  //       return React.cloneElement(child, {});
-  //     }
-  //     return child;
-  //   });
-
   return (
     <div className="flex h-screen dark:bg-gray-900 bg-gray-50">
       {isSidebarOpen && (

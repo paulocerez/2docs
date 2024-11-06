@@ -27,7 +27,8 @@ export function useUserMessageMutation(userId: string) {
 		}
   
 		const data = await response.json();
-		return { chatId: data.chatId || chatId, message: data.message };
+		console.log("data", data);
+		return { chatId: data.id, message: data.prompt };
 	  },
 	  onSuccess: (data, variables) => {
 		if (variables.chatId) {
