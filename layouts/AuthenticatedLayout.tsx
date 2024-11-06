@@ -25,7 +25,7 @@ export default function AuthenticatedLayout({
   currentPageTitle,
   children,
 }: AuthenticatedLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const { chats, isLoading, setCurrentChat } = useChats(userId, queryClient);
   const { data: currentChat } = useQuery<SelectChat | undefined>({
@@ -38,7 +38,7 @@ export default function AuthenticatedLayout({
   useHotkeys("s", () => toggleSidebar());
 
   return (
-    <div className="flex h-screen dark:bg-gray-900 bg-gray-50">
+    <div className="flex">
       {isSidebarOpen && (
         <Sidebar
           isSidebarOpen={isSidebarOpen}
@@ -58,7 +58,7 @@ export default function AuthenticatedLayout({
         <Header
           toggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
-          currentPageTitle={currentPageTitle || ""}
+          currentPageTitle={currentPageTitle}
         />
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>

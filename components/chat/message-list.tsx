@@ -69,7 +69,7 @@ export default function MessageList({ messages }: MessageListProps) {
         )
       ) : (
         <div className="flex justify-center items-center h-32">
-          <p className="text-gray-500 text-sm">No messages yet.</p>
+          <p className="text-gray-500 text-sm">Looking for messages...</p>
         </div>
       )}
     </div>

@@ -48,7 +48,12 @@ export default function Header({
       <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
         {currentPageTitle || "Building a new workflow"}
       </h1>
-      <div className="w-8"></div>
+      <div className="w-auto rounded-lg shadow-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+        Notion
+      </div>
+      <div className="w-auto rounded-lg shadow-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+        Google Docs
+      </div>
     </div>
   );
 }

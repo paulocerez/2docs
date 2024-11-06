@@ -49,7 +49,7 @@ function ChatContentInner({
         });
         await aiResponseMutation.mutateAsync({
           chatId: currentChatId,
-          messages: [...(messages || []), { role: "user", message: prompt }],
+          messages: [...(messages || []), { role: "user", content: prompt }],
         });
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
@@ -75,8 +75,8 @@ function ChatContentInner({
 
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>
-      <div className="flex flex-col h-full bg-gray-500 pt-16">
-        <div className="flex-grow overflow-y-auto pt-4 pb-16">
+      <div className="flex flex-col h-full pt-16">
+        <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl">
             <MessageList messages={messages} />
             {isAiResponding && (
@@ -90,7 +90,7 @@ function ChatContentInner({
             <div ref={messagesEndRef} />
           </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4 z-10">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt
               chatId={currentChatId}
