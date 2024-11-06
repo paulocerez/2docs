@@ -8,8 +8,6 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 
 	try {
 		const { messages } = await request.json() as { messages: ChatCompletionMessageParam[] };
-
-		console.log("messages", messages)
 		if (!Array.isArray(messages) || messages.length === 0) {
 			return NextResponse.json({ error: "Invalid or empty messages array" }, { status: 400 });
 		  }
@@ -31,7 +29,7 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 		const result = await createMessage({
 			chatId: chatId,
 			role: "assistant",
-			message: aiResponse
+			content: aiResponse
 		});
 		return NextResponse.json(result, { status: 200})
 	} catch(error) {

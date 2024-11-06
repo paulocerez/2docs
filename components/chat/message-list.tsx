@@ -33,7 +33,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
 
 export default function MessageList({ messages }: MessageListProps) {
   return (
-    <div className="flex flex-col space-y-10 w-full h-full bg-red-500">
+    <div className="flex flex-col space-y-10 w-full h-full">
       {Array.isArray(messages) && messages.length > 0 ? (
         messages.map(
           (message: Partial<Message> | null, index) =>
@@ -61,7 +61,7 @@ export default function MessageList({ messages }: MessageListProps) {
                       message.role === "user" ? "text-black" : "text-gray-600"
                     }`}
                   >
-                    {message.message || "No content"}
+                    {message.content || "No content"}
                   </Markdown>
                 </div>
               </div>

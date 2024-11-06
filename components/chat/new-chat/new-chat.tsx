@@ -48,7 +48,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
         // generate ai response in the background
         aiResponseMutation.mutateAsync({
           chatId: result.chatId,
-          messages: [{ role: "user", message: prompt }],
+          messages: [{ role: "user", content: prompt }],
         });
         router.push(`/chat/${result.chatId}`);
       } catch (error) {

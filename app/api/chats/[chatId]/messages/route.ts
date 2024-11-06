@@ -31,7 +31,7 @@ export async function POST(
 		if (!prompt) {
 		return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
 	  }
-	  const result = await createMessage({chatId, message: prompt, role: "user" });
+	  const result = await createMessage({chatId, content: prompt, role: "user" });
 	  return NextResponse.json(result, { status: 201 });
 	} catch (error) {
 	  console.error("Error creating message:", error);

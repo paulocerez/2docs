@@ -22,7 +22,7 @@ export const messages = pgTable("message", {
     .notNull()
     .references(() => chats.id, { onDelete: "cascade" }),
   role: text("role").notNull(),
-  message: text("message").notNull(),
+  content: text("message").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 

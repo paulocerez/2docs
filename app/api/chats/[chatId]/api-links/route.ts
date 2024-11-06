@@ -23,7 +23,7 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 		}
 
 		const result = await createChatApiLinks(chatId, data.links);
-		return NextResponse.json({ message: "API links created successfully" }, { status: 201 })
+		return NextResponse.json(result, { status: 201 })
 	} catch(error) {
 		console.error("Error creating API links:", error);
     	return NextResponse.json({ error: "Failed to create API links" }, { status: 500 });

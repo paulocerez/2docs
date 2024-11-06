@@ -13,13 +13,12 @@ const openai = new OpenAI({
 
 
 export async function generateChatCompletion(messages: ChatCompletionMessageParam[]) {
-
-const validMessages = messages.filter(msg => msg.content != null);
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: validMessages,
-	stream: false,
-  });
+	const validMessages = messages.filter(msg => msg.content != null);
+	const completion = await openai.chat.completions.create({
+		model: "gpt-4o-mini",
+		messages: validMessages,
+		stream: false,
+	});
   
-  return completion.choices[0]?.message?.content || '';
+  	return completion.choices[0]?.message?.content || '';
 }
