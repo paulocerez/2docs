@@ -11,7 +11,6 @@ export function useMessages(currentChatId: string | null) {
         return [];
       }
       const response = await fetch(`/api/chats/${currentChatId}/messages`);
-	  console.log(response)
       if (!response.ok) {
         throw new Error("Failed to fetch messages");
       }

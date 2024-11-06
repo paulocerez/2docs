@@ -19,7 +19,6 @@ export function useChatApiLinksMutation() {
 			if (!response.ok) {
 				throw new Error("Failed to create API links");
 			}
-
 			return response.json();
 		},
 		onSuccess: (data, { chatId }) => {

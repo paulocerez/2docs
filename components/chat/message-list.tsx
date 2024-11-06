@@ -61,7 +61,7 @@ export default function MessageList({ messages }: MessageListProps) {
                       message.role === "user" ? "text-black" : "text-gray-600"
                     }`}
                   >
-                    {message.content || "No content"}
+                    {message.message || "No content"}
                   </Markdown>
                 </div>
               </div>

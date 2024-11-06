@@ -1,5 +1,4 @@
 "use client";
-import Chat from "./Chat";
 import { useState } from "react";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 

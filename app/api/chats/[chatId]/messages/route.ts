@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { chatId: string } }
 ): Promise<NextResponse> {
-	const { id: chatId } = await params
+	const { chatId } = await params
 
   if (!chatId) {
     return NextResponse.json({ error: "Chat Id is not provided" }, { status: 400 });
@@ -22,21 +22,20 @@ export async function GET(
 }
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-	const { id: chatId } = await params
-  try {
-	  const data = await request.json();
-
-	  if (!chatId || !data.content ||!data.role) {
-		return NextResponse.json({ error: "chatId, content, and role are required" }, { status: 400 });
+	request: NextRequest,
+	{ params }: { params: { chatId: string } }
+  ): Promise<NextResponse> {
+	const { chatId } = await params;
+	try {
+		const { prompt } = await request.json();
+		console.log("data object", prompt);
+		if (!prompt) {
+		return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
 	  }
-		const result = await createMessage({ ...data, chatId });
-		return NextResponse.json(result, { status: 201 });
-
-  } catch (error) {
-	console.error("Error creating message:", error);
-    return NextResponse.json({ error: "Failed to create message" }, { status: 500 });
-}
-}
+	  const result = await createMessage({chatId, message: prompt, role: "user" });
+	  return NextResponse.json(result, { status: 201 });
+	} catch (error) {
+	  console.error("Error creating message:", error);
+	  return NextResponse.json({ error: "Failed to create message" }, { status: 500 });
+	}
+  }

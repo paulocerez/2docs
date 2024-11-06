@@ -44,12 +44,12 @@ function ChatContentInner({
       setIsAiResponding(true);
       try {
         await userMessageMutation.mutateAsync({
-          title: chatTitle,
+          chatId: currentChatId,
           prompt,
         });
         await aiResponseMutation.mutateAsync({
           chatId: currentChatId,
-          messages: [{ role: "user", content: prompt }],
+          messages: [...(messages || []), { role: "user", message: prompt }],
         });
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
@@ -57,7 +57,7 @@ function ChatContentInner({
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, currentChatId, chatTitle]
+    [userMessageMutation, aiResponseMutation, currentChatId, messages]
   );
 
   if (isLoading)
@@ -93,6 +93,8 @@ function ChatContentInner({
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt
+              chatId={currentChatId}
+              userId={userId}
               onSubmit={handleSubmit}
               isAiResponding={isAiResponding}
               onInputChange={() => {}}

@@ -6,7 +6,7 @@ export function useAIResponseMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ chatId, messages }: { chatId: string, messages: Array<{ role: string; content: string }> }) => {
+    mutationFn: async ({ chatId, messages }: { chatId: string, messages: Array<{ role: string; message: string }> }) => {
       const response = await fetch(`/api/chats/${chatId}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -17,27 +17,29 @@ export function useAIResponseMutation() {
         throw new Error("Failed to generate AI response");
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
+	  const data = await response.json();
+      return { chatId, message: data.message };
 
-      let latestMessage: Message | null = null;
+    //   const reader = response.body?.getReader();
+    //   const decoder = new TextDecoder();
+    //   let latestMessage: Message | null = null;
 
-      while (true) {
-        const { done, value } = await reader!.read();
-        if (done) break;
+    //   while (true) {
+    //     const { done, value } = await reader!.read();
+    //     if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        const parsedLines = lines
-          .filter(line => line.startsWith('data: '))
-          .map(line => JSON.parse(line.slice(5)));
+    //     const chunk = decoder.decode(value);
+    //     const lines = chunk.split('\n');
+    //     const parsedLines = lines
+    //       .filter(line => line.startsWith('data: '))
+    //       .map(line => JSON.parse(line.slice(5)));
 
-        for (const parsedLine of parsedLines) {
-          latestMessage = parsedLine as Message;
-        }
-      }
+    //     for (const parsedLine of parsedLines) {
+    //       latestMessage = parsedLine as Message;
+    //     }
+    //   }
 
-      return { chatId, message: latestMessage! };
+    //   return { chatId, message: latestMessage! };
     },
     onSuccess: (data) => {
       queryClient.setQueryData<Message[]>(

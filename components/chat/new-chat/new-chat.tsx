@@ -37,7 +37,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
         const result = await userMessageMutation.mutateAsync({
           prompt: prompt,
           title: chatTitle,
-          userId: userId,
         });
 
         // create the api links
@@ -46,13 +45,12 @@ function NewChatPageContent({ userId }: { userId: string }) {
           links,
         });
 
-        // generate the ai response
-        await aiResponseMutation.mutateAsync({
+        // generate ai response in the background
+        aiResponseMutation.mutateAsync({
           chatId: result.chatId,
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", message: prompt }],
         });
-        console.log(`/chat/${result.chatId}`);
-        router.replace(`/chat/${result.chatId}`);
+        router.push(`/chat/${result.chatId}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
       } finally {
@@ -68,7 +66,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
       chatTitle,
       prompt,
       isFormValid,
-      userId,
     ]
   );
 

@@ -1,11 +1,13 @@
-import { createChatApiLinks } from "@/db/queries/apiLinks"
+import { createChatApiLinks, getChatApiLinks } from "@/db/postgres/queries/apiLinks"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST (request: NextRequest, { params}: { params: { chatId: string}}): Promise<NextResponse> {
-	const chatId = params.chatId;
+	const { chatId } = await params;
+	console.log("chatId", chatId)
 	
 	try {
 		const data = await request.json()
+		console.log("data", data)
 		const result = await createChatApiLinks({
 			chatId: chatId,
 			apiLink: data.apiLink
@@ -16,4 +18,15 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
     	return NextResponse.json({ error: "Failed to create API links" }, { status: 500 });
 	}
 
+}
+
+export async function GET (request: NextRequest, { params}: { params: { id: string}}): Promise<NextResponse> {
+	const { id: chatId } = await params;
+	try {
+		const result = await getChatApiLinks(chatId)
+		return NextResponse.json(result, { status: 200 })
+	} catch(error) {
+		console.error("Error getting API links:", error);
+    	return NextResponse.json({ error: "Failed to get API links" }, { status: 500 });
+	}
 }

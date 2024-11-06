@@ -1,21 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
-import LoadingSpinner from "../ui/loading-spinner";
+import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 
 export interface PromptProps {
   onSubmit: (message: string) => void;
   isAiResponding: boolean;
   onInputChange: (value: boolean) => void;
+  chatId: string;
+  userId: string;
 }
 
 export default function Prompt({
   onSubmit,
   isAiResponding,
   onInputChange,
-}: PromptProps & { className?: string }) {
+  userId,
+  chatId,
+}: PromptProps) {
   const [inputMessage, setInputMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const userMessageMutation = useUserMessageMutation(userId);
 
   useEffect(() => {
     if (onInputChange) {
@@ -30,11 +35,17 @@ export default function Prompt({
     }
   }, [inputMessage]);
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputMessage.trim()) return;
-    onSubmit(inputMessage);
-    setInputMessage("");
+
+    try {
+      await userMessageMutation.mutateAsync({ chatId, prompt: inputMessage });
+      onSubmit(inputMessage);
+      setInputMessage("");
+    } catch (error) {
+      console.error("Error submitting prompt:", error);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -55,6 +66,7 @@ export default function Prompt({
         onSubmit={handleSubmit}
       >
         <textarea
+          ref={textareaRef}
           value={inputMessage}
           placeholder="Insert a prompt to get started..."
           className="w-full text-sm p-4 resize-none focus:outline-none bg-transparent"
