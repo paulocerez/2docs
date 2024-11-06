@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useRouter } from "next/navigation";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Message } from "@/types/message";
 
 const queryClient = new QueryClient();
 
@@ -27,9 +28,13 @@ function ChatContentInner({
 }: ChatContentProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
   const [chatTitle, setChatTitle] = useState(currentChatTitle);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { data: messages, isLoading, error } = useMessages(currentChatId);
+  const {
+    data: messages,
+    isLoading: isMessagesLoading,
+    error: messagesError,
+  } = useMessages(currentChatId);
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
 
@@ -39,37 +44,89 @@ function ChatContentInner({
 
   const handleSubmit = useCallback(
     async (prompt: string) => {
+      setError(null);
       setIsAiResponding(true);
+
+      // Optimistic update
+      const optimisticMessage: Message = {
+        id: `temp-${Date.now()}`,
+        chatId: currentChatId,
+        role: "user",
+        content: prompt,
+        timestamp: new Date(),
+      };
+
+      queryClient.setQueryData<Message[]>(
+        ["messages", currentChatId],
+        (old) => [...(old || []), optimisticMessage]
+      );
+
+      const retry = async (fn: () => Promise<any>, maxRetries = 3) => {
+        for (let i = 0; i < maxRetries; i++) {
+          try {
+            return await fn();
+          } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * Math.pow(2, i))
+            );
+          }
+        }
+      };
+
       try {
-        await userMessageMutation.mutateAsync({
-          chatId: currentChatId,
-          prompt,
-        });
-        await aiResponseMutation.mutateAsync({
-          chatId: currentChatId,
-          messages: [...(messages || []), { role: "user", content: prompt }],
-        });
+        await retry(() =>
+          userMessageMutation.mutateAsync({
+            chatId: currentChatId,
+            prompt,
+          })
+        );
+
+        await retry(() =>
+          aiResponseMutation.mutateAsync({
+            chatId: currentChatId,
+            messages: [...(messages || []), { role: "user", content: prompt }],
+          })
+        );
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
+        setError(
+          "Failed to send message or generate response. Please try again."
+        );
+
+        // Remove optimistic update on error
+        queryClient.setQueryData<Message[]>(
+          ["messages", currentChatId],
+          (old) => old?.filter((msg) => msg.id !== optimisticMessage.id) || []
+        );
       } finally {
         setIsAiResponding(false);
       }
     },
-    [userMessageMutation, aiResponseMutation, currentChatId, messages]
+    [
+      userMessageMutation,
+      aiResponseMutation,
+      currentChatId,
+      messages,
+      queryClient,
+    ]
   );
 
-  if (isLoading)
+  if (isMessagesLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <MessageLoadingScreen />
       </div>
     );
-  if (error)
+  }
+
+  if (messagesError) {
     return (
       <div className="text-red-500 p-4">
-        Error loading messages: {error.toString()}
+        Error loading messages: {messagesError.toString()}
       </div>
     );
+  }
 
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>

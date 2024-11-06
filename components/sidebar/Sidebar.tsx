@@ -16,8 +16,6 @@ interface SidebarProps {
   isLoading: boolean;
 }
 
-const queryClient = new QueryClient();
-
 export default function Sidebar({
   userId,
   toggleSidebar,
@@ -27,13 +25,6 @@ export default function Sidebar({
   chats,
   isLoading,
 }: SidebarProps) {
-  const { data: currentChat } = useQuery<SelectChat | undefined>({
-    queryKey: ["currentChat"],
-    queryFn: () => queryClient.getQueryData(["currentChat"]),
-    enabled: !!queryClient.getQueryData(["currentChat"]),
-  });
-
-
   return (
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 

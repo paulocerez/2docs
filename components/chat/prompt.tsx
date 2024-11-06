@@ -33,6 +33,7 @@ export default function Prompt({
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputMessage.trim()) return;
+
     onSubmit(inputMessage);
     setInputMessage("");
   };
