@@ -1,6 +1,6 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, use, useCallback, useState } from "react";
+import { FormEvent, use, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
@@ -28,6 +28,12 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
+
+  useEffect(() => {
+    const allLinksValid =
+      links.length > 0 && links.every((link) => isValidUrl(link));
+    setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
+  }, [links]);
 
   const handleSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
@@ -99,11 +105,19 @@ function NewChatPageContent({ userId }: { userId: string }) {
     []
   );
 
+  function isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   const handleLinksChange = useCallback((newLinks: string[]) => {
     setLinks(newLinks);
-    const hasValidLinks =
-      newLinks.filter((link) => link.trim() !== "").length >= 2;
-    setChecklist((prev) => [prev[0], prev[1], hasValidLinks]);
+    const allLinksValid = newLinks.every((link) => isValidUrl(link));
+    setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, []);
 
   if (!userId) return null;

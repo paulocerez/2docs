@@ -55,6 +55,15 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
       }
     };
 
+    const isValidUrl = (url: string) => {
+      try {
+        new URL(url);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
     return (
       <div className="flex flex-col space-y-4">
         <div className="flex flex-wrap items-center gap-4">
@@ -82,6 +91,13 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
                 ) : (
                   <span className="text-xs font-medium">API {index + 1}</span>
                 )}
+                <div
+                  className={`rounded-full w-1 h-1 ${
+                    isValidUrl(linkInputs[index])
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                  }`}
+                ></div>
               </button>
             </div>
           ))}
@@ -92,7 +108,9 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
           >
             <Plus className="w-4 h-4 text-gray-400" />
           </button>
-          <p className="text-xs text-gray-400">Insert at least two links</p>
+          {activeInput !== null && !isValidUrl(linkInputs[activeInput]) && (
+            <span className="text-red-500 text-xs mt-1 block">Invalid URL</span>
+          )}
         </div>
       </div>
     );
@@ -102,3 +120,12 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
 LinkInputs.displayName = "LinkInputs";
 
 export default LinkInputs;
+
+export const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
