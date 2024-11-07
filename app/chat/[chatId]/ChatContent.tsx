@@ -78,6 +78,7 @@ function ChatContentInner({
         await retry(() =>
           userMessageMutation.mutateAsync({
             chatId: currentChatId,
+            title: chatTitle,
             prompt,
           })
         );

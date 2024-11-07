@@ -14,7 +14,7 @@ export async function GET (request: NextRequest, { params }: { params: { chatId:
 
 export async function POST (request: NextRequest, { params}: { params: { chatId: string}}): Promise<NextResponse> {
 	const { chatId } = await params;
-	
+
 	try {
 		const data = await request.json()
 

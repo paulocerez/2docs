@@ -1,14 +1,20 @@
 import { db } from "../db";
 import { desc, eq } from "drizzle-orm";
-import { chats, InsertChat, SelectChat } from "../schema/chats";
+import { chats, InsertChat, messages, SelectChat } from "../schema/chats";
 
 export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
   return await db.select().from(chats).where(eq(chats.userId, userId)).orderBy(desc(chats.lastActivityAt));
 }
-export async function createChat(chatData: InsertChat) {
+export async function createChat(chatData: InsertChat, initialPrompt: string) {
 	// destructuring the variable as returning () returns an array -> returns the first element/object of the array (that only has one element in total)
-	const [result] = await db.insert(chats).values(chatData).returning();
-	return result
+	const [chat] = await db.insert(chats).values(chatData).returning();
+	const [message] = await db.insert(messages).values({
+		chatId: chat.id,
+		content: initialPrompt,
+		role: 'user'
+	}).returning();
+	const result = { chat, message };
+	return result;
   }
 
 export async function getChatById(chatId: string): Promise<SelectChat | null> {

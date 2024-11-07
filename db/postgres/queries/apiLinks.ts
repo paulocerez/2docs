@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 
 export async function createChatApiLinks(chatId: string, links: string[]) {
 	const values = links.map(link => ({ chatId, apiLink: link }))
-	console.log("values", values);
 	return await db.insert(chatApiLinks).values(values).returning();
 }
 

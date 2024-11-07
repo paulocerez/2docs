@@ -38,37 +38,23 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
       try {
         // create the chat and add user message
-        const result = await userMessageMutation.mutateAsync({
+        const chatResult = await userMessageMutation.mutateAsync({
           prompt: prompt,
           title: chatTitle,
         });
 
-        console.log("result", result);
-
         // create the api links
         await chatApiLinksMutation.mutateAsync({
-          chatId: result.id,
+          chatId: chatResult.chat.id,
           links,
         });
 
-        queryClient.setQueryData(
-          ["messages", result.id],
-          [
-            {
-              chatId: result.id,
-              content: prompt,
-              role: "user",
-              timestamp: new Date(),
-            },
-          ]
-        );
-
-        router.push(`/chat/${result.id}`);
+        router.push(`/chat/${chatResult.chat.id}`);
 
         // generate ai response in the background
         aiResponseMutation.mutate(
           {
-            chatId: result.id,
+            chatId: chatResult.chat.id,
             messages: [{ role: "user", content: prompt }],
           },
           {

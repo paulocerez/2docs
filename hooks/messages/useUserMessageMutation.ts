@@ -51,11 +51,11 @@ export function useUserMessageMutation(userId: string) {
 		  // Add new chat
 		  const newChat: SelectChat = {
 			title: variables.title!,
-			id: data.chatId,
-			prompt: data.content,
+			id: data.chat.id,
+			prompt: data.message.content,
 			userId: userId,
-			createdAt: new Date(),
-			lastActivityAt: new Date()
+			createdAt: new Date(data.chat.createdAt),
+			lastActivityAt: new Date(data.chat.lastActivityAt)
 		  };
   
 		  queryClient.setQueryData<SelectChat[]>(
@@ -64,11 +64,11 @@ export function useUserMessageMutation(userId: string) {
 		  );
   
 		  queryClient.setQueryData<Message[]>(
-			["messages", data.chatId],
-			[data]
+			["messages", data.chat.id],
+			[data.message]
 		  );
   
-		  queryClient.setQueryData(["currentChatId"], data.chatId);
+		  queryClient.setQueryData(["currentChatId"], data.chat.id);
 		}
 	  },
 	});

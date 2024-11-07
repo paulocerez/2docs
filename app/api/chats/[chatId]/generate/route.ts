@@ -8,12 +8,11 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 
 	try {
 		const { messages } = await request.json() as { messages: ChatCompletionMessageParam[] };
-		console.log("messages", messages);
 		if (!Array.isArray(messages) || messages.length === 0) {
 			return NextResponse.json({ error: "Invalid or empty messages array" }, { status: 400 });
-		  }
+		}
 
-		  const validMessages = messages.filter(msg => 
+		const validMessages = messages.filter(msg => 
 			msg && typeof msg.role === 'string' && typeof msg.content === 'string'
 		  );
 
