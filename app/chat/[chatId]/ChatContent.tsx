@@ -110,6 +110,7 @@ function ChatContentInner({
       currentChatId,
       messages,
       queryClient,
+      chatTitle,
     ]
   );
 

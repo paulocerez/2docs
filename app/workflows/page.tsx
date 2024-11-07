@@ -1,4 +1,6 @@
+import { auth } from "@/auth";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const workflows = [
@@ -17,7 +19,14 @@ const workflows = [
   },
 ];
 
-export default function WorkflowsPage(userId: string) {
+export default async function WorkflowsPage() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/api/auth/signin?callbackUrl=/workflows");
+  }
+
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle="Your Workflows">
       <div className="flex flex-col items-center justify-center h-full p-8">
