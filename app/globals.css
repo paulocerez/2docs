@@ -81,6 +81,10 @@
   }
 }
 
+.markdown-content p {
+  margin-bottom: 2em;
+}
+
 .markdown {
   overflow-wrap: break-word;
   word-wrap: break-word;

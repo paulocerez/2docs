@@ -31,6 +31,12 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   );
 };
 
+const insertLineBreaksBeforeBold = (content: string): string => {
+  // This regex looks for bold markdown that's not at the start of a line
+  const boldRegex = /([^\n])\*\*(.*?)\*\*/g;
+  return content.replace(boldRegex, (match, p1, p2) => `${p1}\n\n**${p2}**`);
+};
+
 export default function MessageList({ messages }: MessageListProps) {
   return (
     <div className="flex flex-col space-y-10 w-full h-full">
@@ -61,7 +67,9 @@ export default function MessageList({ messages }: MessageListProps) {
                       message.role === "user" ? "text-black" : "text-gray-600"
                     }`}
                   >
-                    {message.content || "No content"}
+                    {insertLineBreaksBeforeBold(
+                      message.content || "No content"
+                    )}
                   </Markdown>
                 </div>
               </div>
