@@ -1,6 +1,6 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, use, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
@@ -8,7 +8,11 @@ import LinkInputs from "@/components/chat/new-chat/link-inputs";
 import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
 import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 
 const queryClient = new QueryClient();
@@ -20,11 +24,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const isFormValid = checklist.every(Boolean);
 
+  // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
-  const isFormValid = checklist.every(Boolean);
 
   const handleSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
@@ -32,12 +38,18 @@ function NewChatPageContent({ userId }: { userId: string }) {
       if (!isFormValid) return;
 
       setIsAiResponding(true);
+      setError(null);
+
       try {
-        // create the chat
+        // create the chat and add user message
         const result = await userMessageMutation.mutateAsync({
           prompt: prompt,
           title: chatTitle,
         });
+
+        if (!result || !result.id) {
+          throw new Error("Failed to create chat");
+        }
 
         // create the api links
         await chatApiLinksMutation.mutateAsync({
@@ -46,13 +58,22 @@ function NewChatPageContent({ userId }: { userId: string }) {
         });
 
         // generate ai response in the background
-        aiResponseMutation.mutateAsync({
-          chatId: result.chatId,
-          messages: [{ role: "user", content: prompt }],
-        });
+        aiResponseMutation.mutate(
+          {
+            chatId: result.chatId,
+            messages: [{ role: "user", content: prompt }],
+          },
+          {
+            onError: (error) => {
+              console.error("Failed to generate AI response:", error);
+              setError("Failed to generate AI response");
+            },
+          }
+        );
         router.push(`/chat/${result.chatId}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
+        setError("Failed to create chat. Please try again.");
       } finally {
         setIsAiResponding(false);
       }
@@ -107,7 +128,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">
                 <div className="flex flex-col items-center space-y-8 text-center">
-                  <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
+                  <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">
                     What can I help you build?
                   </h1>
                   <p className="text-gray-400 text-sm max-w-xl leading-relaxed">

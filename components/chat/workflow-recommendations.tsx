@@ -12,7 +12,7 @@ export default function WorkflowRecommendations() {
         </button>
       </div>
       <div className="flex flex-row items-center gap-2 justify-end">
-        <button className="text-xs underline flex flex-row items-center gap-2">
+        <button className="text-xs underline flex flex-row items-center gap-2 max-w-64 truncate">
           Open stored workflows <MdOutlineOpenInNew className="w-3 h-3" />
         </button>
       </div>

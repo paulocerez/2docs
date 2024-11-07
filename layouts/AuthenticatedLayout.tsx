@@ -27,7 +27,7 @@ export default function AuthenticatedLayout({
 }: AuthenticatedLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const { chats, isLoading, setCurrentChat } = useChats(userId, queryClient);
+  const { chats, isLoading, setCurrentChat } = useChats(userId);
   const { data: currentChat } = useQuery<SelectChat | undefined>({
     queryKey: ["currentChat"],
     queryFn: () => queryClient.getQueryData(["currentChat"]),

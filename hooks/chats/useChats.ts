@@ -1,9 +1,9 @@
 import { SelectChat } from "@/db/postgres/schema/chats";
-import { useQuery, QueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 
-export function useChats(userId: string, queryClient: QueryClient) {
-
+export function useChats(userId: string) {
+	const queryClient = useQueryClient();
   const { data: chats, isLoading } = useQuery<SelectChat[]>({
     queryKey: ["chats", userId],
     queryFn: async () => {

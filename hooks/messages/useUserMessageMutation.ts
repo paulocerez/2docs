@@ -14,7 +14,7 @@ export function useUserMessageMutation(userId: string) {
 	return useMutation({
 	  mutationFn: async ({ chatId, title, prompt }: UserMessageMutationData) => {
 		let url = chatId ? `/api/chats/${chatId}/messages` : '/api/chats';
-		let body = chatId ? { userId, prompt } : { userId, title, prompt };
+		let body = chatId ? { prompt } : { userId, title, prompt };
   
 		const response = await fetch(url, {
 		  method: "POST",
@@ -27,12 +27,11 @@ export function useUserMessageMutation(userId: string) {
 		}
   
 		const data = await response.json();
-		console.log("data", data);
-		return { chatId: data.id, message: data.prompt };
+		return data;	
 	  },
 	  onSuccess: (data, variables) => {
 		if (variables.chatId) {
-		  // Update existing chat
+		  // Add new message to chat
 		  queryClient.setQueryData<Message[]>(
 			["messages", data.chatId],
 			(oldMessages = []) => [...oldMessages, data.message]
@@ -43,7 +42,7 @@ export function useUserMessageMutation(userId: string) {
 			["chats", userId],
 			(oldChats = []) =>
 			  oldChats.map((chat) =>
-				chat.id === data.chatId
+				chat.id === variables.chatId
 				  ? { ...chat, lastActivityAt: new Date() }
 				  : chat
 			  )
@@ -53,7 +52,7 @@ export function useUserMessageMutation(userId: string) {
 		  const newChat: SelectChat = {
 			title: variables.title!,
 			id: data.chatId,
-			prompt: data.message,
+			prompt: data.content,
 			userId: userId,
 			createdAt: new Date(),
 			lastActivityAt: new Date()
@@ -66,7 +65,7 @@ export function useUserMessageMutation(userId: string) {
   
 		  queryClient.setQueryData<Message[]>(
 			["messages", data.chatId],
-			[data.message]
+			[data]
 		  );
   
 		  queryClient.setQueryData(["currentChatId"], data.chatId);
