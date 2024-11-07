@@ -10,6 +10,7 @@ import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
 import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
+import SubmitButton from "./submit";
 
 const queryClient = new QueryClient();
 
@@ -168,13 +169,11 @@ function NewChatPageContent({ userId }: { userId: string }) {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    disabled={!isFormValid || isAiResponding}
-                    className="text-sm py-2 px-4 text-white bg-gray-500 hover:bg-gray-400 transition-all duration-200 border border-gray-300 rounded-md disabled:bg-gray-300"
-                  >
-                    Create Workflow
-                  </button>
+                  <SubmitButton
+                    isFormValid={isFormValid}
+                    isAiResponding={isAiResponding}
+                    onClick={() => handleSubmit}
+                  />
                 </div>
               </div>
             </form>
