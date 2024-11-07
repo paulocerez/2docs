@@ -65,6 +65,8 @@ export default function MessageList({ messages }: MessageListProps) {
                     }}
                     className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
                       message.role === "user" ? "text-black" : "text-gray-600"
+                    } ${
+                      message.role === "assistant" ? "assistant-message" : ""
                     }`}
                   >
                     {insertLineBreaksBeforeBold(
