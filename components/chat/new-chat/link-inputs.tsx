@@ -55,15 +55,6 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
       }
     };
 
-    const isValidUrl = (url: string) => {
-      try {
-        new URL(url);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    };
-
     return (
       <div className="flex flex-col space-y-4">
         <div className="flex flex-wrap items-center gap-4">

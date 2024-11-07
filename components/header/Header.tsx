@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiSidebar } from "react-icons/fi";
+import { IoRocketOutline } from "react-icons/io5";
 import Hotkey from "../ui/hotkey";
 
 interface HeaderProps {
@@ -16,44 +17,50 @@ export default function Header({
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-row items-center p-3 w-full justify-start space-x-4 fixed backdrop-blur-lg bg-gray-50/50 dark:bg-black/50 lg:bg-transparent lg:backdrop-blur-none border-b border-gray-100 dark:lg:border-gray-700 lg:border-none">
-      <div className="flex items-center relative">
-        {!isSidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            onMouseEnter={() => setShowSidebarTooltip(true)}
-            onMouseLeave={() => setShowSidebarTooltip(false)}
-            className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
-            aria-label="Toggle Sidebar"
-          >
-            <FiSidebar className="w-4 h-4" />
-            <div
-              className={`absolute left-0 top-full mt-2 z-50 ${
-                showSidebarTooltip
-                  ? "opacity-100 visible"
-                  : "opacity-0 invisible"
-              } transition-all duration-200 ease-in-out transform ${
-                showSidebarTooltip ? "translate-y-0" : "-translate-y-1"
-              }`}
+    <div className="flex flex-row items-center p-3 w-full justify-between fixed backdrop-blur-lg bg-gray-50/50 dark:bg-black/50 lg:bg-transparent lg:backdrop-blur-none border-b border-gray-100 dark:lg:border-gray-700 lg:border-none">
+      <div className="flex flex-row items-center space-x-4">
+        <div className="flex items-center relative">
+          {!isSidebarOpen && (
+            <button
+              onClick={toggleSidebar}
+              onMouseEnter={() => setShowSidebarTooltip(true)}
+              onMouseLeave={() => setShowSidebarTooltip(false)}
+              className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+              aria-label="Toggle Sidebar"
             >
-              <div className="flex flex-row items-center justify-between space-x-2 p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border dark:border-gray-600 shadow-sm text-xs rounded whitespace-nowrap">
-                <p>Toggle Sidebar</p>
-                <Hotkey letter="s" />
+              <FiSidebar className="w-4 h-4" />
+              <div
+                className={`absolute left-0 top-full mt-2 z-50 ${
+                  showSidebarTooltip
+                    ? "opacity-100 visible"
+                    : "opacity-0 invisible"
+                } transition-all duration-200 ease-in-out transform ${
+                  showSidebarTooltip ? "translate-y-0" : "-translate-y-1"
+                }`}
+              >
+                <div className="flex flex-row items-center justify-between space-x-2 p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border dark:border-gray-600 shadow-sm text-xs rounded whitespace-nowrap">
+                  <p>Toggle Sidebar</p>
+                  <Hotkey letter="s" />
+                </div>
               </div>
-            </div>
-          </button>
-        )}
-        {isSidebarOpen && <div className="w-8"></div>}
+            </button>
+          )}
+          {isSidebarOpen && <div className="w-8"></div>}
+        </div>
+        <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
+          {currentPageTitle || "Building a new workflow"}
+        </h1>
+        <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
+          Notion
+        </div>
+        <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
+          Google Docs
+        </div>
       </div>
-      <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
-        {currentPageTitle || "Building a new workflow"}
-      </h1>
-      <div className="w-auto rounded-lg shadow-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
-        Notion
-      </div>
-      <div className="w-auto rounded-lg shadow-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
-        Google Docs
-      </div>
+      <button className="w-auto rounded-lg shadow-sm bg-gray-100 px-3 py-1 text-xs border border-gray-200 hover:bg-gray-50 transition-all duration-300 flex items-center gap-1.5 mr-2">
+        <IoRocketOutline className="w-3.5 h-3.5" />
+        Publish
+      </button>
     </div>
   );
 }

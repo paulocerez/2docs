@@ -31,7 +31,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
   useEffect(() => {
     const allLinksValid =
-      links.length > 0 && links.every((link) => isValidUrl(link));
+      links.length >= 2 && links.every((link) => isValidUrl(link));
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, [links]);
 
