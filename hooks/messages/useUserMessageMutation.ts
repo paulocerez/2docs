@@ -3,9 +3,9 @@ import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface UserMessageMutationData {
-  prompt: string;
-  chatId?: string;
-  title?: string;
+	title: string;
+	prompt: string;
+	chatId?: string;
 }
 
 export function useUserMessageMutation(userId: string) {

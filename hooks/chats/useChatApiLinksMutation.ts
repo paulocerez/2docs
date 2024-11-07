@@ -16,6 +16,7 @@ export function useChatApiLinksMutation() {
 				body: JSON.stringify({ chatId, links }),
 			});
 
+
 			if (!response.ok) {
 				throw new Error("Failed to create API links");
 			}
@@ -23,7 +24,7 @@ export function useChatApiLinksMutation() {
 		},
 		onSuccess: (data, { chatId }) => {
 			queryClient.setQueryData(["chatApiLinks", chatId], data);
+			console.log("success", data);
 		}
-	})
-
+	});
 }

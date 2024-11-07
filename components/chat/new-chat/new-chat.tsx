@@ -8,11 +8,7 @@ import LinkInputs from "@/components/chat/new-chat/link-inputs";
 import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
 import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 
 const queryClient = new QueryClient();
@@ -47,20 +43,32 @@ function NewChatPageContent({ userId }: { userId: string }) {
           title: chatTitle,
         });
 
-        if (!result || !result.id) {
-          throw new Error("Failed to create chat");
-        }
+        console.log("result", result);
 
         // create the api links
         await chatApiLinksMutation.mutateAsync({
-          chatId: result.chatId,
+          chatId: result.id,
           links,
         });
+
+        queryClient.setQueryData(
+          ["messages", result.id],
+          [
+            {
+              chatId: result.id,
+              content: prompt,
+              role: "user",
+              timestamp: new Date(),
+            },
+          ]
+        );
+
+        router.push(`/chat/${result.id}`);
 
         // generate ai response in the background
         aiResponseMutation.mutate(
           {
-            chatId: result.chatId,
+            chatId: result.id,
             messages: [{ role: "user", content: prompt }],
           },
           {
@@ -70,7 +78,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
             },
           }
         );
-        router.push(`/chat/${result.chatId}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
         setError("Failed to create chat. Please try again.");
@@ -128,7 +135,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">
                 <div className="flex flex-col items-center space-y-8 text-center">
-                  <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">
+                  <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
                     What can I help you build?
                   </h1>
                   <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
