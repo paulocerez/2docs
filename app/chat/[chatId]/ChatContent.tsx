@@ -163,7 +163,7 @@ function ChatContentInner({
             <div ref={messagesEndRef} />
           </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4 z-10">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt
               onSubmit={handleSubmit}

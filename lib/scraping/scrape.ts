@@ -1,16 +1,16 @@
 import FirecrawlApp from "@mendable/firecrawl-js";
 
-const app = new FirecrawlApp({ apiKey: "fc-9158b0b589dc4c2bb44587a1cb988641" });
+const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
 
-export async function scrapeEntireSiteUsingFireCrawl(url: string) {
+export async function scrapeURL(url: string) {
   try {
-    const crawlResponse = await app.crawlUrl(url, {
+    const scrapeResponse = await app.crawlUrl(url, {
       limit: 100,
       scrapeOptions: {
         formats: ["markdown", "html"],
       },
     });
-    return crawlResponse;
+    return scrapeResponse;
   } catch (error) {
     console.error("Scraping ran into an error: ", error);
   }

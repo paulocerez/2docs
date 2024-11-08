@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
 import ScrapingApiLoading from "../../state/scraping-api-loading";
+import { useScrapeUrlMutation } from "@/hooks/messages/useScrapeUrlMutation";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
+  const scrapeUrlMutation = useScrapeUrlMutation();
 
   useEffect(() => {
     const allLinksValid =
@@ -42,7 +44,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
       e.preventDefault();
       if (!isFormValid) return;
 
-      setIsAiResponding(true);
+      setIsScrapingApiDocs(true);
       setError(null);
 
       try {
@@ -57,6 +59,18 @@ function NewChatPageContent({ userId }: { userId: string }) {
           chatId: chatResult.chat.id,
           links,
         });
+
+        for (const link of links) {
+          try {
+            await scrapeUrlMutation.mutateAsync({
+              chatId: chatResult.chat.id,
+              url: link,
+            });
+          } catch (error) {
+            console.error("Failed to scrape url:", error);
+          }
+        }
+        setIsScrapingApiDocs(false);
 
         router.push(`/chat/${chatResult.chat.id}`);
 
@@ -89,6 +103,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
       chatTitle,
       prompt,
       isFormValid,
+      scrapeUrlMutation,
     ]
   );
 
