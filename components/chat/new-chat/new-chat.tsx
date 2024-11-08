@@ -11,6 +11,7 @@ import WorkflowRecommendations from "@/components/chat/workflow-recommendations"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
+import ScrapingApiLoading from "./scraping-api-loading";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [links, setLinks] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const isFormValid = checklist.every(Boolean);
+  const [isScrapingApiDocs, setIsScrapingApiDocs] = useState(false);
 
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
@@ -121,6 +123,10 @@ function NewChatPageContent({ userId }: { userId: string }) {
   }, []);
 
   if (!userId) return null;
+
+  if (isScrapingApiDocs) {
+    return <ScrapingApiLoading />;
+  }
 
   return (
     <AuthenticatedLayout
