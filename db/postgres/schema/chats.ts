@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const chats = pgTable("chat", {
@@ -81,7 +81,6 @@ export const httpMethods = pgTable("http_method", {
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
 });
-
 
 export type InsertChat = typeof chats.$inferInsert;
 export type SelectChat = typeof chats.$inferSelect;

@@ -19,6 +19,7 @@ export function useMessages(currentChatId: string) {
       return data.filter((message): message is Message => message != null);
     },
     enabled: !!currentChatId,
+	refetchInterval: 1000,
     initialData: () => {
       // Return the cached messages if available
       return currentChatId

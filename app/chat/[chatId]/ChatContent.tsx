@@ -30,6 +30,8 @@ function ChatContentInner({
   const [chatTitle, setChatTitle] = useState(currentChatTitle);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
   const {
     data: messages,
     isLoading: isMessagesLoading,
@@ -40,6 +42,12 @@ function ChatContentInner({
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
+    if (messages && messages.length > 0) {
+      setIsInitialLoading(false);
+    }
   }, [messages]);
 
   const handleSubmit = useCallback(
@@ -109,10 +117,18 @@ function ChatContentInner({
       aiResponseMutation,
       currentChatId,
       messages,
-      queryClient,
       chatTitle,
     ]
   );
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <LoadingSpinner />
+        <p>Generating initial response...</p>
+      </div>
+    );
+  }
 
   if (isMessagesLoading) {
     return (
