@@ -11,7 +11,7 @@ import WorkflowRecommendations from "@/components/chat/workflow-recommendations"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
-import ScrapingApiLoading from "./scraping-api-loading";
+import ScrapingApiLoading from "../../state/scraping-api-loading";
 
 const queryClient = new QueryClient();
 

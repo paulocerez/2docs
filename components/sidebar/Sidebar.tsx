@@ -1,10 +1,10 @@
 "use client";
 import SidebarHeader from "./SidebarHeader";
-import StoredWorkflows from "./StoredWorkflows";
 import CreateChatButton from "./CreateChatButton";
 import { SelectChat } from "@/db/postgres/schema/chats";
-import { QueryClient, useQuery } from "@tanstack/react-query";
 import { ChatList } from "./chat-list";
+import Workflows from "./Workflows";
+import Documentations from "./Documentations";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -36,7 +36,8 @@ export default function Sidebar({
         <SidebarHeader toggleSidebar={toggleSidebar} userId={userId} />
         <div className="flex flex-col space-y-1">
           <CreateChatButton />
-          <StoredWorkflows />
+          <Workflows />
+          <Documentations />
         </div>
         <div className="border-t-2 border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 pt-1 text-right">
           No. of Chats: {chats?.length}

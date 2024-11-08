@@ -26,7 +26,7 @@ export default function CreateChatButton() {
         className="flex flex-row space-x-2 items-center text-[13px] font-normal hover:bg-gray-100 w-full rounded-sm"
       >
         <MdChatBubbleOutline />
-        <p>Create new chat</p>
+        <p>Create Chat</p>
       </button>
       <Hotkey letter="c" />
     </div>

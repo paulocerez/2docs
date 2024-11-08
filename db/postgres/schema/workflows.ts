@@ -1,6 +1,6 @@
 import { boolean, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { endpoints } from "./chats";
 import { users } from "./users";
+import { apiEndpoints } from "./api";
 
 export const workflows = pgTable("workflow", {
     id: text("id")
@@ -28,7 +28,7 @@ export const workflowSteps = pgTable("workflow_step", {
         .references(() => workflows.id, { onDelete: "cascade" }),
     endpointId: text("endpoint_id")
         .notNull()
-        .references(() => endpoints.id, { onDelete: "cascade" }),
+        .references(() => apiEndpoints.id, { onDelete: "cascade" }),
     order: integer("order").notNull(),
     inputMapping: text("input_mapping").notNull(),
     outputMapping: text("output_mapping").notNull(),
