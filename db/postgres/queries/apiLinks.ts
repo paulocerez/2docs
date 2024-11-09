@@ -1,9 +1,9 @@
 import { db } from "../db";
-import { chatApiLinks, InsertChatApiLink } from "../schema/chats";
+import { chatApiLinks } from "../schema/chats";
 import { eq } from "drizzle-orm";
 
-export async function createChatApiLinks(chatId: string, links: string[]) {
-	const values = links.map(link => ({ chatId, apiLink: link }))
+export async function createChatApiLinks(chatId: string, apiDocumentationIds: string[]) {
+	const values = apiDocumentationIds.map(apiDocumentationId => ({ chatId, apiDocumentationId }))
 	return await db.insert(chatApiLinks).values(values).returning();
 }
 

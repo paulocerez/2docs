@@ -3,23 +3,30 @@ import { GrStorage } from "react-icons/gr";
 import Hotkey from "../ui/hotkey";
 import { useRouter } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
+import { IconType } from "react-icons/lib";
 
-export default function Workflows() {
+interface SidebarItemProps {
+  name: string;
+  Icon: IconType;
+  hotkey: string;
+}
+
+export default function SidebarItem({ name, Icon, hotkey }: SidebarItemProps) {
   const router = useRouter();
 
-  const redirectToWorkflows = () => {
-    router.push("/workflows");
+  const redirectToItem = () => {
+    router.push(`/${name.toLowerCase()}`);
   };
 
-  useHotkeys("w", () => redirectToWorkflows());
+  useHotkeys(hotkey, () => redirectToItem());
 
   return (
     <div className="flex flex-row items-center justify-between p-2 text-xs font-normal hover:bg-gray-100 rounded-sm">
       <div className="flex flex-row items-center space-x-2 text-[13px]">
-        <GrStorage />
-        <button onClick={redirectToWorkflows}>Workflows</button>
+        {Icon && <Icon />}
+        <button onClick={redirectToItem}>{name}</button>
       </div>
-      <Hotkey letter="w" />
+      <Hotkey letter={hotkey} />
     </div>
   );
 }

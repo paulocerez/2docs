@@ -48,29 +48,33 @@ function NewChatPageContent({ userId }: { userId: string }) {
       setError(null);
 
       try {
-        // create the chat and add user message
+        // create chat and add user message > store in db
         const chatResult = await userMessageMutation.mutateAsync({
           prompt: prompt,
           title: chatTitle,
         });
 
-        // create the api links
-        await chatApiLinksMutation.mutateAsync({
-          chatId: chatResult.chat.id,
-          links,
-        });
-
+        const apiDocResults = [];
+        // scrape the urls > store in db
         for (const link of links) {
           try {
-            await scrapeUrlMutation.mutateAsync({
+            const apiDocResult = await scrapeUrlMutation.mutateAsync({
               chatId: chatResult.chat.id,
               url: link,
             });
+            apiDocResults.push(apiDocResult);
+            console.log("Scraped Urls: ", apiDocResults);
           } catch (error) {
             console.error("Failed to scrape url:", error);
           }
         }
         setIsScrapingApiDocs(false);
+
+        // create the chat api links > store in db
+        await chatApiLinksMutation.mutateAsync({
+          chatId: chatResult.chat.id,
+          apiDocumentationIds: apiDocResults.map((result) => result.id),
+        });
 
         router.push(`/chat/${chatResult.chat.id}`);
 

@@ -2,7 +2,7 @@
 
 Provide the links to the API docs for the services you want to utilize, and let the system do the rest. Works best for all the integrations, Zapier didn't care about yet.
 
-## Features
+## Feature Roadmap
 
 Users can build dynamic code workflows that include several API's. The workflows can soon be shared within the whole community to reuse common flow patterns.
 
@@ -48,7 +48,11 @@ Qdrant Entity:
 
 ## Security
 
-Threat Model
+### Threat Model
+
+### Cyber security measures
+
+###
 
 ## Architecture
 

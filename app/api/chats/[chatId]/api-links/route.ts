@@ -14,15 +14,12 @@ export async function GET (request: NextRequest, { params }: { params: { chatId:
 
 export async function POST (request: NextRequest, { params}: { params: { chatId: string}}): Promise<NextResponse> {
 	const { chatId } = await params;
-
+	
 	try {
-		const data = await request.json()
+		const data = await request.json();
+		console.log("Data: ", data);
 
-		if (!Array.isArray(data.links) || data.links.length === 0) {
-			return NextResponse.json({ error: "Links must be a non-empty array" }, { status: 400 });
-		}
-
-		const result = await createChatApiLinks(chatId, data.links);
+		const result = await createChatApiLinks(chatId, data.apiDocumentationIds);
 		return NextResponse.json(result, { status: 201 })
 	} catch(error) {
 		console.error("Error creating API links:", error);

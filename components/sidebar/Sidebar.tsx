@@ -1,10 +1,11 @@
 "use client";
 import SidebarHeader from "./SidebarHeader";
-import CreateChatButton from "./CreateChatButton";
 import { SelectChat } from "@/db/postgres/schema/chats";
 import { ChatList } from "./chat-list";
-import Workflows from "./Workflows";
-import Documentations from "./Documentations";
+import { IoChatbubbleOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { GrStorage } from "react-icons/gr";
+import { TbPrompt } from "react-icons/tb";
+import SidebarItem from "./SidebarItem";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -15,6 +16,13 @@ interface SidebarProps {
   chats: SelectChat[] | undefined;
   isLoading: boolean;
 }
+
+const sidebarItems = [
+  { name: "Create Chat", icon: IoChatbubbleOutline, hotkey: "c" },
+  { name: "Workflows", icon: GrStorage, hotkey: "w" },
+  { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
+  { name: "Prompts", icon: TbPrompt, hotkey: "p" },
+];
 
 export default function Sidebar({
   userId,
@@ -35,9 +43,14 @@ export default function Sidebar({
       <div className="space-y-4">
         <SidebarHeader toggleSidebar={toggleSidebar} userId={userId} />
         <div className="flex flex-col space-y-1">
-          <CreateChatButton />
-          <Workflows />
-          <Documentations />
+          {sidebarItems.map((item) => (
+            <SidebarItem
+              key={item.name}
+              name={item.name}
+              Icon={item.icon}
+              hotkey={item.hotkey}
+            />
+          ))}
         </div>
         <div className="border-t-2 border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 pt-1 text-right">
           No. of Chats: {chats?.length}
