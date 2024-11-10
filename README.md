@@ -6,7 +6,7 @@
 
 Generate robust code workflows by integrating two or more API's seamlessly. Works by inserting a descriptive workflow prompt and the links to the API references to be included. Finetune and iterate as needed. Cheap, accurate, and user-friendly.
 
-<div style="display: flex; justify-content: center; gap: 20px;">
+<div style="display: flex; justify-content: center; gap: 50px;">
   <a href="https://docs.2docs.dev">Documentation</a>
   <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
   <a href="https://docs.2docs.dev/examples">API Reference</a>
