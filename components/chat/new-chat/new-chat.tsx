@@ -29,9 +29,9 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
-  const aiResponseMutation = useAIResponseMutation();
-  const chatApiLinksMutation = useChatApiLinksMutation();
   const scrapeUrlMutation = useScrapeUrlMutation();
+  const chatApiLinksMutation = useChatApiLinksMutation();
+  const aiResponseMutation = useAIResponseMutation();
 
   useEffect(() => {
     const allLinksValid =
@@ -53,6 +53,8 @@ function NewChatPageContent({ userId }: { userId: string }) {
           prompt: prompt,
           title: chatTitle,
         });
+
+        console.log("Chat Result: ", chatResult);
 
         const apiDocResults = [];
         // scrape the urls > store in db

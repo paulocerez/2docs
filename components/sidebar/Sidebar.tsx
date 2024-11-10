@@ -18,7 +18,7 @@ interface SidebarProps {
 }
 
 const sidebarItems = [
-  { name: "Create Chat", icon: IoChatbubbleOutline, hotkey: "c" },
+  { name: "Chat", icon: IoChatbubbleOutline, hotkey: "c" },
   { name: "Workflows", icon: GrStorage, hotkey: "w" },
   { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
   { name: "Prompts", icon: TbPrompt, hotkey: "p" },

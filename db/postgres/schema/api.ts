@@ -6,6 +6,7 @@ export const apiDocumentations = pgTable("api_documentation", {
   name: text("name").notNull(),
   baseUrl: text("base_url").notNull(),
   version: text("version").notNull(),
+  content: text("content").notNull(),
   lastScrapedAt: timestamp("last_scraped_at").notNull().defaultNow(),
   createdBy: text("created_by").notNull().references(() => users.id),
 }, (table) => {

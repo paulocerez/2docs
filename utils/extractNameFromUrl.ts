@@ -1,5 +1,5 @@
 export default function extractNameFromUrl(url: string) {
-	return url.split(".")[1];
+	return url.split("/")[2];
 }
 
 // console.log(extractNameFromUrl("https://www.google.com/"));

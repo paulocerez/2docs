@@ -20,6 +20,8 @@ services:
       - "8080:80"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+  firecrawl-api:
+    image: firecrawl
 volumes:
   db-data:
   pgadmin-data:

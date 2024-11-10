@@ -7,18 +7,20 @@ interface HeaderProps {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
   currentPageTitle?: string;
+  chatId?: string;
 }
 
 export default function Header({
   isSidebarOpen,
   toggleSidebar,
   currentPageTitle,
+  chatId,
 }: HeaderProps) {
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
 
   return (
     <div className="flex flex-row items-center p-3 w-full justify-between fixed backdrop-blur-lg bg-gray-50/50 dark:bg-black/50 lg:bg-transparent lg:backdrop-blur-none border-b border-gray-100 dark:lg:border-gray-700 lg:border-none">
-      <div className="flex flex-row items-center space-x-4">
+      <div className="flex flex-row items-center space-x-6">
         <div className="flex items-center relative">
           {!isSidebarOpen && (
             <button
@@ -47,20 +49,26 @@ export default function Header({
           )}
           {isSidebarOpen && <div className="w-8"></div>}
         </div>
-        <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[700px]">
+        <h1 className="text-sm text-gray-800 dark:text-gray-200 truncate flex-1 max-w-[300px]">
           {currentPageTitle || "Building a new workflow"}
         </h1>
-        <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
-          Notion
-        </div>
-        <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
-          Google Docs
-        </div>
       </div>
-      <button className="w-auto rounded-lg shadow-sm bg-gray-100 px-3 py-1 text-xs border border-gray-200 hover:bg-gray-50 transition-all duration-300 flex items-center gap-1.5 mr-2">
-        <IoRocketOutline className="w-3.5 h-3.5" />
-        Publish
-      </button>
+
+      {chatId && (
+        <div className="flex flex-row items-center space-x-4">
+          <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
+            Notion
+          </div>
+          <div className="w-auto rounded-lg shadow-sm bg-gray-100 px-2 py-1 text-xs">
+            Google Docs
+          </div>
+
+          <button className="w-auto rounded-lg shadow-sm bg-gray-100 px-3 py-1 text-xs border border-gray-200 hover:bg-gray-50 transition-all duration-300 flex items-center gap-1.5 mr-2">
+            <IoRocketOutline className="w-3.5 h-3.5" />
+            Publish
+          </button>
+        </div>
+      )}
     </div>
   );
 }

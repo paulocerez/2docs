@@ -10,41 +10,26 @@ Users can build dynamic code workflows that include several API's. The workflows
 
 PostgreSQL Entities:
 
-- users
-  Stores user information
-  Referenced by: chats, apiDocumentations, workflows
-- chats
-  Stores individual chat sessions
-  References: users
-  Referenced by: chatApiLinks
-- apiDocumentations
-  Stores metadata about API documentations
-  References: users (createdBy)
-  Referenced by: apiEndpoints, chatApiLinks
-- apiEndpoints
-  Stores detailed information about individual API endpoints
-  References: apiDocumentations
-- chatApiLinks
-  Links chats to specific API documentations
-  References: chats, apiDocumentations
-- workflows
-  Stores user-created workflows
-  References: users
-  Referenced by: workflowSteps, workflowVariables
-- workflowSteps
-  Stores individual steps within a workflow
-  References: workflows, apiEndpoints
-- workflowVariables
-  Stores variables used within workflows
-  References: workflows
+Here are the two tables in Markdown format for your GitHub README:
+
+PostgreSQL Entities:
+
+| Entity            | Information stored                                  | References               | Referenced By                       | Example                                                                                                                                      |
+| ----------------- | --------------------------------------------------- | ------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| users             | User information                                    | -                        | chats, apiDocumentations, workflows | { id: "user123", name: "John Doe", email: "john@example.com" }                                                                               |
+| chats             | Individual chat sessions                            | users                    | chatApiLinks                        | { id: "chat456", userId: "user123", title: "API Integration Chat" }                                                                          |
+| apiDocumentations | Metadata about API documentations                   | users (createdBy)        | apiEndpoints, chatApiLinks          | { id: "api789", name: "GitHub API", createdBy: "user123" }                                                                                   |
+| apiEndpoints      | Detailed information about individual API endpoints | apiDocumentations        | workflowSteps                       | { id: "endpoint101", apiDocumentationId: "api789", path: "/users", method: "GET" }                                                           |
+| chatApiLinks      | Links between chats and API documentations          | chats, apiDocumentations | -                                   | { chatId: "chat456", apiDocumentationId: "api789" }                                                                                          |
+| workflows         | User-created workflows                              | users                    | workflowSteps, workflowVariables    | { id: "workflow202", userId: "user123", title: "GitHub Issue Tracker" }                                                                      |
+| workflowSteps     | Individual steps within a workflow                  | workflows, apiEndpoints  | -                                   | { id: "step303", workflowId: "workflow202", apiEndpointId: "endpoint101", order: 1 }                                                         |
+| workflowVariables | Variables used within workflows                     | workflows                | -                                   | { id: "var404", workflowId: "workflow202", name: "GITHUBAPIKEY", defaultValue: null, description: "Your GitHub API key for authentication" } |
 
 Qdrant Entity:
 
-- Vector Embeddings (Qdrant Collection)
-  Stores vector embeddings of API documentation chunks
-  Payload includes references to PostgreSQL entities:
-  apiDocumentationId (references apiDocumentations.id)
-  apiEndpointId (references apiEndpoints.id)
+| Entity                                | Information stored                            | References | Referenced By | Example                                                                                                                                                             |
+| ------------------------------------- | --------------------------------------------- | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vector Embeddings (Qdrant Collection) | Vector embeddings of API documentation chunks | -          | -             | { id: "vec505", vector: [0.1, 0.2, ...], payload: { apiDocumentationId: "api789", apiEndpointId: "endpoint101", content: "This endpoint retrieves user data..." } } |
 
 ## Security
 
