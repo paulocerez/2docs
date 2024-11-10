@@ -1,12 +1,151 @@
-# API-Docs based workflow generator
+<div align="center">
 
-Provide the links to the API docs for the services you want to utilize, and let the system do the rest. Works best for all the integrations, Zapier didn't care about yet.
+<img src="public/2docs-logo.svg" alt="2docs Logo" width="180" height="180" />
+
+<h1 style="margin-top: 8px;">2docs</h1>
+
+Generate robust code workflows by integrating two or more API's seamlessly. Works by inserting a descriptive workflow prompt and the links to the API references to be included. Finetune and iterate as needed. Cheap, accurate, and user-friendly.
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <a href="https://docs.2docs.dev">Documentation</a>
+  <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
+  <a href="https://docs.2docs.dev/examples">API Reference</a>
+</div>
+
+---
+
+</div>
+
+## Who is this useful for?
+
+The tool aims to simplify the creation of automations with full ownership over the code. Compared to common automation tools it aims to give the developer full control over the generated code while maintaining much lower costs and higher accuracy due to frequent crawling of the API references directly.
+
+Some API's change quite frequently. This might take quite some time to be reflected in Integrations of tools like Zapier or Make. Furthermore, 2docs intends to create educational transparency for developers getting started using multiple Application Programming Interfaces. As this is a crucial skill for developers nowadays, the data flows between these interfaces should be playful, easy to grasp, and highly interactive.
+
+## Usage
+
+### Web App
+
+The easiest way to use 2docs is via the web app running in the browser. It is currently visible <a href="https://2docs.vercel.app/">here</a>.
+
+### API
+
+### Local usage
+
+Follow the instructions below to set up a local development environment for 2docs.
+
+##### Clone the repository
+
+```
+git clone https://github.com/paulocerez/2docs.git
+```
+
+##### Copy the .env.example file into a .env
+
+```
+cp .env.example .env
+```
+
+```
+AUTH_SECRET=
+DATABASE_PASSWORD=
+AUTH_DRIZZLE_URL=
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+DATABASE_URL=
+OPENAI_API_KEY=
+FIRECRAWL_API_KEY=
+QDRANT_API_KEY=
+QDRANT_URL=
+```
+
+##### Get the necessary API-Keys
+
+```
+Visit and generate an API Key at OpenAI.
+```
+
+##### Install the required dependencies
+
+```
+npm install
+```
+
+##### Run the application locally
+
+```
+docker compose up --build
+```
 
 ## Feature Roadmap
 
-Users can build dynamic code workflows that include several API's. The workflows can soon be shared within the whole community to reuse common flow patterns.
+##### 15-11-2024
+
+Users can start basic chat sessions, crawling entire API references and store these in the Vector Database. The generator then builds a workflow based on the user prompt.
+
+##### 15-12-2024
+
+The workflows are much more accurate. Users can share workflows in an Online Community.
 
 ## Database
+
+### Entity-Relationship Diagram
+
+```mermaid
+erDiagram
+users ||--o{ chats : creates
+users ||--o{ apiDocumentations : creates
+users ||--o{ workflows : creates
+chats ||--o{ chatApiLinks : has
+apiDocumentations ||--o{ apiEndpoints : contains
+apiDocumentations ||--o{ chatApiLinks : referenced_in
+workflows ||--o{ workflowSteps : contains
+workflows ||--o{ workflowVariables : has
+apiEndpoints ||--o{ workflowSteps : used_in
+users {
+string id PK
+string name
+string email
+}
+chats {
+string id PK
+string userId FK
+string title
+}
+apiDocumentations {
+string id PK
+string name
+string createdBy FK
+}
+apiEndpoints {
+string id PK
+string apiDocumentationId FK
+string path
+string method
+}
+chatApiLinks {
+string chatId FK
+string apiDocumentationId FK
+}
+workflows {
+string id PK
+string userId FK
+string title
+}
+workflowSteps {
+string id PK
+string workflowId FK
+string apiEndpointId FK
+int order
+}
+workflowVariables {
+string id PK
+string workflowId FK
+string name
+string defaultValue
+string description
+}
+```
 
 ### PostgreSQL
 
@@ -33,12 +172,20 @@ Users can build dynamic code workflows that include several API's. The workflows
 
 ### Cyber security measures
 
-###
+| Entry Point | Threat | Mitigation |
+| ----------- | ------ | ---------- |
+
+### Current external dependencies
+
+Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up and login functionality. Qdrant and Neon Serverless as Database Cloud Services.
 
 ## Architecture
 
 Currently under construction 🔨
 
-## Roadmap
+## Technologies
 
-Currently under construction 🔨
+- Next.js 15 (App Router, TypeScript, TailwindCSS)
+- Postgresql (Neon Serverless), Qdrant
+- Firecrawl
+- Docker
