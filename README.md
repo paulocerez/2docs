@@ -8,11 +8,7 @@ Users can build dynamic code workflows that include several API's. The workflows
 
 ## Database
 
-PostgreSQL Entities:
-
-Here are the two tables in Markdown format for your GitHub README:
-
-PostgreSQL Entities:
+### PostgreSQL
 
 | Entity            | Information stored                                  | References               | Referenced By                       | Example                                                                                                                                      |
 | ----------------- | --------------------------------------------------- | ------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -25,7 +21,7 @@ PostgreSQL Entities:
 | workflowSteps     | Individual steps within a workflow                  | workflows, apiEndpoints  | -                                   | { id: "step303", workflowId: "workflow202", apiEndpointId: "endpoint101", order: 1 }                                                         |
 | workflowVariables | Variables used within workflows                     | workflows                | -                                   | { id: "var404", workflowId: "workflow202", name: "GITHUBAPIKEY", defaultValue: null, description: "Your GitHub API key for authentication" } |
 
-Qdrant Entity:
+### Qdrant
 
 | Entity                                | Information stored                            | References | Referenced By | Example                                                                                                                                                             |
 | ------------------------------------- | --------------------------------------------- | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
