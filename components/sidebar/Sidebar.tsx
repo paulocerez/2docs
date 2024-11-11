@@ -3,7 +3,7 @@ import SidebarHeader from "./SidebarHeader";
 import { SelectChat } from "@/db/postgres/schema/chats";
 import { ChatList } from "./chat-list";
 import { IoChatbubbleOutline, IoDocumentTextOutline } from "react-icons/io5";
-import { GrStorage } from "react-icons/gr";
+import { GrChat, GrStorage } from "react-icons/gr";
 import { TbPrompt } from "react-icons/tb";
 import SidebarItem from "./SidebarItem";
 
@@ -18,7 +18,7 @@ interface SidebarProps {
 }
 
 const sidebarItems = [
-  { name: "Chat", icon: IoChatbubbleOutline, hotkey: "c" },
+  { name: "Chat", icon: GrChat, hotkey: "c" },
   { name: "Workflows", icon: GrStorage, hotkey: "w" },
   { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
   { name: "Prompts", icon: TbPrompt, hotkey: "p" },

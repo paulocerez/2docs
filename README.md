@@ -6,7 +6,7 @@
 
 Generate robust code workflows by integrating two or more API's seamlessly. Works by inserting a descriptive workflow prompt and the links to the API references to be included. Finetune and iterate as needed. Cheap, accurate, and user-friendly.
 
-<div style="display: flex; justify-content: center; gap: 50px;">
+<div style="display: flex; justify-content: space-around; align-items: center; padding: 10px 0px">
   <a href="https://docs.2docs.dev">Documentation</a>
   <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
   <a href="https://docs.2docs.dev/examples">API Reference</a>
@@ -24,11 +24,15 @@ Some API's change quite frequently. This might take quite some time to be reflec
 
 ## Usage
 
+Depending on your use case, there's different ways of working with 2docs workflows:
+
 ### Web App
 
 The easiest way to use 2docs is via the web app running in the browser. It is currently visible <a href="https://2docs.vercel.app/">here</a>.
 
 ### API
+
+Check out the API reference here to call the respective endpoints for workflow generation and retrieve the code
 
 ### Local usage
 
@@ -149,6 +153,10 @@ string description
 
 ### PostgreSQL
 
+```
+Storing data in tables per entity.
+```
+
 | Entity            | Information stored                                  | References               | Referenced By                       | Example                                                                                                                                      |
 | ----------------- | --------------------------------------------------- | ------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | users             | User information                                    | -                        | chats, apiDocumentations, workflows | { id: "user123", name: "John Doe", email: "john@example.com" }                                                                               |
@@ -161,6 +169,10 @@ string description
 | workflowVariables | Variables used within workflows                     | workflows                | -                                   | { id: "var404", workflowId: "workflow202", name: "GITHUBAPIKEY", defaultValue: null, description: "Your GitHub API key for authentication" } |
 
 ### Qdrant
+
+```
+Storing vector embeddings of the scraped API references, performing vector similarity search for efficient endpoint retrieval.
+```
 
 | Entity                                | Information stored                            | References | Referenced By | Example                                                                                                                                                             |
 | ------------------------------------- | --------------------------------------------- | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
