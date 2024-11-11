@@ -61,6 +61,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
         for (const link of links) {
           try {
             const apiDocResult = await scrapeUrlMutation.mutateAsync({
+              userId: userId,
               chatId: chatResult.chat.id,
               url: link,
             });
@@ -110,6 +111,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
       prompt,
       isFormValid,
       scrapeUrlMutation,
+      userId,
     ]
   );
 

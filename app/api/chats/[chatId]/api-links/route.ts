@@ -17,7 +17,6 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 	
 	try {
 		const data = await request.json();
-		console.log("Data: ", data);
 
 		const result = await createChatApiLinks(chatId, data.apiDocumentationIds);
 		return NextResponse.json(result, { status: 201 })
