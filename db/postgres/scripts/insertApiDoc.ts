@@ -3,7 +3,7 @@ import { apiDocumentations, InsertApiDocumentation } from "../schema/apis";
 import { faker } from "@faker-js/faker";
 
 async function insertApiDocumentation(count: number) {
-	const batchSize = 1;
+	const batchSize = 5;
 	const totalBatches = Math.ceil(count / batchSize);
 
 	console.log(`Inserting ${count} API documentation records...`);
@@ -14,21 +14,27 @@ async function insertApiDocumentation(count: number) {
 			const apiDoc: InsertApiDocumentation = {
 				name: faker.lorem.word(),
 				baseUrl: faker.internet.url(),
-				version: faker.lorem.word(),
+				version: "1.0.0",
 				content: faker.lorem.paragraph(),
-				createdBy: faker.string.uuid(),
+				createdBy: 'be4d08d3-b464-49a3-87e2-ba3b85f543de',
+				id: faker.string.uuid(),
 			}
 			batch.push(apiDoc);
 		}
-		await db.insert(apiDocumentations).values(batch);
-		console.log(`Inserted batch ${i + 1} of ${totalBatches}`);
+		try {
+			await db.insert(apiDocumentations).values(batch);
+			console.log(`Inserted batch ${i + 1} of ${totalBatches}`);
+		} catch (error) {
+			console.error("Batch insert error:", error);
+			throw error;
+		}
 	}
 	console.log(`Inserted ${count} API documents`);
 } 
 
 async function main() {
 	try {
-	  await insertApiDocumentation(1);
+	  await insertApiDocumentation(20);
 	  console.log("Insertion complete!");
 	  process.exit(0);
 	} catch (error) {
