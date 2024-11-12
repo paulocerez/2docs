@@ -61,11 +61,6 @@ Generate robust code workflows by integrating two or more API's seamlessly. Work
 
 Built with Next.js/TypeScript, PostgreSQL (Neon Serverless), Qdrant, and Docker.
 
-Watch me give a few words about the tool here: ⬇️
-
-<iframe width="640" height="400" src="https://www.loom.com/embed/9cb21f641319445eb8e64bde2aa23e34?sid=5dfc7397-4e70-44e9-a45c-d8f319696f67?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true"
- frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-
 ## Who is this useful for?
 
 The tool aims to simplify the creation of automations with full ownership over the code. Compared to common automation tools it aims to give the developer full control over the generated code while maintaining much lower costs (plus no lock-in effects, you own all the code) and higher accuracy due to frequent crawling of the API references directly.
