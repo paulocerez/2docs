@@ -2,7 +2,7 @@
 import SidebarHeader from "./SidebarHeader";
 import { SelectChat } from "@/db/postgres/schema/chats";
 import { ChatList } from "./chat-list";
-import { IoChatbubbleOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { IoDocumentTextOutline } from "react-icons/io5";
 import { GrChat, GrStorage } from "react-icons/gr";
 import { TbPrompt } from "react-icons/tb";
 import SidebarItem from "./SidebarItem";
