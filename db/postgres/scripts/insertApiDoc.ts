@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { apiDocumentations, InsertApiDocumentation } from "../schema/api";
+import { apiDocumentations, InsertApiDocumentation } from "../schema/apis";
 import { faker } from "@faker-js/faker";
 
 async function insertApiDocumentation(count: number) {

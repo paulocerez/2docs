@@ -24,7 +24,6 @@ export function useChatApiLinksMutation() {
 		},
 		onSuccess: (data, { chatId }) => {
 			queryClient.setQueryData(["chatApiLinks", chatId], data);
-			console.log("success", data);
 		}
 	});
 }

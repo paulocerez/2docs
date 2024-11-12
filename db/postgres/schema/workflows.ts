@@ -1,6 +1,6 @@
 import { boolean, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users";
-import { apiEndpoints } from "./api";
+import { apiEndpoints } from "./apis";
 
 export const workflows = pgTable("workflow", {
     id: text("id")

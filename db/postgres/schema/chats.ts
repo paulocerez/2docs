@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { users } from './users';
-import { apiDocumentations } from './api';
+import { apiDocumentations } from './apis';
 
 export const chats = pgTable("chat", {
 	id: text("id")

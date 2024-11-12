@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
 
 		// if (statusCode === 429) {
 			const fallbackMarkdown = notion[1].markdown;
-			const scrape = await createApiDocumentation({ name: urlName, baseUrl: url, version: "1.0", createdBy: userId, content: fallbackMarkdown });
-			return NextResponse.json({ message: 'Test Scraping completed', scrapeId: scrape.id }, { status: 201 });
+			const apiDocumentation = await createApiDocumentation({ name: urlName, baseUrl: url, version: "1.0", createdBy: userId, content: fallbackMarkdown });
+			return NextResponse.json({ message: 'Test Scraping completed', apiDocumentationId: apiDocumentation.id }, { status: 201 });
 		}
 		// create api doc in db
 		// const scrape = await createApiDocumentation({ name: urlName, baseUrl: url, version: "1.0", createdBy: 'user', content: markdown || "" });

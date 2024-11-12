@@ -54,8 +54,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
           title: chatTitle,
         });
 
-        console.log("Chat Result: ", chatResult);
-
         const apiDocResults = [];
         // scrape the urls > store in db
         for (const link of links) {
@@ -65,20 +63,19 @@ function NewChatPageContent({ userId }: { userId: string }) {
               chatId: chatResult.chat.id,
               url: link,
             });
-            apiDocResults.push(apiDocResult);
-            console.log("Scraped Urls: ", apiDocResults);
+            apiDocResults.push(apiDocResult.apiDocumentationId);
           } catch (error) {
             console.error("Failed to scrape url:", error);
           }
         }
-        setIsScrapingApiDocs(false);
 
         // create the chat api links > store in db
         await chatApiLinksMutation.mutateAsync({
           chatId: chatResult.chat.id,
-          apiDocumentationIds: apiDocResults.map((result) => result.id),
+          apiDocumentationIds: apiDocResults,
         });
 
+        setIsScrapingApiDocs(false);
         router.push(`/chat/${chatResult.chat.id}`);
 
         // generate ai response in the background
