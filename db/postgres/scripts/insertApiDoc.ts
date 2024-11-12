@@ -2,8 +2,8 @@ import { db } from "../db";
 import { apiDocumentations, InsertApiDocumentation } from "../schema/api";
 import { faker } from "@faker-js/faker";
 
-async function insertApiDocumentations(count: number) {
-	const batchSize = 100;
+async function insertApiDocumentation(count: number) {
+	const batchSize = 1;
 	const totalBatches = Math.ceil(count / batchSize);
 
 	console.log(`Inserting ${count} API documentation records...`);
@@ -24,11 +24,11 @@ async function insertApiDocumentations(count: number) {
 		console.log(`Inserted batch ${i + 1} of ${totalBatches}`);
 	}
 	console.log(`Inserted ${count} API documents`);
-}
+} 
 
 async function main() {
 	try {
-	  await insertApiDocumentations(2000);
+	  await insertApiDocumentation(1);
 	  console.log("Insertion complete!");
 	  process.exit(0);
 	} catch (error) {
