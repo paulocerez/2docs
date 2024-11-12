@@ -31,7 +31,7 @@ export async function POST (request: NextRequest, { params}: { params: { chatId:
 			role: "assistant",
 			content: aiResponse
 		});
-		return NextResponse.json(result, { status: 200})
+		return NextResponse.json(result, { status: 201 })
 	} catch(error) {
 		console.error("Error generating AI response:", error);
     	return NextResponse.json({ error: "Failed to generate AI response" }, { status: 500 });

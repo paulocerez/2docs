@@ -201,3 +201,5 @@ Currently under construction 🔨
 - Postgresql (Neon Serverless), Qdrant
 - Firecrawl
 - Docker
+
+## Possible contributions
