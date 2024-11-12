@@ -23,7 +23,6 @@ export default function SidebarHeader({
 }: SidebarHeaderProps) {
   const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
-  const { theme, setTheme } = useTheme();
 
   const { data: user, isLoading } = useQuery<UserData>({
     queryKey: ["user", userId],
@@ -31,6 +30,7 @@ export default function SidebarHeader({
       const response = await fetch(`/api/users/${userId}`);
       return response.json();
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   return (

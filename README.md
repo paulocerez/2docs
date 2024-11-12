@@ -7,20 +7,96 @@
 Generate robust code workflows by integrating two or more API's seamlessly. Works by inserting a descriptive workflow prompt and the links to the API references to be included. Finetune and iterate as needed. Cheap, accurate, and user-friendly.
 
 <div style="display: flex; justify-content: space-around; align-items: center; padding: 10px 0px">
-  <a href="https://docs.2docs.dev">Documentation</a>
-  <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
-  <a href="https://docs.2docs.dev/examples">API Reference</a>
+  <table style="border-collapse: collapse; border: none;">
+    <tr>
+      <td align="center" width="200" style="border: none;">
+        <a href="https://docs.2docs.dev">Documentation</a>
+      </td>
+      <td align="center" width="200" style="border: none;">
+        <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
+      </td>
+      <td align="center" width="200" style="border: none;">
+        <a href="https://docs.2docs.dev/examples">API Reference</a>
+      </td>
+    </tr>
+  </table>
+</div>
 </div>
 
 ---
 
-</div>
+## Table of Contents
+
+- [Who is this useful for?](#who-is-this-useful-for)
+  - [User Personas](#user-personas)
+  - [User Stories](#user-stories)
+- [Usage](#usage)
+  - [Web App](#web-app)
+  - [API](#api)
+  - [Local Usage](#local-usage)
+- [Conceptual Guide](#conceptual-guide)
+- [Feature Roadmap](#feature-roadmap)
+- [Database](#database)
+  - [Entity-Relationship Diagram](#entity-relationship-diagram)
+  - [PostgreSQL](#postgresql)
+  - [Qdrant](#qdrant)
+- [Security](#security)
+  - [Threat Model](#threat-model)
+  - [Cyber Security Measures](#cyber-security-measures)
+  - [Current External Dependencies](#current-external-dependencies)
+- [Architecture](#architecture)
+- [Technologies](#technologies)
+- [Possible Contributions](#possible-contributions)
+
+---
+
+## TL;DR
+
+2docs is a tool that generates code workflows by connecting multiple APIs though their references. It crawls API documentation directly for up-to-date accuracy, enabling developers to build integrated systems quickly with full code ownership (no vendor lock-in). Cheap, reliable, accurate. It uses vector embeddings for efficient API endpoint matching.
+
+- It offers three ways to use:
+  - Web App: Quick browser-based interface
+  - API: Direct endpoint access
+  - Local Setup: Full development environment
+
+Built with Next.js/TypeScript, PostgreSQL (Neon Serverless), Qdrant, and Docker.
 
 ## Who is this useful for?
 
-The tool aims to simplify the creation of automations with full ownership over the code. Compared to common automation tools it aims to give the developer full control over the generated code while maintaining much lower costs and higher accuracy due to frequent crawling of the API references directly.
+The tool aims to simplify the creation of automations with full ownership over the code. Compared to common automation tools it aims to give the developer full control over the generated code while maintaining much lower costs (plus no lock-in effects, you own all the code) and higher accuracy due to frequent crawling of the API references directly.
 
 Some API's change quite frequently. This might take quite some time to be reflected in Integrations of tools like Zapier or Make. Furthermore, 2docs intends to create educational transparency for developers getting started using multiple Application Programming Interfaces. As this is a crucial skill for developers nowadays, the data flows between these interfaces should be playful, easy to grasp, and highly interactive.
+
+<details>
+<summary>User Personas</summary>
+<br />
+
+- Name: Paul
+- Developer skill: Midlevel
+- Programming languages: JS/TS
+- Developer environment: MacOS, Linux
+- Team role: Software Engineer
+  <br />
+- Name: Lisa
+- Developer skill: No-code experience, Web Dev Basics
+- Programming languages: JS/TS, Python
+- Developer environment: MacOS, Linux
+- Team role: Product Manager
+</details>
+
+<details>
+<summary>User Stories</summary>
+
+```
+”As a developer, I want to implement two or more API's quickly so our product can access 3rd party data to build a better product for our clients.”
+```
+
+```
+”As a Product Manager, I want to easily understand the requirements on how to integrate different services using custom code to improve our product and automate boring stuff.”
+```
+
+</details>
+</div>
 
 ## Usage
 
@@ -32,7 +108,7 @@ The easiest way to use 2docs is via the web app running in the browser. It is cu
 
 ### API
 
-Check out the API reference here to call the respective endpoints for workflow generation and retrieve the code
+Check out the API reference here to call the respective endpoints for workflow generation and retrieve the code.
 
 ### Local usage
 
@@ -80,6 +156,8 @@ npm install
 ```
 docker compose up --build
 ```
+
+## Conceptual Guide
 
 ## Feature Roadmap
 
@@ -203,3 +281,5 @@ Currently under construction 🔨
 - Docker
 
 ## Possible contributions
+
+- Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs)
