@@ -159,6 +159,27 @@ docker compose up --build
 
 ## Conceptual Guide
 
+# User Flow
+
+```mermaid
+graph TD
+    A[Start] --> B[Login Page]
+    B -->|OAuth 2.0 via Google| C[New Chat Page]
+    C --> D[Insert Prompt]
+    D --> E[Add API Reference Links]
+    E --> F[Generate Initial Workflow]
+    F --> G[Review and Fine-tune Workflow]
+    G -->|Satisfied| I[Share Workflow]
+    I --> J[Publish to Community]
+    C --> K[Browse Community Workflows]
+    K --> L[View Shared Workflow]
+    L --> M[Clone Workflow]
+    M --> G
+    C --> N[Manage Own Workflows]
+    N --> O[Edit Existing Workflow]
+	O --> G
+```
+
 ## Feature Roadmap
 
 ##### 15-11-2024
@@ -325,12 +346,32 @@ graph TD
 
 ### Cyber security measures
 
-| Entry Point | Threat | Mitigation | Security Benefit/Urgency Level |
-| ----------- | ------ | ---------- | ------------------------------ |
+| Entry Point      | Threat                     | Mitigation | Security Benefit/Urgency Level |
+| ---------------- | -------------------------- | ---------- | ------------------------------ |
+| Login            |                            |            |                                |
+|                  |                            |            |                                |
+| Login            |                            |            |                                |
+| Prompt Insertion | Malicious prompt injection | ---------- | ------------------------------ |
+| Links insertion  | Malicious URL injection    | ---------- | ------------------------------ |
+|                  | ------                     | ---------- | ------------------------------ |
+
+##### Input Validation/Sanitization
+
+##### Authentication Security
+
+##### Permission/Access control
+
+##### Server-Side Request Forgery
+
+##### Data protection
+
+##### Permission/Access control
+
+##### Permission/Access control
 
 ### Current external dependencies
 
-Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up and login functionality. Qdrant and Neon Serverless as Database Cloud Services.
+Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up and login functionality. Qdrant and Neon Serverless as Database Cloud Services. Firecrawl is used for the crawling procedure.
 
 ## Architecture
 
