@@ -1,8 +1,5 @@
-import { auth } from "@/auth";
 import { createApiDocumentation } from "@/db/postgres/queries/scrape";
-import { mochi } from "@/docs/mochi";
 import { notion } from "@/docs/notion";
-import { scrapeURL } from "@/lib/scraping/scrape";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
 import { NextRequest, NextResponse } from "next/server";
 
