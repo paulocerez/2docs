@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiSidebar } from "react-icons/fi";
 import { IoRocketOutline } from "react-icons/io5";
 import Hotkey from "../ui/hotkey";
+import Soon from "../ui/soon";
 
 interface HeaderProps {
   isSidebarOpen: boolean;
@@ -65,7 +66,8 @@ export default function Header({
 
           <button className="w-auto rounded-lg shadow-sm bg-gray-100 px-3 py-1 text-xs border border-gray-200 hover:bg-gray-50 transition-all duration-300 flex items-center gap-1.5 mr-2">
             <IoRocketOutline className="w-3.5 h-3.5" />
-            Publish
+            <p>Publish</p>
+            <Soon />
           </button>
         </div>
       )}

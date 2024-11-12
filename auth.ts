@@ -10,9 +10,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 		// functions acting similar to middleware
 		// called when user logs in > access to session and user object from the db
 		async session({session, user}) {
-			// assign id from session object to be userId
-			session.user.id = user.id
-			return session
+			if (session.user) {
+			  session.user.id = user.id;
+			}
+			return session;
 		},
 
 		authorized({auth, request: { nextUrl}}) {

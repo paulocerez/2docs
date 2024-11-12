@@ -84,7 +84,7 @@ Some API's change quite frequently. This might take quite some time to be reflec
 - Team role: Product Manager
 </details>
 
-<details>
+<details>e
 <summary>User Stories</summary>
 
 ```
@@ -258,12 +258,75 @@ Storing vector embeddings of the scraped API references, performing vector simil
 
 ## Security
 
+The security apporach is highly guided by the STRIDE Model. It clusters potential threats into 6 categories:
+
+| Entry Point            | Explanation                                                   |
+| ---------------------- | ------------------------------------------------------------- |
+| Spoofing Identity      | Illegal access and usage of credentials                       |
+| Tampering with data    | Malicious data modifications (unauthorized, unauthenticated)  |
+| Repudiation            | Performing illegal actions that can't be proven by the system |
+| Information disclosure | Exposure of discrete information to unauthorized users        |
+| Denial of service      | Service unavailability to valid users                         |
+| Elevation of privilege | Unauthorized access controls                                  |
+
 ### Threat Model
+
+```mermaid
+graph TD
+    subgraph "User Interaction"
+        A[User] -->|Inputs| B(API Reference URL)
+        A -->|Authenticates| C(OAuth 2.0 via Google)
+        A -->|Creates| D(Workflow Prompt)
+        A -->|Publishes/Shares| E(Generated Workflow)
+    end
+
+    subgraph "Backend Processes"
+        B -->|Crawled by| F(Web Crawler)
+        F -->|Stores| G(Vector Database)
+        D -->|Processed by| H(Workflow Generator)
+        G -->|Provides data to| H
+    end
+
+    subgraph "Data Flows"
+        C -->|User data| I(User Management)
+        F -->|API data| G
+        H -->|Generated workflow| E
+        E -->|Shared data| J(Community Platform)
+    end
+
+    subgraph "Attack Vectors"
+        K[Attacker] -->|1. Malicious URL| B
+        K -->|2. SSRF| F
+        K -->|3. Phishing| C
+        K -->|4. Prompt Injection| D
+        K -->|5. Unauthorized Access| E
+        K -->|6. Data Interception| J
+    end
+
+    subgraph "Security Measures"
+        B -->|URL Validation| M1[Input Validation]
+        F -->|Domain Whitelist| M2[SSRF Prevention]
+        C -->|Secure OAuth| M3[Auth Security]
+        D -->|Sanitization| M4[Input Sanitization]
+        E -->|Access Control| M5[Permission System]
+        J -->|Encryption| M6[Data Protection]
+    end
+
+    classDef process fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef dataflow fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef attack fill:#fbb,stroke:#f33,stroke-width:2px;
+    classDef security fill:#bfb,stroke:#3b3,stroke-width:2px;
+
+    class F,G,H process;
+    class I,J dataflow;
+    class K attack;
+    class M1,M2,M3,M4,M5,M6 security;
+```
 
 ### Cyber security measures
 
-| Entry Point | Threat | Mitigation |
-| ----------- | ------ | ---------- |
+| Entry Point | Threat | Mitigation | Security Benefit/Urgency Level |
+| ----------- | ------ | ---------- | ------------------------------ |
 
 ### Current external dependencies
 
@@ -283,3 +346,7 @@ Currently under construction 🔨
 ## Possible contributions
 
 - Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs)
+
+```
+
+```

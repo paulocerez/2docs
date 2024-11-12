@@ -1,10 +1,10 @@
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 
 const openai = new OpenAI();
 
-export async function createEmbedding(text: string): Promise<number[]> {
+export async function generateEmbedding(text: string) {
 	const response = await openai.embeddings.create({
-		model: "text-embedding-3-small",
+		model: "text-embedding-ada-002",
 		input: text,
 	});
 	return response.data[0].embedding;
