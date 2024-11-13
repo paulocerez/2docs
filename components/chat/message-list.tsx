@@ -31,17 +31,6 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   );
 };
 
-const BoldText = ({ children }: { children: React.ReactNode }) => {
-  const text = children?.toString() || "";
-  const hasColon = text.endsWith(":");
-
-  return (
-    <strong className={hasColon ? "bold-with-colon" : "bold-section"}>
-      {children}
-    </strong>
-  );
-};
-
 export default function MessageList({ messages }: MessageListProps) {
   return (
     <div className="flex flex-col space-y-10 w-full h-full">
@@ -67,7 +56,6 @@ export default function MessageList({ messages }: MessageListProps) {
                     rehypePlugins={[rehypeRaw, rehypeSanitize]}
                     components={{
                       code: CodeBlock,
-                      strong: BoldText,
                     }}
                     className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
                       message.role === "user" ? "text-black" : "text-gray-600"

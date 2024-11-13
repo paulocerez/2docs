@@ -1,8 +1,13 @@
 import FirecrawlApp from "@mendable/firecrawl-js";
 
-const app = new FirecrawlApp({ apiKey: "fc-9158b0b589dc4c2bb44587a1cb988641" });
+const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
 
 export async function scrapeURL(url: string): Promise<{ markdown: string; statusCode: number }> {
+
+	if (!process.env.FIRECRAWL_API_KEY) {
+		throw new Error("FIRECRAWL_API_KEY is not set");
+	}
+
   try {
     const crawlResponse = await app.crawlUrl(url, {
       limit: 100,
