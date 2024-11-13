@@ -294,66 +294,123 @@ The security apporach is highly guided by the STRIDE Model. It clusters potentia
 
 ```mermaid
 graph TD
-    subgraph "User Interaction"
-        A[User] -->|Inputs| B(API Reference URL)
-        A -->|Authenticates| C(OAuth 2.0 via Google)
-        A -->|Creates| D(Workflow Prompt)
-        A -->|Publishes/Shares| E(Generated Workflow)
-    end
+subgraph "User Interaction"
+A[User] --> B[Login Page]
+B -->|OAuth 2.0 via Google| C[New Chat Page]
+C --> D[Insert Prompt]
+D --> E[Add API Reference Links]
+E --> F[Generate Initial Workflow]
+F --> G[Review and Fine-tune Workflow]
+G -->|Satisfied| I[Share Workflow]
+I --> J[Publish to Community]
+C --> K[Browse Community Workflows]
+K --> L[View Shared Workflow]
+L --> M[Clone Workflow]
+M --> G
+C --> N[Manage Own Workflows]
+N --> O[Edit Existing Workflow]
+O --> G
+end
 
-    subgraph "Backend Processes"
-        B -->|Crawled by| F(Web Crawler)
-        F -->|Stores| G(Vector Database)
-        D -->|Processed by| H(Workflow Generator)
-        G -->|Provides data to| H
-    end
-
-    subgraph "Data Flows"
-        C -->|User data| I(User Management)
-        F -->|API data| G
-        H -->|Generated workflow| E
-        E -->|Shared data| J(Community Platform)
+    subgraph "Backend Services"
+        P[Vercel Hosting]
+        Q[Neon Serverless Postgres]
+        R[Vector Database]
+        S[Web Crawler]
+        T[Workflow Generator API]
     end
 
     subgraph "Attack Vectors"
-        K[Attacker] -->|1. Malicious URL| B
-        K -->|2. SSRF| F
-        K -->|3. Phishing| C
-        K -->|4. Prompt Injection| D
-        K -->|5. Unauthorized Access| E
-        K -->|6. Data Interception| J
+        AV1[OAuth Phishing]
+        AV2[CSRF]
+        AV3[XSS]
+        AV4[SQL Injection]
+        AV5[SSRF]
+        AV6[Data Exfiltration]
+        AV7[Unauthorized Access]
+        AV8[API Abuse]
+        AV9[Prompt Injection]
     end
 
     subgraph "Security Measures"
-        B -->|URL Validation| M1[Input Validation]
-        F -->|Domain Whitelist| M2[SSRF Prevention]
-        C -->|Secure OAuth| M3[Auth Security]
-        D -->|Sanitization| M4[Input Sanitization]
-        E -->|Access Control| M5[Permission System]
-        J -->|Encryption| M6[Data Protection]
+        SM1[Secure OAuth Implementation]
+        SM2[CSRF Tokens]
+        SM3[Input Sanitization]
+        SM4[Parameterized Queries]
+        SM5[URL Validation]
+        SM6[Encryption at Rest]
+        SM7[Role-Based Access Control]
+        SM8[Rate Limiting]
+        SM9[Prompt Filtering]
     end
 
-    classDef process fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef dataflow fill:#bbf,stroke:#333,stroke-width:2px;
+    B --> AV1
+    C --> AV2
+    D --> AV3
+    Q --> AV4
+    S --> AV5
+    Q --> AV6
+    L --> AV7
+    T --> AV8
+    F --> AV9
+
+    AV1 --> SM1
+    AV2 --> SM2
+    AV3 --> SM3
+    AV4 --> SM4
+    AV5 --> SM5
+    AV6 --> SM6
+    AV7 --> SM7
+    AV8 --> SM8
+    AV9 --> SM9
+
+    classDef user fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef backend fill:#bbf,stroke:#333,stroke-width:2px;
     classDef attack fill:#fbb,stroke:#f33,stroke-width:2px;
     classDef security fill:#bfb,stroke:#3b3,stroke-width:2px;
 
-    class F,G,H process;
-    class I,J dataflow;
-    class K attack;
-    class M1,M2,M3,M4,M5,M6 security;
+    class A,B,C,D,E,F,G,I,J,K,L,M,N,O user;
+    class P,Q,R,S,T backend;
+    class AV1,AV2,AV3,AV4,AV5,AV6,AV7,AV8,AV9 attack;
+    class SM1,SM2,SM3,SM4,SM5,SM6,SM7,SM8,SM9 security;
+
 ```
 
 ### Cyber security measures
 
-| Entry Point      | Threat                     | Mitigation | Security Benefit/Urgency Level |
-| ---------------- | -------------------------- | ---------- | ------------------------------ |
-| Login            |                            |            |                                |
-|                  |                            |            |                                |
-| Login            |                            |            |                                |
-| Prompt Insertion | Malicious prompt injection | ---------- | ------------------------------ |
-| Links insertion  | Malicious URL injection    | ---------- | ------------------------------ |
-|                  | ------                     | ---------- | ------------------------------ |
+| Entry Point                | Threat                                                     | Mitigation                                                                                | Security Benefit/Urgency Level |
+| -------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------ |
+| Login                      |                                                            |                                                                                           |                                |
+|                            |                                                            |                                                                                           |                                |
+| Login                      |                                                            |                                                                                           |                                |
+| Prompt Insertion           | Malicious prompt injection                                 | ----------                                                                                | ------------------------------ |
+| Links insertion            | Malicious URL injection                                    | ----------                                                                                | ------------------------------ |
+| Creation of chats          | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ |
+| Creation of workflows      | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ |
+| Creation of messages       | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ |
+| Login                      | OAuth Phishing                                             | Implement secure OAuth 2.0 flow, use HTTPS, educate users about secure login practices    | High/Urgent                    |
+| Login                      | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                           | High/Urgent                    |
+| New Chat Page              | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                          | High/Urgent                    |
+| Prompt Insertion           | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                             | Medium/Important               |
+| Links insertion            | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                   | High/Urgent                    |
+| Web Crawler                | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols        | High/Urgent                    |
+| API Requests               | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                       | Medium/Important               |
+| Workflow Generation        | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                    | Medium/Important               |
+| Database (Postgres)        | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges                  | High/Urgent                    |
+| Database (Postgres)        | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                                | High/Urgent                    |
+| Vector Database (Qdrant)   | Unauthorized Access                                        | Implement proper authentication and authorization for database access                     | Medium/Important               |
+| Workflow Sharing           | Unauthorized Access                                        | Implement role-based access control (RBAC), verify user permissions before allowing edits | High/Urgent                    |
+| Workflow Viewing           | Information Leakage                                        | Ensure proper access controls, don't expose unpublished workflows                         | Medium/Important               |
+| Workflow Cloning           | Unauthorized Cloning                                       | Implement checks to ensure only published workflows can be cloned                         | Low/Consider                   |
+| API Endpoints              | Insecure Direct Object References (IDOR)                   | Implement proper authorization checks for all API endpoints                               | High/Urgent                    |
+| All Network Communications | Man-in-the-Middle Attacks                                  | Use HTTPS for all communications, implement HSTS                                          | High/Urgent                    |
+| User Sessions              | Session Hijacking                                          | Use secure session management practices, implement session timeouts                       | High/Urgent                    |
+| Error Handling             | Information Disclosure                                     | Implement proper error handling to avoid leaking sensitive information                    | Medium/Important               |
+| Dependencies               | Known Vulnerabilities                                      | Regularly update and patch all dependencies, use dependency scanning tools                | High/Urgent                    |
+| Server Configuration       | Misconfiguration                                           | Implement secure server configurations, use security headers                              | Medium/Important               |
+| Application Logic          | Business Logic Flaws                                       | Conduct thorough code reviews and security audits                                         | Medium/Important               |
+
+##### Security on all layers
 
 ##### Input Validation/Sanitization
 
@@ -364,8 +421,6 @@ graph TD
 ##### Server-Side Request Forgery
 
 ##### Data protection
-
-##### Permission/Access control
 
 ##### Permission/Access control
 
@@ -387,7 +442,3 @@ Currently under construction 🔨
 ## Possible contributions
 
 - Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs)
-
-```
-
-```
