@@ -123,9 +123,11 @@ function ChatContentInner({
 
   if (isInitialLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-screen space-x-2">
         <LoadingSpinner />
-        <p>Generating initial response...</p>
+        <p className="text-sm text-gray-400 flex items-center">
+          Generating initial response ...
+        </p>
       </div>
     );
   }

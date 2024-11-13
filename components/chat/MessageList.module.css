@@ -21,3 +21,12 @@
   background: none !important;
   padding: 0 !important;
 }
+
+.markdown-content .bold-section {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.markdown-content .bold-with-colon {
+  margin-bottom: 0.5em;
+}

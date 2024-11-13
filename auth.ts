@@ -18,11 +18,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 		authorized({auth, request: { nextUrl}}) {
 			const isLoggedIn = !!auth?.user;
-			const paths = ["/chat"]
+
+			const paths = ["/chat", "/workflows", "/settings", "/docs"]
 			const isProtected = paths.some((path) => nextUrl.pathname.startsWith(path))
 
+
 			if (isProtected && !isLoggedIn) {
-				const redirectUrl = new URL("api/auth/signin", nextUrl.origin)
+				const redirectUrl = new URL("/", nextUrl.origin)
 				redirectUrl.searchParams.append("callbackUrl", nextUrl.href)
 				return Response.redirect(redirectUrl)
 			}

@@ -31,10 +31,15 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   );
 };
 
-const insertLineBreaksBeforeBold = (content: string): string => {
-  // This regex looks for bold markdown that's not at the start of a line
-  const boldRegex = /([^\n])\*\*(.*?)\*\*/g;
-  return content.replace(boldRegex, (match, p1, p2) => `${p1}\n\n**${p2}**`);
+const BoldText = ({ children }: { children: React.ReactNode }) => {
+  const text = children?.toString() || "";
+  const hasColon = text.endsWith(":");
+
+  return (
+    <strong className={hasColon ? "bold-with-colon" : "bold-section"}>
+      {children}
+    </strong>
+  );
 };
 
 export default function MessageList({ messages }: MessageListProps) {
@@ -62,6 +67,7 @@ export default function MessageList({ messages }: MessageListProps) {
                     rehypePlugins={[rehypeRaw, rehypeSanitize]}
                     components={{
                       code: CodeBlock,
+                      strong: BoldText,
                     }}
                     className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
                       message.role === "user" ? "text-black" : "text-gray-600"
@@ -69,9 +75,7 @@ export default function MessageList({ messages }: MessageListProps) {
                       message.role === "assistant" ? "assistant-message" : ""
                     }`}
                   >
-                    {insertLineBreaksBeforeBold(
-                      message.content || "No content"
-                    )}
+                    {message.content || "No content"}
                   </Markdown>
                 </div>
               </div>

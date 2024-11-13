@@ -1,5 +1,5 @@
 import { createApiDocumentation } from "@/db/postgres/queries/scrape";
-import { notion } from "@/docs/notion";
+import { notion } from "@/markdown/notion";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
 import { NextRequest, NextResponse } from "next/server";
 
