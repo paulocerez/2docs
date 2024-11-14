@@ -202,9 +202,13 @@ graph TD
 
 ## Features
 
+[Insert usage GIF here]
+
 ##### 15-11-2024
 
-Users can start basic chat sessions, crawling entire API references and store these in the Vector Database. The generator then builds a workflow by retrieving the api endpoints and variables as embeddings from Qdrant based on the user prompt. The workflow sharing is currently under construction, not built in the way it is described in the docs already.
+Users can start basic chat sessions. Here the user inserts a chat title, a prompt that describes the desired workflow, and two or more links to API references the user wants to utilize. The application will then store that data, grab the url's, crawl these references including subpages and store them as markdown. That markdown is processed and parsed into workflow variables and api endpoints which are then transformed into embeddings. These embeddings are stored in the Vector Database, where they can be easily retrieved from using Similarity Search. Based on the prompt, the app will fetch and combine variables and endpoints into a code workflow that satisfies the user intention. Boom, there is your workflow. That workflow can be refined by adding more and more prompts until it fully meets your needs.
+
+The workflow sharing feature is currently under construction, not built in the way it is described in the docs already.
 
 ##### 15-12-2024
 
