@@ -216,58 +216,171 @@ The workflows are much more accurate. Users can share workflows in an Online Com
 
 ```mermaid
 erDiagram
-users ||--o{ chats : creates
-users ||--o{ apiDocumentations : creates
-users ||--o{ workflows : creates
-chats ||--o{ chatApiLinks : has
-apiDocumentations ||--o{ apiEndpoints : contains
-apiDocumentations ||--o{ chatApiLinks : referenced_in
-workflows ||--o{ workflowSteps : contains
-workflows ||--o{ workflowVariables : has
-apiEndpoints ||--o{ workflowSteps : used_in
-users {
-string id PK
-string name
-string email
-}
-chats {
-string id PK
-string userId FK
-string title
-}
-apiDocumentations {
-string id PK
-string name
-string createdBy FK
-}
-apiEndpoints {
-string id PK
-string apiDocumentationId FK
-string path
-string method
-}
-chatApiLinks {
-string chatId FK
-string apiDocumentationId FK
-}
-workflows {
-string id PK
-string userId FK
-string title
-}
-workflowSteps {
-string id PK
-string workflowId FK
-string apiEndpointId FK
-int order
-}
-workflowVariables {
-string id PK
-string workflowId FK
-string name
-string defaultValue
-string description
-}
+    %% Authentication
+    users ||--o{ accounts : has
+    users ||--o{ sessions : has
+    users ||--o{ authenticators : has
+
+    %% Chat System
+    users ||--o{ chats : creates
+    chats ||--o{ messages : contains
+    chats ||--o{ chatApiLinks : has
+
+    %% API Documentation
+    users ||--o{ apiDocumentations : creates
+    apiDocumentations ||--o{ apiEndpoints : contains
+    apiDocumentations ||--o{ chatApiLinks : referenced_in
+    apiEndpoints ||--o{ vectorEmbeddings : has
+
+    %% Workflow System
+    users ||--o{ workflowRuns : executes
+    users ||--o{ userWorkflows : has
+    workflows ||--o{ userWorkflows : accessed_by
+    workflows ||--o{ workflowSteps : contains
+    workflows ||--o{ workflowVariables : has
+    workflows ||--o{ workflowRuns : tracks
+    workflowSteps }o--|| apiEndpoints : uses
+
+    users {
+        string id PK
+        string name
+        string email UK
+        timestamp emailVerified
+        string image
+    }
+
+    accounts {
+        string userId FK
+        string type
+        string provider
+        string providerAccountId
+        string refresh_token
+        string access_token
+        integer expires_at
+        string token_type
+        string scope
+        string id_token
+        string session_state
+    }
+
+    sessions {
+        string sessionToken PK
+        string userId FK
+        timestamp expires
+    }
+
+    authenticators {
+        string id PK
+        string credentialID UK
+        string userId FK
+        string providerAccountId
+        string credentialPublicKey
+        integer counter
+        string credentialDeviceType
+        boolean credentialBackedUp
+        string transports
+    }
+
+    chats {
+        string id PK
+        string userId FK
+        timestamp createdAt
+        string prompt
+        string title
+        timestamp lastActivityAt
+    }
+
+    messages {
+        string id PK
+        string chatId FK
+        string role
+        string content
+        timestamp timestamp
+    }
+
+    apiDocumentations {
+        string id PK
+        string name
+        string baseUrl
+        string version
+        string content
+        timestamp lastScrapedAt
+        string createdBy FK
+    }
+
+    apiEndpoints {
+        string id PK
+        string apiDocumentationId FK
+        string path
+        string method
+        string summary
+        string description
+        string parameters
+        string requestBody
+        string responses
+    }
+
+    vectorEmbeddings {
+        string id PK
+        string apiEndpointId FK
+        string content
+        string metadata
+        string vectorId
+    }
+
+    workflows {
+        string id PK
+        string createdBy FK "References creator"
+        string title
+        string description
+        timestamp createdAt
+        timestamp updatedAt
+        boolean isPublished
+        timestamp publishedAt
+        integer version
+        string[] tags
+    }
+
+    userWorkflows {
+        string id PK
+        string userId FK
+        string workflowId FK
+        string role "owner|editor|viewer"
+        timestamp addedAt
+    }
+
+    workflowSteps {
+        string id PK
+        string workflowId FK
+        string endpointId FK
+        integer order
+        string inputMapping
+        string outputMapping
+    }
+
+    workflowVariables {
+        string id PK
+        string workflowId FK
+        string name
+        string defaultValue
+        string description
+    }
+
+    workflowRuns {
+        string id PK
+        string workflowId FK
+        string userId FK
+        timestamp startedAt
+        timestamp completedAt
+        string status
+        string result
+    }
+
+    chatApiLinks {
+        string id PK
+        string chatId FK
+        string apiDocumentationId FK
+    }
 ```
 
 ### PostgreSQL

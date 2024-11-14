@@ -6,7 +6,7 @@ export const workflows = pgTable("workflow", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
-    userId: text("user_id")
+    createdById: text("created_by")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
@@ -17,6 +17,20 @@ export const workflows = pgTable("workflow", {
     publishedAt: timestamp("published_at"),
     version: integer("version").notNull().default(1),
     tags: text("tags").array(),
+});
+
+export const userWorkflows = pgTable("user_workflow", {
+	id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    workflowId: text("workflow_id")
+        .notNull()
+        .references(() => workflows.id, { onDelete: "cascade" }),
+	role: text("role").notNull(),
+	addedAt: timestamp("added_at").notNull().defaultNow(),
 });
 
 export const workflowSteps = pgTable("workflow_step", {
@@ -62,36 +76,11 @@ export const workflowRuns = pgTable("workflow_run", {
     result: text("result"),
 });
 
-export const workflowLikes = pgTable("workflow_like", {
-    id: text("id")
-        .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
-    workflowId: text("workflow_id")
-        .notNull()
-        .references(() => workflows.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const workflowComments = pgTable("workflow_comment", {
-    id: text("id")
-        .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
-    workflowId: text("workflow_id")
-        .notNull()
-        .references(() => workflows.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    content: text("content").notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
 export type InsertWorkflow = typeof workflows.$inferInsert;
 export type SelectWorkflow = typeof workflows.$inferSelect;
+
+export type InsertUserWorkflow = typeof userWorkflows.$inferInsert;
+export type SelectUserWorkflow = typeof userWorkflows.$inferSelect;
 
 export type InsertWorkflowStep = typeof workflowSteps.$inferInsert;
 export type SelectWorkflowStep = typeof workflowSteps.$inferSelect;
@@ -102,8 +91,3 @@ export type SelectWorkflowVariable = typeof workflowVariables.$inferSelect;
 export type InsertWorkflowRun = typeof workflowRuns.$inferInsert;
 export type SelectWorkflowRun = typeof workflowRuns.$inferSelect;
 
-export type InsertWorkflowLike = typeof workflowLikes.$inferInsert;
-export type SelectWorkflowLike = typeof workflowLikes.$inferSelect;
-
-export type InsertWorkflowComment = typeof workflowComments.$inferInsert;
-export type SelectWorkflowComment = typeof workflowComments.$inferSelect;
