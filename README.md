@@ -385,41 +385,52 @@ graph TD
 
 ### Cyber security measures
 
-| Entry Point              | Threat                                                     | Mitigation                                                                                     | Security Benefit/Urgency Level | Implemented? |
-| ------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| Login                    | OAuth Phishing, Access Token interception                  | Implement secure OAuth 2.0 flow through Auth.js, use HTTPS, token validation, (user education) | High/Urgent                    | ✅           |
-| Login                    | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                                | High/Urgent                    | ❌           |
-| Prompt Insertion         | Malicious prompt injection                                 | ----------                                                                                     | ------------------------------ | ❌           |
-| Links insertion          | Malicious URL injection                                    | ----------                                                                                     | ------------------------------ | ❌           |
-| Creation of chats        | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
-| Creation of workflows    | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
-| Creation of messages     | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
-| New Chat Page            | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                               | High/Urgent                    | ❌           |
-| Prompt Insertion         | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                                  | Medium/Important               | ❌           |
-| Links insertion          | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                        | High/Urgent                    | ❌           |
-| Web Crawler              | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols             | High/Urgent                    | ❌           |
-| API Requests             | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                            | Medium/Important               | ✅           |
-| Workflow Generation      | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                         | Medium/Important               | ❌           |
-| Database (Postgres)      | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges                       | High/Urgent                    | ✅           |
-| Database (Postgres)      | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                                     | High/Urgent                    | ❌           |
-| Vector Database (Qdrant) | Unauthorized Access                                        | Implement proper authentication and authorization for database access                          | Medium/Important               | ✅           |
+##### Security Measures in the User Flow
+
+| Entry Point                | Threat                                    | Mitigation                                                                                     | Security Benefit/Urgency Level | Implemented?                            |
+| -------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------- |
+| Login                      | OAuth Phishing, Access Token interception | Implement secure OAuth 2.0 flow through Auth.js, use HTTPS, token validation, (user education) | High/Urgent                    | ✅ ❌ (all except for token validation) |
+| Login                      | CSRF Attack                               | Implement CSRF tokens for all forms and state-changing requests                                | High/Urgent                    | ❌                                      |
+| New Chat Page              | XSS (Cross-Site Scripting)                | Input sanitization, use of Content Security Policy (CSP) headers                               | High/Urgent                    | ❌                                      |
+| Prompt Insertion           | Malicious prompt injection                | Input validation and sanitization, implement prompt filtering                                  | Medium/Important               | ❌                                      |
+| Links insertion            | Malicious URL injection                   | URL validation and sanitization, implement whitelist of allowed domains                        | High/Urgent                    | ❌                                      |
+| Workflow Generation        | Prompt manipulation                       | Implement safeguards in the workflow generation logic, sanitize inputs                         | Medium/Important               | ❌                                      |
+| Workflow Generation        | DDOS                                      | Rate Limiting                                                                                  | High/Urgent                    | ❌                                      |
+| Application Logic          | Business Logic Flaws                      | Thorough code reviews and security audits ("simulated pentesting")                             | High/Urgent                    | ✅                                      |
+| API Endpoints              | Insecure Direct Object References (IDOR)  | Implement proper authorization checks for all API endpoints                                    | High/Urgent                    | ❌                                      |
+| All Network Communications | Man-in-the-Middle Attacks                 | Use HTTPS for all communications                                                               | High/Urgent                    | ✅                                      |
+| Error Handling             | Information Disclosure                    | Implement proper error handling to avoid leaking sensitive information                         | Medium/Important               | ❌                                      |
+| Server Configuration       | Misconfiguration                          | Implement secure server configurations, use security headers                                   | Medium/Important               | ❌                                      |
 
 <br />
 
-Security Measures regarding features that are currently not implemented:
+##### Security Measures in external services or dependencies
 
-| Entry Point                | Threat                                   | Mitigation                                                                                | Security Benefit/Urgency Level | Implemented? |
-| -------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| Workflow Sharing           | Unauthorized Access                      | Implement role-based access control (RBAC), verify user permissions before allowing edits | High/Urgent                    | ❌           |
-| Workflow Viewing           | Information Leakage                      | Ensure proper access controls, don't expose unpublished workflows                         | Medium/Important               | ❌           |
-| Workflow Cloning           | Unauthorized Cloning                     | Implement checks to ensure only published workflows can be cloned                         | Low/Consider                   | ❌           |
-| API Endpoints              | Insecure Direct Object References (IDOR) | Implement proper authorization checks for all API endpoints                               | High/Urgent                    | ❌           |
-| All Network Communications | Man-in-the-Middle Attacks                | Use HTTPS for all communications, implement HSTS                                          | High/Urgent                    | ✅           |
-| User Sessions              | Session Hijacking                        | Use secure session management practices, implement session timeouts                       | High/Urgent                    | ✅           |
-| Error Handling             | Information Disclosure                   | Implement proper error handling to avoid leaking sensitive information                    | Medium/Important               | ❌           |
-| Dependencies               | Known Vulnerabilities                    | Regularly update and patch all dependencies, use dependency scanning tools                | High/Urgent                    | ✅           |
-| Server Configuration       | Misconfiguration                         | Implement secure server configurations, use security headers                              | Medium/Important               | ❌           |
-| Application Logic          | Business Logic Flaws                     | Conduct thorough code reviews and security audits                                         | Medium/Important               | ❌           |
+| Entry Point                    | Threat                             | Mitigation                                                                         | Security Benefit/Urgency Level | Implemented?                                  |
+| ------------------------------ | ---------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------- |
+| Web Crawler                    | SSRF (Server-Side Request Forgery) | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols | High/Urgent                    | ❌                                            |
+| API Requests (Crawler, OpenAI) | API Abuse                          | Implement rate limiting, use API keys, monitor for unusual activity (logging)      | Medium/Important               | ✅                                            |
+| Dependencies                   | Known Vulnerabilities              | Regular updates and patches of all dependencies, dependency scanning tools (Snyk)  | High/Urgent                    | ✅ ❌ (no dependency scanning tool right now) |
+
+<br />
+
+##### Database Security Measures
+
+| Entry Point   | Threat              | Mitigation                                                            | Security Benefit/Urgency Level | Implemented? |
+| ------------- | ------------------- | --------------------------------------------------------------------- | ------------------------------ | ------------ |
+| Database      | SQL Injection       | Parameterized queries via DrizzleORM, limit database user privileges  | High/Urgent                    | ✅           |
+| Database      | Data Breach         | Encrypt sensitive data at rest, use strong access controls            | High/Urgent                    | ❌           |
+| Database      | Unauthorized Access | Implement proper authentication and authorization for database access | High/Urgent                    | ✅           |
+| User Sessions | Session Hijacking   | Use secure session management practices, implement session timeouts   | High/Urgent                    | ✅           |
+
+<br />
+
+##### Security Measures regarding features that are currently not implemented
+
+| Entry Point                    | Threat                                       | Mitigation                                                                                                              | Security Benefit/Urgency Level                       | Implemented? |
+| ------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------ |
+| Sharing Workflows to Community | Unauthorized Write Access                    | Implement role-based access control per workflow, verify user permissions before allowing edits (editor, viewer, admin) | High/Urgent (once workflow community is implemented) | ❌           |
+| Viewing Community Workflows    | Information Leakage/Unauthorized View Access | Proper access controls, no exposure of unpublished workflows                                                            | High/Urgent                                          | ❌           |
 
 ### Current external dependencies
 
