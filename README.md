@@ -6,47 +6,35 @@
 
 Generate robust code workflows by integrating two or more API's seamlessly. Works by inserting a descriptive workflow prompt and the links to the API references to be included. Finetune and iterate as needed. Cheap, accurate, and user-friendly.
 
-<div style="display: flex; justify-content: space-around; align-items: center; padding: 10px 0px">
-  <table style="border-collapse: collapse; border: none;">
-    <tr>
-      <td align="center" width="200" style="border: none;">
-        <a href="https://docs.2docs.dev">Documentation</a>
-      </td>
-      <td align="center" width="200" style="border: none;">
-        <a href="https://docs.2docs.dev/getting-started">Getting Started</a>
-      </td>
-      <td align="center" width="200" style="border: none;">
-        <a href="https://docs.2docs.dev/examples">API Reference</a>
-      </td>
-    </tr>
-  </table>
-</div>
 </div>
 
 ---
 
 ## Table of Contents
 
+- [TL;DR](#tldr)
 - [Who is this useful for?](#who-is-this-useful-for)
   - [User Personas](#user-personas)
   - [User Stories](#user-stories)
+- [How it works](#how-it-works)
 - [Usage](#usage)
   - [Web App](#web-app)
   - [API](#api)
-  - [Local Usage](#local-usage)
+  - [Local usage](#local-usage)
 - [Conceptual Guide](#conceptual-guide)
+  - [User Flow](#user-flow)
 - [Feature Roadmap](#feature-roadmap)
 - [Database](#database)
   - [Entity-Relationship Diagram](#entity-relationship-diagram)
   - [PostgreSQL](#postgresql)
   - [Qdrant](#qdrant)
 - [Security](#security)
-  - [Threat Model](#threat-model)
-  - [Cyber Security Measures](#cyber-security-measures)
-  - [Current External Dependencies](#current-external-dependencies)
-- [Architecture](#architecture)
+  - [Threat Modeling](#threat-modeling)
+  - [Cyber security measures](#cyber-security-measures)
+  - [Current external dependencies](#current-external-dependencies)
 - [Technologies](#technologies)
-- [Possible Contributions](#possible-contributions)
+- [Possible contributions](#possible-contributions)
+- [Feedback](#feedback)
 
 ---
 
@@ -96,7 +84,6 @@ Some API's change quite frequently. This might take quite some time to be reflec
 ```
 
 </details>
-</div>
 
 ## How it works
 
@@ -130,24 +117,28 @@ graph TD
 
 ## Usage
 
-Depending on your use case, there's different ways of working with 2docs workflows:
-
 ### Web App
 
 The easiest way to use 2docs is via the web app running in the browser. It is currently visible <a href="https://2docs.vercel.app/">here</a>.
-
-### API
-
-Check out the API reference here to call the respective endpoints for workflow generation and retrieve the code.
 
 ### Local usage
 
 Follow the instructions below to set up a local development environment for 2docs.
 
-##### Clone the repository
+- Requirements: Node.js, Docker
+  <br />
+
+##### Clone the repository and move into the project folder
 
 ```
 git clone https://github.com/paulocerez/2docs.git
+cd 2docs
+```
+
+##### Install the required dependencies
+
+```
+npm install
 ```
 
 ##### Copy the .env.example file into a .env
@@ -157,32 +148,32 @@ cp .env.example .env
 ```
 
 ```
+OPENAI_API_KEY=
 AUTH_SECRET=
 DATABASE_PASSWORD=
 AUTH_DRIZZLE_URL=
 AUTH_GOOGLE_ID=
 AUTH_GOOGLE_SECRET=
-DATABASE_URL=
-OPENAI_API_KEY=
+DATABASE_URL=http://localhost:5432
 QDRANT_URL=http://localhost:6333
 ```
 
 ##### Get the necessary API-Keys
 
 ```
-Visit and generate an API Key at OpenAI.
+Visit and generate an API Key at OpenAI. Insert in .env
 ```
 
-##### Install the required dependencies
+##### Launch Firecrawl and the databases locally using Docker
 
 ```
-npm install
+docker compose up --build
 ```
 
 ##### Run the application locally
 
 ```
-docker compose up --build
+npm run dev
 ```
 
 ## Conceptual Guide
@@ -305,6 +296,8 @@ Storing vector embeddings of the scraped API references, performing vector simil
 | ------------------------------------- | --------------------------------------------- | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Vector Embeddings (Qdrant Collection) | Vector embeddings of API documentation chunks | -          | -             | { id: "vec505", vector: [0.1, 0.2, ...], payload: { apiDocumentationId: "api789", apiEndpointId: "endpoint101", content: "This endpoint retrieves user data..." } } |
 
+<br />
+
 ## Security
 
 The security apporach is highly guided by the STRIDE Model. It clusters potential threats into 6 categories:
@@ -412,37 +405,44 @@ end
 
 ### Cyber security measures
 
-| Entry Point                | Threat                                                     | Mitigation                                                                                | Security Benefit/Urgency Level | Implemented? |
-| -------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| Login                      |                                                            |                                                                                           |                                | ❌           |
-|                            |                                                            |                                                                                           |                                | ❌           |
-| Login                      |                                                            |                                                                                           |                                | ❌           |
-| Prompt Insertion           | Malicious prompt injection                                 | ----------                                                                                | ------------------------------ | ❌           |
-| Links insertion            | Malicious URL injection                                    | ----------                                                                                | ------------------------------ | ❌           |
-| Creation of chats          | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ | ✅           |
-| Creation of workflows      | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ | ✅           |
-| Creation of messages       | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                           | ------------------------------ | ✅           |
-| Login                      | OAuth Phishing                                             | Implement secure OAuth 2.0 flow, use HTTPS, educate users about secure login practices    | High/Urgent                    | ✅           |
-| Login                      | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                           | High/Urgent                    | ❌           |
-| New Chat Page              | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                          | High/Urgent                    | ❌           |
-| Prompt Insertion           | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                             | Medium/Important               | ❌           |
-| Links insertion            | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                   | High/Urgent                    | ❌           |
-| Web Crawler                | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols        | High/Urgent                    | ❌           |
-| API Requests               | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                       | Medium/Important               | ✅           |
-| Workflow Generation        | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                    | Medium/Important               | ❌           |
-| Database (Postgres)        | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges                  | High/Urgent                    | ✅           |
-| Database (Postgres)        | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                                | High/Urgent                    | ❌           |
-| Vector Database (Qdrant)   | Unauthorized Access                                        | Implement proper authentication and authorization for database access                     | Medium/Important               | ✅           |
-| Workflow Sharing           | Unauthorized Access                                        | Implement role-based access control (RBAC), verify user permissions before allowing edits | High/Urgent                    | ❌           |
-| Workflow Viewing           | Information Leakage                                        | Ensure proper access controls, don't expose unpublished workflows                         | Medium/Important               | ❌           |
-| Workflow Cloning           | Unauthorized Cloning                                       | Implement checks to ensure only published workflows can be cloned                         | Low/Consider                   | ❌           |
-| API Endpoints              | Insecure Direct Object References (IDOR)                   | Implement proper authorization checks for all API endpoints                               | High/Urgent                    | ❌           |
-| All Network Communications | Man-in-the-Middle Attacks                                  | Use HTTPS for all communications, implement HSTS                                          | High/Urgent                    | ✅           |
-| User Sessions              | Session Hijacking                                          | Use secure session management practices, implement session timeouts                       | High/Urgent                    | ✅           |
-| Error Handling             | Information Disclosure                                     | Implement proper error handling to avoid leaking sensitive information                    | Medium/Important               | ❌           |
-| Dependencies               | Known Vulnerabilities                                      | Regularly update and patch all dependencies, use dependency scanning tools                | High/Urgent                    | ✅           |
-| Server Configuration       | Misconfiguration                                           | Implement secure server configurations, use security headers                              | Medium/Important               | ❌           |
-| Application Logic          | Business Logic Flaws                                       | Conduct thorough code reviews and security audits                                         | Medium/Important               | ❌           |
+| Entry Point              | Threat                                                     | Mitigation                                                                             | Security Benefit/Urgency Level | Implemented? |
+| ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| Login                    |                                                            |                                                                                        |                                | ❌           |
+|                          |                                                            |                                                                                        |                                | ❌           |
+| Login                    |                                                            |                                                                                        |                                | ❌           |
+| Prompt Insertion         | Malicious prompt injection                                 | ----------                                                                             | ------------------------------ | ❌           |
+| Links insertion          | Malicious URL injection                                    | ----------                                                                             | ------------------------------ | ❌           |
+| Creation of chats        | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
+| Creation of workflows    | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
+| Creation of messages     | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
+| Login                    | OAuth Phishing                                             | Implement secure OAuth 2.0 flow, use HTTPS, educate users about secure login practices | High/Urgent                    | ✅           |
+| Login                    | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                        | High/Urgent                    | ❌           |
+| New Chat Page            | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                       | High/Urgent                    | ❌           |
+| Prompt Insertion         | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                          | Medium/Important               | ❌           |
+| Links insertion          | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                | High/Urgent                    | ❌           |
+| Web Crawler              | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols     | High/Urgent                    | ❌           |
+| API Requests             | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                    | Medium/Important               | ✅           |
+| Workflow Generation      | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                 | Medium/Important               | ❌           |
+| Database (Postgres)      | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges               | High/Urgent                    | ✅           |
+| Database (Postgres)      | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                             | High/Urgent                    | ❌           |
+| Vector Database (Qdrant) | Unauthorized Access                                        | Implement proper authentication and authorization for database access                  | Medium/Important               | ✅           |
+
+<br />
+
+Security Measures regarding features that are currently not implemented:
+
+| Entry Point                | Threat                                   | Mitigation                                                                                | Security Benefit/Urgency Level | Implemented? |
+| -------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| Workflow Sharing           | Unauthorized Access                      | Implement role-based access control (RBAC), verify user permissions before allowing edits | High/Urgent                    | ❌           |
+| Workflow Viewing           | Information Leakage                      | Ensure proper access controls, don't expose unpublished workflows                         | Medium/Important               | ❌           |
+| Workflow Cloning           | Unauthorized Cloning                     | Implement checks to ensure only published workflows can be cloned                         | Low/Consider                   | ❌           |
+| API Endpoints              | Insecure Direct Object References (IDOR) | Implement proper authorization checks for all API endpoints                               | High/Urgent                    | ❌           |
+| All Network Communications | Man-in-the-Middle Attacks                | Use HTTPS for all communications, implement HSTS                                          | High/Urgent                    | ✅           |
+| User Sessions              | Session Hijacking                        | Use secure session management practices, implement session timeouts                       | High/Urgent                    | ✅           |
+| Error Handling             | Information Disclosure                   | Implement proper error handling to avoid leaking sensitive information                    | Medium/Important               | ❌           |
+| Dependencies               | Known Vulnerabilities                    | Regularly update and patch all dependencies, use dependency scanning tools                | High/Urgent                    | ✅           |
+| Server Configuration       | Misconfiguration                         | Implement secure server configurations, use security headers                              | Medium/Important               | ❌           |
+| Application Logic          | Business Logic Flaws                     | Conduct thorough code reviews and security audits                                         | Medium/Important               | ❌           |
 
 ##### Security on all layers
 
