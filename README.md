@@ -200,11 +200,11 @@ graph TD
 	O --> G
 ```
 
-## Feature Roadmap
+## Features
 
 ##### 15-11-2024
 
-Users can start basic chat sessions, crawling entire API references and store these in the Vector Database. The generator then builds a workflow based on the user prompt.
+Users can start basic chat sessions, crawling entire API references and store these in the Vector Database. The generator then builds a workflow based on the user prompt. The workflow sharing is currently under construction, not built in the way it is described in the docs already.
 
 ##### 15-12-2024
 
@@ -318,115 +318,91 @@ During the implementations of security measures, I've been following this Thread
 
 <a href="https://owasp.org/www-community/Threat_Modeling_Process#step-1-scope-your-work">OWASP Threat Modeling Process</a>
 
-The key idea is to look at the application security from the attacker's perspective.
+The key idea is to look at the application security from the attacker's perspective - functionality and data as the value of the system, where exploitation of vulnerabilities cause risks of damage.
+
+These are the core principles I follow:
+
+- Keeping things simple > Not overengineering the system and trying to keep things tightly coupled together.
+- Zero trust > Constant operation verification.
+
+#### Data Flow Diagram
 
 ```mermaid
 graph TD
-subgraph "User Interaction"
-A[User] --> B[Login Page]
-B -->|OAuth 2.0 via Google| C[New Chat Page]
-C --> D[Insert Prompt]
-D --> E[Add API Reference Links]
-E --> F[Generate Initial Workflow]
-F --> G[Review and Fine-tune Workflow]
-G -->|Satisfied| I[Share Workflow]
-I --> J[Publish to Community]
-C --> K[Browse Community Workflows]
-K --> L[View Shared Workflow]
-L --> M[Clone Workflow]
-M --> G
-C --> N[Manage Own Workflows]
-N --> O[Edit Existing Workflow]
-O --> G
-end
-
-    subgraph "Backend Services"
-        P[Vercel Hosting]
-        Q[Neon Serverless Postgres]
-        R[Vector Database]
-        S[Web Crawler]
-        T[Workflow Generator API]
+    subgraph User
+        A[User]
     end
 
-    subgraph "Attack Vectors"
-        AV1[OAuth Phishing]
-        AV2[CSRF]
-        AV3[XSS]
-        AV4[SQL Injection]
-        AV5[SSRF]
-        AV6[Data Exfiltration]
-        AV7[Unauthorized Access]
-        AV8[API Abuse]
-        AV9[Prompt Injection]
+    subgraph "Authentication"
+        B[Google OAuth]
     end
 
-    subgraph "Security Measures"
-        SM1[Secure OAuth Implementation]
-        SM2[CSRF Tokens]
-        SM3[Input Sanitization]
-        SM4[Parameterized Queries]
-        SM5[URL Validation]
-        SM6[Encryption at Rest]
-        SM7[Role-Based Access Control]
-        SM8[Rate Limiting]
-        SM9[Prompt Filtering]
+    subgraph "API Backend"
+        C[API Backend]
     end
 
-    B --> AV1
-    C --> AV2
-    D --> AV3
-    Q --> AV4
-    S --> AV5
-    Q --> AV6
-    L --> AV7
-    T --> AV8
-    F --> AV9
+    subgraph "External Services"
+        D[Firecrawl API]
+        F[OpenAI API]
+    end
 
-    AV1 --> SM1
-    AV2 --> SM2
-    AV3 --> SM3
-    AV4 --> SM4
-    AV5 --> SM5
-    AV6 --> SM6
-    AV7 --> SM7
-    AV8 --> SM8
-    AV9 --> SM9
+    subgraph "Databases"
+        E[Postgres DB]
+        G[Qdrant DB]
+    end
+
+    A -->|Authenticates| B
+    B -->|Returns token| C
+    A -->|Submits API URL| C
+    C -->|Requests crawl| D
+    D -->|Returns API docs| C
+    C -->|Stores API data| E
+    C -->|Requests embeddings| F
+    F -->|Returns embeddings| C
+    C -->|Stores vectors| G
+    A -->|Submits workflow prompt| C
+    C -->|Searches relevant APIs| G
+    G -->|Returns relevant endpoints| C
+    C -->|Requests workflow generation| F
+    F -->|Returns generated workflow| C
+    C -->|Stores workflow| E
+    C -->|Returns workflow| A
+    A -->|Shares workflow| C
+    C -->|Updates permissions| E
 
     classDef user fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef backend fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef attack fill:#fbb,stroke:#f33,stroke-width:2px;
-    classDef security fill:#bfb,stroke:#3b3,stroke-width:2px;
+    classDef auth fill:#fba,stroke:#333,stroke-width:2px;
+    classDef api fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef db fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef external fill:#fbb,stroke:#333,stroke-width:2px;
 
-    class A,B,C,D,E,F,G,I,J,K,L,M,N,O user;
-    class P,Q,R,S,T backend;
-    class AV1,AV2,AV3,AV4,AV5,AV6,AV7,AV8,AV9 attack;
-    class SM1,SM2,SM3,SM4,SM5,SM6,SM7,SM8,SM9 security;
-
+    class A user;
+    class B auth;
+    class C api;
+    class E,G db;
+    class D,F external;
 ```
 
 ### Cyber security measures
 
-| Entry Point              | Threat                                                     | Mitigation                                                                             | Security Benefit/Urgency Level | Implemented? |
-| ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| Login                    |                                                            |                                                                                        |                                | ❌           |
-|                          |                                                            |                                                                                        |                                | ❌           |
-| Login                    |                                                            |                                                                                        |                                | ❌           |
-| Prompt Insertion         | Malicious prompt injection                                 | ----------                                                                             | ------------------------------ | ❌           |
-| Links insertion          | Malicious URL injection                                    | ----------                                                                             | ------------------------------ | ❌           |
-| Creation of chats        | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
-| Creation of workflows    | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
-| Creation of messages     | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                        | ------------------------------ | ✅           |
-| Login                    | OAuth Phishing                                             | Implement secure OAuth 2.0 flow, use HTTPS, educate users about secure login practices | High/Urgent                    | ✅           |
-| Login                    | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                        | High/Urgent                    | ❌           |
-| New Chat Page            | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                       | High/Urgent                    | ❌           |
-| Prompt Insertion         | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                          | Medium/Important               | ❌           |
-| Links insertion          | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                | High/Urgent                    | ❌           |
-| Web Crawler              | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols     | High/Urgent                    | ❌           |
-| API Requests             | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                    | Medium/Important               | ✅           |
-| Workflow Generation      | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                 | Medium/Important               | ❌           |
-| Database (Postgres)      | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges               | High/Urgent                    | ✅           |
-| Database (Postgres)      | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                             | High/Urgent                    | ❌           |
-| Vector Database (Qdrant) | Unauthorized Access                                        | Implement proper authentication and authorization for database access                  | Medium/Important               | ✅           |
+| Entry Point              | Threat                                                     | Mitigation                                                                                     | Security Benefit/Urgency Level | Implemented? |
+| ------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| Login                    | OAuth Phishing, Access Token interception                  | Implement secure OAuth 2.0 flow through Auth.js, use HTTPS, token validation, (user education) | High/Urgent                    | ✅           |
+| Login                    | CSRF Attack                                                | Implement CSRF tokens for all forms and state-changing requests                                | High/Urgent                    | ❌           |
+| Prompt Insertion         | Malicious prompt injection                                 | ----------                                                                                     | ------------------------------ | ❌           |
+| Links insertion          | Malicious URL injection                                    | ----------                                                                                     | ------------------------------ | ❌           |
+| Creation of chats        | DDOS through too many concurrent requests                  | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
+| Creation of workflows    | DDOS through too many Firecrawl API requests -> High costs | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
+| Creation of messages     | DDOS through too many OpenAI API requests -> High costs    | Rate Limiting -> Freemium Tiers                                                                | ------------------------------ | ✅           |
+| New Chat Page            | XSS (Cross-Site Scripting)                                 | Input sanitization, use of Content Security Policy (CSP) headers                               | High/Urgent                    | ❌           |
+| Prompt Insertion         | Malicious prompt injection                                 | Input validation and sanitization, implement prompt filtering                                  | Medium/Important               | ❌           |
+| Links insertion          | Malicious URL injection                                    | URL validation and sanitization, implement whitelist of allowed domains                        | High/Urgent                    | ❌           |
+| Web Crawler              | SSRF (Server-Side Request Forgery)                         | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols             | High/Urgent                    | ❌           |
+| API Requests             | API Abuse                                                  | Implement rate limiting, use API keys, monitor for unusual activity                            | Medium/Important               | ✅           |
+| Workflow Generation      | Prompt manipulation                                        | Implement safeguards in the workflow generation logic, sanitize inputs                         | Medium/Important               | ❌           |
+| Database (Postgres)      | SQL Injection                                              | Use parameterized queries via DrizzleORM, limit database user privileges                       | High/Urgent                    | ✅           |
+| Database (Postgres)      | Data Breach                                                | Encrypt sensitive data at rest, use strong access controls                                     | High/Urgent                    | ❌           |
+| Vector Database (Qdrant) | Unauthorized Access                                        | Implement proper authentication and authorization for database access                          | Medium/Important               | ✅           |
 
 <br />
 
@@ -445,23 +421,9 @@ Security Measures regarding features that are currently not implemented:
 | Server Configuration       | Misconfiguration                         | Implement secure server configurations, use security headers                              | Medium/Important               | ❌           |
 | Application Logic          | Business Logic Flaws                     | Conduct thorough code reviews and security audits                                         | Medium/Important               | ❌           |
 
-##### Security on all layers
-
-##### Input Validation/Sanitization
-
-##### Authentication Security
-
-##### Permission/Access control
-
-##### Server-Side Request Forgery
-
-##### Data protection
-
-##### Permission/Access control
-
 ### Current external dependencies
 
-Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up and login functionality. Qdrant and Neon Serverless as Database Cloud Services. Firecrawl is used for the crawling procedure.
+Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up and login functionality. Qdrant and Neon Serverless as Database Cloud Services. Firecrawl is used for the crawling procedure. Vercel as the host.
 
 ## Technologies
 
@@ -472,7 +434,7 @@ Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up an
 
 ## Possible contributions
 
-- Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs)
+- Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs) -> Would like rebuild specifically for API reference standards once the other stuff is done
 
 ## Feedback? ✨
 
