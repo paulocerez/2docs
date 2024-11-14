@@ -174,6 +174,7 @@ docker compose up --build
 
 ```
 npm run dev
+Database client (drizzle studio) can be run using: npm run db:studio
 ```
 
 ## Conceptual Guide
