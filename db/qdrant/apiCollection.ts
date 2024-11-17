@@ -1,12 +1,18 @@
 import client from "./db";
 
-const COLLECTION_NAME = "api-docs";
-
-export const initializeCollection = async () => {
-	await client.createCollection(COLLECTION_NAME, {
+export const initializeCollection = async (apiId: string) => {
+	await client.createCollection(`api_${apiId}`, {
 		vectors: {
 			size: 1536,
 			distance: "Cosine",
 		},
 	});
+}
+
+export const getCollection = async (apiId: string) => {
+	return client.getCollection(`api_${apiId}`);
+}
+
+export const listCollections = async () => {
+	return client.getCollections();
 }
