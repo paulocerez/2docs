@@ -1,4 +1,3 @@
-// function to scrape a url and return the markdown
 import FirecrawlApp from "@mendable/firecrawl-js";
 
 const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
@@ -39,3 +38,5 @@ export async function scrapeURL(url: string): Promise<{ markdown: string; status
     throw error;
   }
 }
+
+scrapeURL("https://mochi.cards/docs/api/");

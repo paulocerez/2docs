@@ -1,4 +1,3 @@
-
 import { db } from "../db";
 import { accounts, InsertAccount} from "../schema/users";
 

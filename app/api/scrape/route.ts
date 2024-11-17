@@ -1,25 +1,29 @@
-// route to scrape a url and process the documentation
-import { processDocumentation } from "@/lib/docs/processDocumentation";
-import { scrapeURL } from "@/lib/scraping/scrapeURL";
+import { createApiDocumentation } from "@/db/postgres/queries/scrape";
+import { notion } from "@/markdown/notion";
+import extractNameFromUrl from "@/utils/extractNameFromUrl";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+	
 	try {
 		const { userId, chatId, url } = await request.json();
+		const urlName = extractNameFromUrl(url);
 	
 		if (!userId) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
+		// get markdown data from url	
+		// const { markdown, statusCode } = await scrapeURL(url);
 
-		const { markdown, statusCode } = await scrapeURL(url);
-
-		if (statusCode === 200 && markdown) {
-			const apiDocId = await processDocumentation(markdown, userId, url);
-			return NextResponse.json({ message: 'Scraping and processing completed', apiDocId }, { status: 201 });
-		} else {
-			return NextResponse.json({ error: "Failed to scrape url" }, { status: statusCode });
+		// if (statusCode === 429) {
+			const fallbackMarkdown = notion[1].markdown;
+			const apiDocumentation = await createApiDocumentation({ name: urlName, baseUrl: url, version: "1.0", createdBy: userId, content: fallbackMarkdown });
+			return NextResponse.json({ message: 'Test Scraping completed', apiDocumentationId: apiDocumentation.id }, { status: 201 });
 		}
-	} catch (error) {
+		// create api doc in db
+		// const scrape = await createApiDocumentation({ name: urlName, baseUrl: url, version: "1.0", createdBy: 'user', content: markdown || "" });
+		// return NextResponse.json({ message: 'Scraping completed', scrapeId: scrape.id }, { status: 200 });
+	catch (error) {
 		console.error("Error in POST /api/scrape:", error);
 		return NextResponse.json({ error: "Failed to scrape url" }, { status: 500 });
 	}	
