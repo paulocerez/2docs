@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
 		}
 
 		const { markdown, statusCode } = await scrapeURL(url);
+		console.log("markdown", markdown);
+
 
 		if (statusCode === 200 && markdown) {
 			const apiDocId = await processDocumentation(markdown, userId, url);

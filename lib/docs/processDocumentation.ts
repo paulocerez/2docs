@@ -3,8 +3,8 @@ import { initializeCollection } from "@/db/qdrant/apiCollection";
 import { upsertVectors } from "@/db/qdrant/vector";
 import { generateEmbedding } from "@/lib/vector-search/generateEmbedding";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
-import { parseMarkdownForEndpoints } from "./parseMarkdown";
 import { createApiEndpoint, createVectorEmbedding } from "@/db/postgres/queries/api";
+import { parseMarkdownForEndpointsUsingLLM } from "./parse-markdown/llmParseMarkdown";
 
 export async function processDocumentation(markdown: string, userId: string, url: string) {
 	// create api documentation in postgres
@@ -15,14 +15,12 @@ export async function processDocumentation(markdown: string, userId: string, url
 	  createdBy: userId,
 	  content: markdown,
 	});
-
-	console.log(apiDoc);
   
 	// initialize qdrant collection
 	await initializeCollection(apiDoc.id);
 	
 	// parse markdown for endpoints
-	const endpoints = parseMarkdownForEndpoints(markdown);
+	const endpoints = await parseMarkdownForEndpointsUsingLLM(markdown);
 	console.log(endpoints);
   
 	// create api endpoints in postgres

@@ -16,6 +16,7 @@ Generate robust code workflows by integrating two or more API's seamlessly. Work
 - [Who is this useful for?](#who-is-this-useful-for)
   - [User Personas](#user-personas)
   - [User Stories](#user-stories)
+- [Example use cases](#example-use-cases)
 - [How it works](#how-it-works)
 - [Usage](#usage)
   - [Web App](#web-app)
@@ -72,7 +73,7 @@ Some API's change quite frequently. This might take quite some time to be reflec
 - Team role: Product Manager
 </details>
 
-<details>e
+<details>
 <summary>User Stories</summary>
 
 ```
@@ -82,6 +83,51 @@ Some API's change quite frequently. This might take quite some time to be reflec
 ```
 ”As a Product Manager, I want to easily understand the requirements on how to integrate different services using custom code to improve our product and automate boring stuff.”
 ```
+
+</details>
+
+## Example use cases
+
+<details>
+<summary>Finding recipes with nutrition info</summary>
+
+- Prompt: "Find healthy chicken recipes under 500 calories with at least 30g of proteins."
+- APIs: Spoonacular API, Nutritionix API
+
+</details>
+<details>
+<summary>Movie night planner</summary>
+
+- Prompt: "Suggest a romantic comedy movie and nearby pizza delivery options for tonight."
+- APIs: The Movie Database (TMDb) API, Yelp Fusion API
+
+</details>
+<details>
+<summary>Job Search Aggregator</summary>
+
+- Prompt: "Find software developer jobs in Berlin and provide company details for the top 5 results."
+- APIs: Indeed API, Clearbit Company API
+
+</details>
+<details>
+<summary>Social Media Content Scheduler</summary>
+
+- Prompt: "Create and schedule a tweet about AI technology for next Tuesday at 2 PM, including a relevant image."
+- APIs: Buffer API, DALL-E API by OpenAI
+
+</details>
+<details>
+<summary>Book Recommendation Engine</summary>
+
+- Prompt: "Recommend science fiction books similar to 'Dune' and show their ratings."
+- APIs: Google Books API, Goodreads API
+
+</details>
+<details>
+<summary>Automated Document Generator</summary>
+
+- Prompt: "Create a serverless function that automatically creates and sends out order confirmations for customers that signed a contract and moved into the 'signed' pipeline stage."
+- APIs: PandaDoc API, HubSpot API
 
 </details>
 
@@ -161,7 +207,7 @@ QDRANT_URL=http://localhost:6333
 ##### Get the necessary API-Keys
 
 ```
-Visit and generate an API Key at OpenAI. Insert in .env
+Visit and generate an API Key at OpenAI. Insert in .env.local.
 ```
 
 ##### Launch Firecrawl and the databases locally using Docker
@@ -174,7 +220,8 @@ docker compose up --build
 
 ```
 npm run dev
-Database client (drizzle studio) can be run using: npm run db:studio
+Postgres client (drizzle studio) can be run using: npm run db:studio
+Qdrant client: http://localhost:6333/dashboard#/collections
 ```
 
 ## Conceptual Guide

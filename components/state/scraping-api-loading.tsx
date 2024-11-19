@@ -43,8 +43,8 @@ export default function ScrapingApiLoading() {
                   Scraping API Docs
                 </h1>
                 <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
-                  Please wait while we process the API documentation. This may
-                  take a few moments.
+                  Please wait while we process the API documentation. This can
+                  take up to a few minutes.
                 </p>
                 <div className="relative w-24 h-24">
                   {[...Array(3)].map((_, i) => (
