@@ -103,6 +103,12 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
             <span className="text-red-500 text-xs mt-1 block">Invalid URL</span>
           )}
         </div>
+        <p className="text-[10px] text-gray-400">
+          Make sure to point to the OpenAPI Specification file of the API you
+          want to use. Alternatively, you can point to the full API docs
+          website, e.g. in Postman. Ensure that all the endpoints are shown on
+          one page, possibly in HTTP or cURL format.
+        </p>
       </div>
     );
   }

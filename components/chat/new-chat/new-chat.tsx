@@ -166,9 +166,9 @@ function NewChatPageContent({ userId }: { userId: string }) {
                     What can I help you build?
                   </h1>
                   <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
-                    Insert two or more links of the API Docs you want to include
-                    in your workflow. Specify the workflow with as much context
-                    and precision as possible in the prompt field.
+                    Insert two or more links to the API References you want to
+                    include in your workflow. Provide as much context and
+                    precision as possible in the prompt field.
                   </p>
                   <div className="max-w-sm w-full space-y-1">
                     <input

@@ -33,7 +33,6 @@ export async function processDocumentation(markdown: string, userId: string, url
 	  // generate embedding for endpoint
 	  const content = `${endpoint.path} ${endpoint.method} ${endpoint.summary ?? ''} ${endpoint.description ?? ''}`;
 	  const embedding = await generateEmbedding(content);
-  
 	  // create vector embedding in postgres
 	  await createVectorEmbedding({
 		apiEndpointId: apiEndpoint.id,

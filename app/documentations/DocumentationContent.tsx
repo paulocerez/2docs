@@ -4,11 +4,44 @@ import React, { useState } from "react";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Plus, ArrowRight } from "lucide-react";
-import { communityWorkflows, userWorkflows } from "./workflows";
 
 const queryClient = new QueryClient();
 
-function WorkflowContentInner({ userId }: { userId: string }) {
+function DocumentationContentInner({ userId }: { userId: string }) {
+  const userWorkflows = [
+    {
+      title: "Google Calendar to Notion",
+      description:
+        "Automatically syncs events from Google Calendar to a Notion database.",
+      icon: "📅",
+      status: "Active",
+      used: 100,
+    },
+    {
+      title: "Linear Issues to Notion",
+      description:
+        "Maps Linear issues to a Notion database for better tracking.",
+      icon: "🔄",
+      status: "Inactive",
+      used: 100,
+    },
+  ];
+
+  const communityWorkflows = [
+    {
+      title: "Flashcards in Notion",
+      description: "Creates flashcards in Notion from your study notes.",
+      icon: "📚",
+      used: 1000,
+    },
+    {
+      title: "Twitter to Notion",
+      description: "Save your favorite tweets to a Notion database.",
+      icon: "🐦",
+      used: 5000,
+    },
+  ];
+
   const [activeWorkflows, setActiveWorkflows] = useState(
     userWorkflows.reduce((acc, workflow) => {
       acc[workflow.title] = workflow.status === "Active";
@@ -141,10 +174,10 @@ function WorkflowContentInner({ userId }: { userId: string }) {
   );
 }
 
-export default function WorkflowContent({ userId }: { userId: string }) {
+export default function DocumentationContent({ userId }: { userId: string }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <WorkflowContentInner userId={userId} />
+      <DocumentationContentInner userId={userId} />
     </QueryClientProvider>
   );
 }
