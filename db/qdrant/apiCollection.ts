@@ -1,7 +1,11 @@
 import client from "./db";
 
-export const initializeCollection = async (apiId: string) => {
-	await client.createCollection(`api_${apiId}`, {
+const collectionName = (name: string, apiId: string) => {
+	return `api_${name}_${apiId}`;
+}
+
+export const initializeCollection = async (name: string, apiId: string) => {
+	await client.createCollection(collectionName(name, apiId), {
 		vectors: {
 			size: 1536,
 			distance: "Cosine",
@@ -9,8 +13,8 @@ export const initializeCollection = async (apiId: string) => {
 	});
 }
 
-export const getCollection = async (apiId: string) => {
-	return client.getCollection(`api_${apiId}`);
+export const getCollection = async (name: string, apiId: string) => {
+	return client.getCollection(collectionName(name, apiId));
 }
 
 export const listCollections = async () => {

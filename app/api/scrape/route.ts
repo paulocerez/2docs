@@ -1,6 +1,7 @@
 // route to scrape a url and process the documentation
 import { processDocumentation } from "@/lib/docs/processDocumentation";
 import { scrapeURL } from "@/lib/scraping/scrapeURL";
+import { saveMarkdownToFile } from "@/utils/saveMarkdownToFile";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -12,10 +13,10 @@ export async function POST(request: NextRequest) {
 		}
 
 		const { markdown, statusCode } = await scrapeURL(url);
-		console.log("markdown", markdown);
 
 
 		if (statusCode === 200 && markdown) {
+			const filePath = await saveMarkdownToFile(markdown, url); // save markdown to file for debugging
 			const apiDocId = await processDocumentation(markdown, userId, url);
 			return NextResponse.json({ message: 'Scraping and processing completed', apiDocId }, { status: 201 });
 		} else {

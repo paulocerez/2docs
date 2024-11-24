@@ -17,7 +17,7 @@ export async function processDocumentation(markdown: string, userId: string, url
 	});
   
 	// initialize qdrant collection
-	await initializeCollection(apiDoc.id);
+	await initializeCollection(apiDoc.name, apiDoc.id);
 	
 	// parse markdown for endpoints
 	const endpoints = await parseMarkdownForEndpointsUsingLLM(markdown);
@@ -42,7 +42,7 @@ export async function processDocumentation(markdown: string, userId: string, url
 	  });
   
 	  // upsert vectors in qdrant
-	  await upsertVectors(apiDoc.id, [{
+	  await upsertVectors(apiDoc.name, apiDoc.id, [{
 		id: apiEndpoint.id,
 		vector: embedding,
 		payload: {

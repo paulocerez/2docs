@@ -20,6 +20,7 @@ export const apiEndpoints = pgTable("api_endpoint", {
   apiDocumentationId: text("api_documentation_id").notNull().references(() => apiDocumentations.id, { onDelete: "cascade" }),
   path: text("path").notNull(),
   method: text("method").notNull(),
+  operation: text("operation"),
   summary: text("summary"),
   description: text("description"),
   parameters: text("parameters"),

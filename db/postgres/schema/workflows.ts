@@ -33,6 +33,7 @@ export const userWorkflows = pgTable("user_workflow", {
 	addedAt: timestamp("added_at").notNull().defaultNow(),
 });
 
+// sequence of steps that make up a workflow
 export const workflowSteps = pgTable("workflow_step", {
     id: text("id")
         .primaryKey()
@@ -48,6 +49,7 @@ export const workflowSteps = pgTable("workflow_step", {
     outputMapping: text("output_mapping").notNull(),
 });
 
+// reusable variables across a workflow sequence
 export const workflowVariables = pgTable("workflow_variable", {
     id: text("id")
         .primaryKey()
