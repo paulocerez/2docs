@@ -35,6 +35,7 @@ export default function TestCreationPage() {
 
       if (response.ok) {
         setMarkdown(data.markdown);
+        console.log("data", data);
         setStatus({
           type: "success",
           message: `Successfully scraped API: ${
