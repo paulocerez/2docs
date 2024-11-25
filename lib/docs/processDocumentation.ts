@@ -34,11 +34,11 @@ export async function processDocumentation(markdown: string, userId: string, url
 	  const content = `${endpoint.path} ${endpoint.method} ${endpoint.summary ?? ''} ${endpoint.description ?? ''}`;
 	  const embedding = await generateEmbedding(content);
 	  // create vector embedding in postgres
-	  await createVectorEmbedding({
+	await createVectorEmbedding({
 		apiEndpointId: apiEndpoint.id,
 		content,
 		metadata: JSON.stringify(apiEndpoint),
-		vectorId: apiEndpoint.id,
+		qdrantVectorId: apiEndpoint.id,
 	  });
   
 	  // upsert vectors in qdrant

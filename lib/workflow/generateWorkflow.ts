@@ -1,13 +1,16 @@
 import { searchVectors } from "@/db/qdrant/vector";
-import { generateEmbedding } from "../vector-search/generateEmbedding";
-import { generateChatCompletion } from "../language-model/chat-completion";
+import { generateEmbedding } from "@/lib/vector-search/generateEmbedding";
+import { generateChatCompletion } from "@/lib/language-model/chat-completion";
+import { getApiDocumentation } from "@/db/postgres/queries/api";
 
 export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
 	const promptEmbedding = await generateEmbedding(prompt);
 	let allRelevantEndpoints = [];
+	
 
 	for (const apiDocId of apiDocIds) {
-		const relevantEndpoints = await searchVectors(apiDocId, promptEmbedding);
+		const apiName = (await getApiDocumentation(apiDocId))[0].name;
+		const relevantEndpoints = await searchVectors(apiName, apiDocId, promptEmbedding);
 		allRelevantEndpoints.push(...relevantEndpoints);
 	}
 
@@ -20,6 +23,26 @@ export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
 
 	const workflowPrompt = `
     Given the following API endpoints and user request, generate a step-by-step workflow using the latest TypeScript syntax.
+	The workflow should be returned as a JSON object with the following structure:
+    {
+      "variables": [
+        {
+          "id": "unique_id",
+          "name": "variable_name",
+          "defaultValue": "default_value",
+          "description": "variable description"
+        }
+      ],
+      "steps": [
+        {
+          "id": "unique_id",
+          "endpointId": "endpoint_id",
+          "order": step_number,
+          "inputMapping": "input mapping logic",
+          "outputMapping": "output mapping logic"
+        }
+      ]
+    }
 
     API Endpoints:
     ${context}
@@ -27,13 +50,23 @@ export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
     User Request:
     ${prompt}
 
-    Step-by-step workflow:
+    Generate the workflow JSON:
   `;
+  
+  const workflowResponse = await generateChatCompletion([
+    { role: 'system', content: 'You are an API workflow generator. Create accurate step-by-step workflows based on the given API documentation and user request. Return the workflow as a valid JSON object.' },
+    { role: 'user', content: workflowPrompt }
+  ]);
 
-	const workflow = await generateChatCompletion([
-		{ role: 'system', content: 'You are an API workflow generator. Create accurate step-by-step workflows based on the given API documentation and user request.' },
-		{ role: 'user', content: workflowPrompt }
-	  ]);
+  console.log(workflowResponse);
 
-	return workflow
+  try {
+    const cleanedContent = workflowResponse.replace(/```json\n|\n```/g, "").trim();
+    const workflow = JSON.parse(cleanedContent);
+    console.log(workflow);
+    return workflow;
+  } catch (error) {
+    console.error("Failed to parse workflow JSON:", error);
+    throw new Error("Failed to generate valid workflow");
+  }
 }
