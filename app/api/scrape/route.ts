@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
 
 		if (statusCode === 200 && markdown) {
-			const filePath = await saveMarkdownToFile(markdown, url); // save markdown to file for debugging
+			await saveMarkdownToFile(markdown, url); // save markdown to file for debugging
 			const apiDocId = await processDocumentation(markdown, userId, url);
 			return NextResponse.json({ message: 'Scraping and processing completed', apiDocId }, { status: 201 });
 		} else {

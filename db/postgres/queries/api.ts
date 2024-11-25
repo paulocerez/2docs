@@ -8,6 +8,10 @@ export async function createApiDocumentation(data: InsertApiDocumentation) {
 	return result;
   }
 
+export async function getApiDocumentation(id: string) {
+	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.id, id));
+}
+
 
 // API ENDPOINT
 export async function createApiEndpoint(data: InsertApiEndpoint) {
