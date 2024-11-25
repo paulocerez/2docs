@@ -42,7 +42,7 @@ export default function ScrapingApiLoading() {
                 <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
                   Scraping API Docs
                 </h1>
-                <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
+                <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
                   Please wait while we process the API documentation. This can
                   take up to a few minutes.
                 </p>
@@ -70,7 +70,7 @@ export default function ScrapingApiLoading() {
                 </div>
               </motion.div>
               <motion.div
-                className="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
+                className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden"
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
                 transition={{

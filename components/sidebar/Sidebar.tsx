@@ -20,8 +20,8 @@ interface SidebarProps {
 const sidebarItems = [
   { name: "Chat", icon: GrChat, hotkey: "c" },
   { name: "Workflows", icon: GrStorage, hotkey: "w" },
-  { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
-  { name: "Prompts", icon: TbPrompt, hotkey: "p" },
+  //   { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
+  //   { name: "Prompts", icon: TbPrompt, hotkey: "p" },
 ];
 
 export default function Sidebar({
