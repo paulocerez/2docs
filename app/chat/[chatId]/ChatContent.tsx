@@ -8,10 +8,11 @@ import { useMessages } from "@/hooks/messages/useMessages";
 import MessageList from "@/components/chat/message-list";
 import Prompt from "@/components/chat/prompt";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { useRouter } from "next/navigation";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Message } from "@/types/message";
+import { Workflow } from "@/components/workflow/Workflow";
+import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
 
 const queryClient = new QueryClient();
 
@@ -27,10 +28,11 @@ function ChatContentInner({
   currentChatTitle,
 }: ChatContentProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
-  const [chatTitle, setChatTitle] = useState(currentChatTitle);
-  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [workflow, setWorkflow] = useState<any>(null);
+  const [mode, setMode] = useState<"question" | "editing">("question");
 
   const {
     data: messages,
@@ -39,6 +41,11 @@ function ChatContentInner({
   } = useMessages(currentChatId);
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
+  const workflowMutation = useWorkflowMutation();
+
+  const selectMode = (selectedMode: "question" | "editing") => {
+    setMode(selectedMode);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,7 +93,7 @@ function ChatContentInner({
         await retry(() =>
           userMessageMutation.mutateAsync({
             chatId: currentChatId,
-            title: chatTitle,
+            title: currentChatTitle,
             prompt,
           })
         );
@@ -117,7 +124,7 @@ function ChatContentInner({
       aiResponseMutation,
       currentChatId,
       messages,
-      chatTitle,
+      currentChatTitle,
     ]
   );
 
@@ -149,11 +156,14 @@ function ChatContentInner({
   }
 
   return (
-    <AuthenticatedLayout userId={userId} currentPageTitle={chatTitle}>
+    <AuthenticatedLayout userId={userId} currentPageTitle={currentChatTitle}>
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl">
             <MessageList messages={messages} />
+            {workflow && (
+              <Workflow initialWorkflow={workflow} onSave={() => {}} />
+            )}
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">
                 <LoadingSpinner />
@@ -168,6 +178,8 @@ function ChatContentInner({
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full">
             <Prompt
+              mode={mode}
+              setMode={selectMode}
               onSubmit={handleSubmit}
               isAiResponding={isAiResponding}
               onInputChange={() => {}}

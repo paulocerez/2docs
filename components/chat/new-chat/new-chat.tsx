@@ -13,6 +13,7 @@ import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
 import ScrapingApiLoading from "../../state/scraping-api-loading";
 import { useScrapeUrlMutation } from "@/hooks/messages/useScrapeUrlMutation";
+import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
 
 const queryClient = new QueryClient();
 
@@ -25,13 +26,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [links, setLinks] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const isFormValid = checklist.every(Boolean);
-  const [isScrapingApiDocs, setIsScrapingApiDocs] = useState(false);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
   const aiResponseMutation = useAIResponseMutation();
+  const workflowMutation = useWorkflowMutation();
 
   useEffect(() => {
     const allLinksValid =
@@ -39,58 +40,45 @@ function NewChatPageContent({ userId }: { userId: string }) {
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, [links]);
 
-  const handleSubmit = useCallback(
+  const scrapeDocsAndGenerateWorkflow = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!isFormValid) return;
 
-      setIsScrapingApiDocs(true);
+      setIsProcessing(true);
       setError(null);
+      // TODOstill need to check if links are pointing to valid api references
+      // const validatedLinks = await validateLinks(links);
 
       try {
-        // create chat and add user message > store in db
-        const chatResult = await userMessageMutation.mutateAsync({
-          prompt: prompt,
+        const apiDocIds = [];
+        // Scrape and process each api reference
+        for (const link of links) {
+          const { apiDocId } = await scrapeUrlMutation.mutateAsync({
+            userId,
+            url: link,
+          });
+          apiDocIds.push(apiDocId);
+        }
+
+        // Generate workflow
+        const { workflow } = await workflowMutation.mutateAsync({
+          prompt,
+          apiDocIds,
+        });
+        // create chat and add user message
+        const { chat } = await userMessageMutation.mutateAsync({
+          prompt,
           title: chatTitle,
         });
 
-        const apiDocResults = [];
-        // scrape the urls > store in db
-        for (const link of links) {
-          try {
-            const apiDocResult = await scrapeUrlMutation.mutateAsync({
-              userId: userId,
-              chatId: chatResult.chat.id,
-              url: link,
-            });
-            apiDocResults.push(apiDocResult.apiDocumentationId);
-          } catch (error) {
-            console.error("Failed to scrape url:", error);
-          }
-        }
-
-        // create the chat api links > store in db
+        // create chat api links
         await chatApiLinksMutation.mutateAsync({
-          chatId: chatResult.chat.id,
-          apiDocumentationIds: apiDocResults,
+          chatId: chat.id,
+          apiDocumentationIds: apiDocIds,
         });
 
-        setIsScrapingApiDocs(false);
-        router.push(`/chat/${chatResult.chat.id}`);
-
-        // generate ai response in the background
-        aiResponseMutation.mutate(
-          {
-            chatId: chatResult.chat.id,
-            messages: [{ role: "user", content: prompt }],
-          },
-          {
-            onError: (error) => {
-              console.error("Failed to generate AI response:", error);
-              setError("Failed to generate AI response");
-            },
-          }
-        );
+        router.push(`/chat/${chat.id}`);
       } catch (error) {
         console.error("Failed to send message or generate workflow:", error);
         setError("Failed to create chat. Please try again.");
@@ -101,7 +89,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
     [
       userMessageMutation,
       chatApiLinksMutation,
-      aiResponseMutation,
       router,
       links,
       chatTitle,
@@ -109,6 +96,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
       isFormValid,
       scrapeUrlMutation,
       userId,
+      workflowMutation,
     ]
   );
 
@@ -144,7 +132,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
   if (!userId) return null;
 
-  if (isScrapingApiDocs) {
+  if (isProcessing) {
     return <ScrapingApiLoading />;
   }
 
@@ -157,7 +145,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
           <div className="mx-auto px-4 w-full max-w-4xl">
             <form
-              onSubmit={handleSubmit}
+              onSubmit={scrapeDocsAndGenerateWorkflow}
               className="min-h-screen flex items-center justify-center"
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">
@@ -212,7 +200,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
                   <SubmitButton
                     isFormValid={isFormValid}
                     isAiResponding={isAiResponding}
-                    onClick={() => handleSubmit}
+                    onClick={() => scrapeDocsAndGenerateWorkflow}
                   />
                 </div>
               </div>
