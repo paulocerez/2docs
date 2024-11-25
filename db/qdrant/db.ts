@@ -10,7 +10,6 @@ let client: QdrantClient;
     apiKey: process.env.QDRANT_API_KEY,
   });
 
-  console.log(client);
 // } else {
 //   client = new QdrantClient({ 
 //     host: "localhost", 

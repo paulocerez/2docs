@@ -13,10 +13,9 @@ export const upsertVectors = async (name: string, apiId: string, vectors: Vector
 	});
   };
   
-  export const searchVectors = async (name: string, apiId: string, vector: number[], limit: number = 10) => {
+  export const searchVectors = async (name: string, apiId: string, vector: number[]) => {
 	const collectionName = `api_${name}_${apiId}`;
 	return client.search(collectionName, {
 	  vector,
-	  limit,
 	});
   };

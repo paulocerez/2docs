@@ -39,3 +39,6 @@ next-env.d.ts
 
 # qdrant
 /qdrant_storage
+
+# markdown examples
+*.md

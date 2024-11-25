@@ -9,10 +9,10 @@ export const apiDocumentations = pgTable("api_documentation", {
   content: text("content").notNull(),
   lastScrapedAt: timestamp("last_scraped_at").notNull().defaultNow(),
   createdBy: text("created_by").notNull().references(() => users.id),
-}, (table) => {
-  return {
-    nameVersionIdx: uniqueIndex('name_version_idx').on(table.name, table.version),
-  }
+// }, (table) => {
+//   return {
+//     nameVersionIdx: uniqueIndex('name_version_idx').on(table.name, table.version),
+//   }
 });
 
 export const apiEndpoints = pgTable("api_endpoint", {
@@ -33,8 +33,17 @@ export const vectorEmbeddings = pgTable("vector_embedding", {
   apiEndpointId: text("api_endpoint_id").notNull().references(() => apiEndpoints.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   metadata: text("metadata"),
-  vectorId: text("vector_id").notNull(), // reference to vector in Qdrant
+  qdrantVectorId: text("qdrant_vector_id").notNull(), // reference to vector in Qdrant
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// possible additional tables:
+// - apiCategories
+// - apiTags
+// - webhooks
+// - userPreferences
+
 
 export type InsertApiDocumentation = typeof apiDocumentations.$inferInsert;
 export type SelectApiDocumentation = typeof apiDocumentations.$inferSelect;
