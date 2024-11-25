@@ -1,120 +1,153 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
+  AlertCircle,
   Check,
   ChevronDown,
   ChevronUp,
   Copy,
-  Play,
-  ToggleLeft,
-  ToggleRight,
+  Save,
 } from "lucide-react";
-import { WorkflowStep } from "./workflow-step";
-import { WorkflowVariable } from "./workflow-variable";
+import { WorkflowStep, WorkflowStepProps } from "./workflow-step";
+import { WorkflowVariable, WorkflowVariableProps } from "./workflow-variable";
 import Button from "../ui/button";
 import Toggle from "../ui/toggle";
 
-interface WorkflowVariableProps {
-  id: string;
-  name: string;
-  defaultValue?: string;
-  description?: string;
-}
-
 interface WorkflowProps {
-  steps: Array<{
-    id: string;
-    endpointId: string;
-    order: number;
-    inputMapping: string;
-    outputMapping: string;
-  }>;
-  variables: WorkflowVariableProps[];
+  initialWorkflow: {
+    steps: WorkflowStepProps[];
+    variables: WorkflowVariableProps[];
+  };
+  onSave: (updatedWorkflow: any) => void;
 }
 
-export function Workflow({ steps, variables }: WorkflowProps) {
+const defaultWorkflow = {
+  variables: [],
+  steps: [],
+};
+
+export function Workflow({
+  initialWorkflow = defaultWorkflow,
+  onSave,
+}: WorkflowProps) {
   const [showVariables, setShowVariables] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [workflowCode, setWorkflowCode] = useState(
+    JSON.stringify(initialWorkflow, null, 2)
+  );
+  const [parsedWorkflow, setParsedWorkflow] = useState(initialWorkflow);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const parsed = JSON.parse(workflowCode);
+      if (typeof parsed === "object" && parsed !== null) {
+        setParsedWorkflow({
+          steps: Array.isArray(parsed.steps) ? parsed.steps : [],
+          variables: Array.isArray(parsed.variables) ? parsed.variables : [],
+        });
+        setError(null);
+      } else {
+        throw new Error("Invalid workflow structure");
+      }
+    } catch (e) {
+      setError("Invalid JSON or workflow structure");
+      setParsedWorkflow(defaultWorkflow);
+    }
+  }, [workflowCode]);
 
   const toggleCode = () => setShowCode(!showCode);
-  const copyTextToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+
+  const copyTextToClipboard = () => {
+    navigator.clipboard.writeText(workflowCode);
     setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const workflowCode = `
-const workflow = {
-  variables: ${JSON.stringify(variables, null, 2)},
-  steps: ${JSON.stringify(steps, null, 2)}
-}
-  `.trim();
+  const handleSave = () => {
+    if (!error) {
+      onSave(parsedWorkflow);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800">
-      <motion.div
-        className="border border-gray-200 rounded-lg p-2"
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        transition={{ duration: 0.5 }}
-      >
-        <button
-          onClick={() => setShowVariables(!showVariables)}
-          className="w-full flex justify-between items-center p-2 text-gray-800 rounded-md transition-colors duration-200"
-        >
-          <span>Workflow Variables</span>
-          {showVariables ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </button>
-        {showVariables && (
-          <motion.div
-            className="mt-4 space-y-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            {variables.map((variable, index) => (
-              <motion.div
-                key={variable.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <WorkflowVariable {...variable} />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </motion.div>
-
       {showCode ? (
-        <motion.pre
-          className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm"
+        <motion.div
+          className="border border-gray-200 rounded-lg p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <code>{workflowCode}</code>
-        </motion.pre>
+          <textarea
+            className="w-full h-96 p-2 text-sm font-mono bg-gray-50 border border-gray-300 rounded-md"
+            value={workflowCode}
+            onChange={(e) => setWorkflowCode(e.target.value)}
+          />
+          {error && (
+            <div className="mt-2 text-red-500 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              {error}
+            </div>
+          )}
+        </motion.div>
       ) : (
-        <div className="space-y-6">
-          {steps.map((step, index) => (
-            <motion.div
-              key={step.id}
-              className="relative"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
+        <>
+          <motion.div
+            className="border border-gray-200 rounded-lg p-2"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.5 }}
+          >
+            <button
+              onClick={() => setShowVariables(!showVariables)}
+              className="w-full flex justify-between items-center p-2 text-gray-800 rounded-md transition-colors duration-200"
             >
-              <WorkflowStep {...step} />
-            </motion.div>
-          ))}
-        </div>
+              <span>Workflow Variables</span>
+              {showVariables ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+            {showVariables && (
+              <motion.div
+                className="mt-4 space-y-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {parsedWorkflow.variables.map((variable) => (
+                  <motion.div
+                    key={variable.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <WorkflowVariable {...variable} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+
+          <div className="space-y-6">
+            {parsedWorkflow.steps.map((step) => (
+              <motion.div
+                key={step.id}
+                className="relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <WorkflowStep {...step} />
+              </motion.div>
+            ))}
+          </div>
+        </>
       )}
       <div className="flex flex-row justify-between transition-all duration-200">
         <Button
@@ -126,7 +159,7 @@ const workflow = {
               <Copy className="h-4 w-4" />
             )
           }
-          onClick={() => copyTextToClipboard(workflowCode)}
+          onClick={() => copyTextToClipboard()}
         />
         <Button
           title={showCode ? "Show steps" : "Show code"}
@@ -134,6 +167,12 @@ const workflow = {
         >
           <Toggle condition={showCode} />
         </Button>
+        <Button
+          title="Save Workflow"
+          icon={<Save className="h-5 w-5" />}
+          onClick={handleSave}
+          disabled={!!error}
+        />
       </div>
     </div>
   );

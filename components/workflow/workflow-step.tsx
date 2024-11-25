@@ -4,13 +4,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-type WorkflowStepProps = {
+export interface WorkflowStepProps {
   id: string;
   endpointId: string;
   order: number;
   inputMapping: string;
   outputMapping: string;
-};
+  onChange: (updatedStep: WorkflowStepProps) => void;
+}
 
 export function WorkflowStep({
   id,
