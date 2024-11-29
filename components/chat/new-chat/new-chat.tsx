@@ -1,6 +1,6 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, use, useCallback, useState, useEffect } from "react";
+import { FormEvent, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
@@ -47,10 +47,10 @@ function NewChatPageContent({ userId }: { userId: string }) {
 
       setIsProcessing(true);
       setError(null);
-      // TODOstill need to check if links are pointing to valid api references
-      // const validatedLinks = await validateLinks(links);
 
       try {
+        // TODOstill need to check if links are pointing to valid api references
+        // const validatedLinks = await validateLinks(links);
         const apiDocIds = [];
         // Scrape and process each api reference
         for (const link of links) {
@@ -66,10 +66,12 @@ function NewChatPageContent({ userId }: { userId: string }) {
           prompt,
           apiDocIds,
         });
+
         // create chat and add user message
         const { chat } = await userMessageMutation.mutateAsync({
           prompt,
           title: chatTitle,
+          workflowId: workflow.id,
         });
 
         // create chat api links

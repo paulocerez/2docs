@@ -58,8 +58,6 @@ export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
     { role: 'user', content: workflowPrompt }
   ]);
 
-  console.log(workflowResponse);
-
   try {
     const cleanedContent = workflowResponse.replace(/```json\n|\n```/g, "").trim();
     const workflow = JSON.parse(cleanedContent);

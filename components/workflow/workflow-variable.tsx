@@ -13,7 +13,6 @@ export interface WorkflowVariableProps {
 }
 
 export function WorkflowVariable({
-  id,
   name,
   defaultValue,
   description,

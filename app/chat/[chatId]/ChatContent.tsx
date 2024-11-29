@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Message } from "@/types/message";
 import { Workflow } from "@/components/workflow/Workflow";
 import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
+import { useWorkflow } from "@/hooks/workflows/useWorkflow";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,6 @@ function ChatContentInner({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [workflow, setWorkflow] = useState<any>(null);
   const [mode, setMode] = useState<"question" | "editing">("question");
 
   const {
@@ -41,7 +41,8 @@ function ChatContentInner({
   } = useMessages(currentChatId);
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
-  const workflowMutation = useWorkflowMutation();
+  const { data: workflow, refetch: refetchWorkflow } =
+    useWorkflow(currentChatId);
 
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
@@ -162,7 +163,10 @@ function ChatContentInner({
           <div className="mx-auto px-4 w-full max-w-2xl">
             <MessageList messages={messages} />
             {workflow && (
-              <Workflow initialWorkflow={workflow} onSave={() => {}} />
+              <Workflow
+                initialWorkflow={workflow}
+                onSave={handleWorkflowSave}
+              />
             )}
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">

@@ -6,6 +6,7 @@ interface UserMessageMutationData {
 	title: string;
 	prompt: string;
 	chatId?: string;
+	workflowId: string;
 }
 
 export function useUserMessageMutation(userId: string) {
@@ -51,6 +52,7 @@ export function useUserMessageMutation(userId: string) {
 		  // Add new chat
 		  const newChat: SelectChat = {
 			title: variables.title!,
+			workflowId: variables.workflowId,
 			id: data.chat.id,
 			prompt: data.message.content,
 			userId: userId,

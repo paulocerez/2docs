@@ -17,16 +17,20 @@ export default function Button({
 }) {
   return (
     <button
-      className={`w-fit flex justify-center items-center p-2 text-gray-800 rounded-md transition-colors duration-200 ${
+      className={`w-fit flex justify-center items-center text-gray-800 rounded-md transition-colors duration-200 ${
         border ? "border border-gray-200" : ""
       } ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
-      <div className="flex flex-row items-center gap-1">
+      <div
+        className={`flex flex-row items-center ${title ? "gap-1" : "gap-0"}`}
+      >
         <span className="hover:bg-gray-100 p-2 rounded-md">{icon}</span>
         <div>{children}</div>
-        <span className="text-sm font-medium text-gray-800">{title}</span>
+        {title && (
+          <span className="text-sm font-medium text-gray-800">{title}</span>
+        )}
       </div>
     </button>
   );

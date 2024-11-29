@@ -51,3 +51,4 @@ export async function getUserChatsWithMessagesAndApis(userId: string) {
   .leftJoin(apiDocumentations, eq(chatApiLinks.apiDocumentationId, apiDocumentations.id))
   .orderBy(desc(chats.lastActivityAt));
 }
+

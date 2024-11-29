@@ -7,13 +7,14 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Code,
   Copy,
+  Eye,
   Save,
 } from "lucide-react";
 import { WorkflowStep, WorkflowStepProps } from "./workflow-step";
 import { WorkflowVariable, WorkflowVariableProps } from "./workflow-variable";
 import Button from "../ui/button";
-import Toggle from "../ui/toggle";
 
 interface WorkflowProps {
   initialWorkflow: {
@@ -75,6 +76,25 @@ export function Workflow({
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800">
+      <div className="flex justify-end">
+        <button
+          onClick={toggleCode}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50 transition-all duration-200"
+        >
+          {showCode ? (
+            <>
+              <Eye className="h-4 w-4" />
+              View Steps
+            </>
+          ) : (
+            <>
+              <Code className="h-4 w-4" />
+              View Code
+            </>
+          )}
+        </button>
+      </div>
+
       {showCode ? (
         <motion.div
           className="border border-gray-200 rounded-lg p-4"
@@ -88,7 +108,7 @@ export function Workflow({
             onChange={(e) => setWorkflowCode(e.target.value)}
           />
           {error && (
-            <div className="mt-2 text-red-500 flex items-center">
+            <div className="mt-2 text-red-500 flex items-center text-xs">
               <AlertCircle className="h-4 w-4 mr-2" />
               {error}
             </div>
@@ -162,13 +182,7 @@ export function Workflow({
           onClick={() => copyTextToClipboard()}
         />
         <Button
-          title={showCode ? "Show steps" : "Show code"}
-          onClick={toggleCode}
-        >
-          <Toggle condition={showCode} />
-        </Button>
-        <Button
-          title="Save Workflow"
+          border
           icon={<Save className="h-5 w-5" />}
           onClick={handleSave}
           disabled={!!error}
