@@ -38,10 +38,15 @@ function ChatContentInner({
     data: messages,
     isLoading: isMessagesLoading,
     error: messagesError,
+  }: {
+    data: Message[] | undefined;
+    isLoading: boolean;
+    error: Error | null;
   } = useMessages(currentChatId);
   const userMessageMutation = useUserMessageMutation(userId);
   const aiResponseMutation = useAIResponseMutation();
-  const { data: workflow, refetch: refetchWorkflow } =
+  const workflowMutation = useWorkflowMutation();
+  const { data: workflow, isLoading: isWorkflowLoading } =
     useWorkflow(currentChatId);
 
   const selectMode = (selectedMode: "question" | "editing") => {
@@ -129,12 +134,12 @@ function ChatContentInner({
     ]
   );
 
-  if (isInitialLoading) {
+  if (isInitialLoading || isWorkflowLoading) {
     return (
       <div className="flex items-center justify-center h-screen space-x-2">
         <LoadingSpinner />
         <p className="text-sm text-gray-400 flex items-center">
-          Generating initial response ...
+          {isWorkflowLoading ? "Loading workflow..." : "Loading chat..."}
         </p>
       </div>
     );
@@ -161,13 +166,8 @@ function ChatContentInner({
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl">
-            <MessageList messages={messages} />
-            {workflow && (
-              <Workflow
-                initialWorkflow={workflow}
-                onSave={handleWorkflowSave}
-              />
-            )}
+            <MessageList messages={messages || []} />
+            {workflow && <Workflow initialWorkflow={workflow} />}
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">
                 <LoadingSpinner />

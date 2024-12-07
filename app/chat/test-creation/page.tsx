@@ -16,14 +16,14 @@ export default function TestCreationPage() {
   }>({ type: null, message: "" });
 
   const [chatTitle, setChatTitle] = useState(
-    "Notion and Pandadoc Document Generator"
+    "Notion and Mochi Flashcard Generator"
   );
   const [apiLinks, setApiLinks] = useState<string[]>([
-    "https://www.postman.com/pandadoc-api/pandadoc-s-public-workspace/documentation/3vs89v3/pandadoc-api-reference",
+    "https://mochi.cards/docs/api/",
     "https://www.postman.com/notionhq/notion-s-api-workspace/documentation/y28pjg6/notion-api",
   ]);
   const [prompt, setPrompt] = useState(
-    "I want to automatically generate and send documents via Pandadoc to users of my Notion database. All of the rows that have a status called customer should receive that document containing their information. These are stored in the other cells of the row called customer name, customer email, and customer phone number, deal summary, and deal status."
+    "I want to create a flashcard for each row of a Notion database. There I insert two columns, one containing the respective frontside, the other the respective backside of a flashcard. These should be inserted accordingly in the Mochi app. This should always happen when a third column contains a certain value called create. Suggest ways on how to achieve this."
   );
 
   const handleAddApiLink = () => {
