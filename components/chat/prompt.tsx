@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { FaPaperPlane } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaEdit,
+  FaPaperPlane,
+  FaQuestionCircle,
+} from "react-icons/fa";
 import { KeyboardEvent } from "react";
+import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
+import Toggle from "../ui/toggle";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 export interface PromptProps {
@@ -105,21 +112,17 @@ export default function Prompt({
               >
                 <button
                   onClick={() => setMode("question")}
-                  className="block w-full text-left px-1"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
                   role="menuitem"
                 >
-                  <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md">
-                    Ask a question
-                  </div>
+                  Ask a question
                 </button>
                 <button
                   onClick={() => setMode("editing")}
-                  className="block w-full text-left px-1"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
                   role="menuitem"
                 >
-                  <div className="px-2 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md">
-                    Edit the workflow
-                  </div>
+                  Edit the workflow
                 </button>
               </div>
             </div>

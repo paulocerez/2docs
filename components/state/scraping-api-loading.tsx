@@ -43,8 +43,9 @@ export default function ScrapingApiLoading() {
                   Scraping API Docs
                 </h1>
                 <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
-                  Please wait while we process the API documentation. This can
-                  take up to a few minutes.
+                  Please wait while we process the API documentation.
+                  <br />
+                  This can take up to a few minutes.
                 </p>
                 <div className="relative w-24 h-24">
                   {[...Array(3)].map((_, i) => (
@@ -69,27 +70,29 @@ export default function ScrapingApiLoading() {
                   ))}
                 </div>
               </motion.div>
-              <motion.div
-                className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden"
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{
-                  duration: 5,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                }}
-              >
+              <div>
                 <motion.div
-                  className="h-full bg-blue-500"
-                  initial={{ width: "0%" }}
+                  className="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
+                  initial={{ width: 0 }}
                   animate={{ width: "100%" }}
                   transition={{
                     duration: 5,
                     ease: "easeInOut",
                     repeat: Infinity,
                   }}
-                />
-              </motion.div>
+                >
+                  <motion.div
+                    className="h-full bg-blue-500"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{
+                      duration: 5,
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                    }}
+                  />
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>

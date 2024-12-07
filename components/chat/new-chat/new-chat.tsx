@@ -1,6 +1,6 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, useCallback, useState, useEffect } from "react";
+import { FormEvent, use, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
 import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
@@ -61,10 +61,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
           apiDocIds.push(apiDocId);
         }
 
-        // Generate workflow
+        console.log(userId, chatTitle);
+        // Generate and save the workflow, receiving the saved workflow with its ID
         const { workflow } = await workflowMutation.mutateAsync({
           prompt,
           apiDocIds,
+          userId,
+          title: chatTitle,
         });
 
         // create chat and add user message

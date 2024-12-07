@@ -24,7 +24,7 @@ export default function Button({
       disabled={disabled}
     >
       <div
-        className={`flex flex-row items-center ${title ? "gap-1" : "gap-0"}`}
+        className={`flex flex-row items-center ${title ? "gap-0.5" : "gap-0"}`}
       >
         <span className="hover:bg-gray-100 p-2 rounded-md">{icon}</span>
         <div>{children}</div>
