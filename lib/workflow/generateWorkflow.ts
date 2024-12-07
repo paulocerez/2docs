@@ -3,7 +3,8 @@ import { generateEmbedding } from "@/lib/vector-search/generateEmbedding";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 import { getApiDocumentation } from "@/db/postgres/queries/api";
 
-export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
+export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {
+	console.log(prompt, apiDocIds, userId, chatTitle)
 	const promptEmbedding = await generateEmbedding(prompt);
 	let allRelevantEndpoints = [];
 	
@@ -59,8 +60,14 @@ export async function generateWorkflow(prompt: string, apiDocIds: string[]) {
   ]);
 
   try {
-    const cleanedContent = workflowResponse.replace(/```json\n|\n```/g, "").trim();
+    const cleanedContent = workflowResponse
+      .split('```json')[1]
+      .split('```')[0]
+      .trim();
+	console.log(cleanedContent)
     const workflow = JSON.parse(cleanedContent);
+
+	workflow.title = chatTitle
     console.log(workflow);
     return workflow;
   } catch (error) {

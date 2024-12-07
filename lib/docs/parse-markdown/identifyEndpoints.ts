@@ -1,10 +1,7 @@
 import { readMarkdownFile } from "@/utils/readMarkdownFile";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.mjs";
-
-const openai = new OpenAI({
-    apiKey: 'sk-quqi68yuMO7hTugSdbymcy5bXtCXoObAoi3AEhMg-9T3BlbkFJ2oBryA186fEjaazV1IvbvxzYSKpzgU0Mt8qbZlW6MA',
-});
+import { client } from "@/lib/language-model/client";
 
 export async function identifyEndpoints(markdown: string): Promise<string[]> {
     const messages: ChatCompletionMessageParam[] = [
@@ -41,8 +38,8 @@ export async function identifyEndpoints(markdown: string): Promise<string[]> {
     ];
 
     try {
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+        const completion = await client.chat.completions.create({
+            model: process.env.LLM_MODEL!,
             messages: messages,
             temperature: 0.3,
             stream: false,

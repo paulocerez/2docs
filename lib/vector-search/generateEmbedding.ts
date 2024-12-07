@@ -1,18 +1,10 @@
 import { OpenAI } from "openai";
-
-const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
-  });
+import { client } from "@/lib/language-model/client";
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-	try {
-		const response = await openai.embeddings.create({
-			model: "text-embedding-ada-002",
+	const response = await client.embeddings.create({
+		model: "text-embedding-ada-002",
 		input: text,
-		});
-		return response.data[0].embedding;
-	} catch (error) {
-		console.error("Error generating embedding:", error);
-		throw error;
-	}
+	});
+	return response.data[0].embedding;
 }

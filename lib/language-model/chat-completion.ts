@@ -1,24 +1,16 @@
 import { config } from "dotenv";
 config({ path: "./.env.local" });
-import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-const apiKey = process.env.OPENAI_API_KEY;
-
-if (!apiKey) {
-  throw new Error("OPENAI_API_KEY is not set in the environment variables");
-}
-const openai = new OpenAI({
-  apiKey: apiKey,
-});
-
+import { client } from "@/lib/language-model/client";
 
 export async function generateChatCompletion(messages: ChatCompletionMessageParam[]) {
 	const validMessages = messages.filter(msg => msg.content != null);
-	const completion = await openai.chat.completions.create({
-		model: "gpt-4o-mini",
+	const completion = await client.chat.completions.create({
+		model: process.env.LLM_MODEL!,
 		messages: validMessages,
 		stream: false,
+		max_tokens: 7000,
 	});
   
-  	return completion.choices[0]?.message?.content || '';
+	return completion.choices[0]?.message?.content || '';
 }

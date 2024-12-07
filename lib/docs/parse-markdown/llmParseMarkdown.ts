@@ -1,10 +1,6 @@
 import { InsertApiEndpoint } from "@/db/postgres/schema/apis";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
-});
+import { client } from "@/lib/language-model/client";
 
 
 export async function parseMarkdownForEndpointsUsingLLM(markdown: string): Promise<Omit<InsertApiEndpoint, 'id' | 'apiDocumentationId'>[]> {
@@ -42,8 +38,8 @@ export async function parseMarkdownForEndpointsUsingLLM(markdown: string): Promi
 		}
 	];
 
-	const completion = await openai.chat.completions.create({
-			model: "gpt-4o-mini",
+	const completion = await client.chat.completions.create({
+			model: process.env.LLM_MODEL!,
 			messages: messages,
 			temperature: 0.3, // less creative, more standardized output
 			stream: false,
