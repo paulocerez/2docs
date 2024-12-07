@@ -621,6 +621,7 @@ Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up an
 ## Possible contributions
 
 - Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs) -> Would like rebuild specifically for API reference standards once the other stuff is done
+- Parsing the API references through openai currently, will implement something more advanced in the future, but unfortunately not all docs are standardized in the same way (that made it difficult for now)
 
 ## Feedback? ✨
 
