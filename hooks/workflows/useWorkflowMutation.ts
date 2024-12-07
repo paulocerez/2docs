@@ -1,20 +1,29 @@
+// hooks/workflows/useWorkflowMutation.ts
+
 import { useMutation } from "@tanstack/react-query";
 
+interface WorkflowMutationData {
+  prompt: string;
+  apiDocIds: string[];
+  userId: string;
+  title: string;
+}
 
 export default function useWorkflowMutation() {
-  
-	return useMutation({
-		mutationFn: async ({ prompt, apiDocIds }: { prompt: string, apiDocIds: string[] }) => {
-			const response = await fetch(`/api/chats`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ prompt, apiDocIds }),
-			});
+  return useMutation({
+    mutationFn: async ({ prompt, apiDocIds, userId, title: chatTitle }: WorkflowMutationData) => {
+      const response = await fetch(`/api/workflows`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, apiDocIds, userId, chatTitle }),
+      });
 
-			if (!response.ok) {
-				throw new Error("Failed to create workflow");
-			}
-			return response.json();
-		}
+	  console.log(prompt, apiDocIds, userId, chatTitle)
+
+      if (!response.ok) {
+        throw new Error("Failed to generate and save workflow");
+      }
+      return response.json();
+    },
   });
 }

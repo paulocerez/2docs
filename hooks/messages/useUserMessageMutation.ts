@@ -6,16 +6,16 @@ interface UserMessageMutationData {
 	title: string;
 	prompt: string;
 	chatId?: string;
-	workflowId: string;
+	workflowId?: string;
 }
 
 export function useUserMessageMutation(userId: string) {
 	const queryClient = useQueryClient();
   
 	return useMutation({
-	  mutationFn: async ({ chatId, title, prompt }: UserMessageMutationData) => {
+	  mutationFn: async ({ chatId, title, prompt, workflowId }: UserMessageMutationData) => {
 		let url = chatId ? `/api/chats/${chatId}/messages` : '/api/chats';
-		let body = chatId ? { prompt } : { userId, title, prompt };
+		let body = chatId ? { prompt } : { userId, title, prompt, workflowId };
   
 		const response = await fetch(url, {
 		  method: "POST",
@@ -52,7 +52,7 @@ export function useUserMessageMutation(userId: string) {
 		  // Add new chat
 		  const newChat: SelectChat = {
 			title: variables.title!,
-			workflowId: variables.workflowId,
+			workflowId: variables.workflowId!,
 			id: data.chat.id,
 			prompt: data.message.content,
 			userId: userId,
