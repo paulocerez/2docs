@@ -23,8 +23,6 @@ export const messages = pgTable("message", {
   role: text("role").notNull(),
   content: text("message").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
-  workflowId: text("workflow_id")
-    .references(() => workflows.id, { onDelete: "set null" }),
 });
 
 export const chatApiLinks = pgTable("chat_api_links", {

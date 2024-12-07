@@ -12,7 +12,7 @@ export async function createChat(chatData: InsertChat, initialPrompt: string) {
 	const [message] = await db.insert(messages).values({
 		chatId: chat.id,
 		content: initialPrompt,
-		role: 'user'
+		role: 'user',
 	}).returning();
 	const result = { chat, message };
 	return result;
@@ -51,4 +51,3 @@ export async function getUserChatsWithMessagesAndApis(userId: string) {
   .leftJoin(apiDocumentations, eq(chatApiLinks.apiDocumentationId, apiDocumentations.id))
   .orderBy(desc(chats.lastActivityAt));
 }
-
