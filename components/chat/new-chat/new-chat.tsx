@@ -1,9 +1,8 @@
 "use client";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import { FormEvent, use, useCallback, useState, useEffect } from "react";
+import { FormEvent, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
-import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
 import LinkInputs from "@/components/chat/new-chat/link-inputs";
 import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
@@ -31,7 +30,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
-  const aiResponseMutation = useAIResponseMutation();
   const workflowMutation = useWorkflowMutation();
 
   useEffect(() => {
@@ -61,7 +59,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
           apiDocIds.push(apiDocId);
         }
 
-        console.log(userId, chatTitle);
         // Generate and save the workflow, receiving the saved workflow with its ID
         const { workflow } = await workflowMutation.mutateAsync({
           prompt,

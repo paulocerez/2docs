@@ -9,7 +9,6 @@ export async function generateChatCompletion(messages: ChatCompletionMessagePara
 		model: process.env.LLM_MODEL!,
 		messages: validMessages,
 		stream: false,
-		max_tokens: 7000,
 	});
   
 	return completion.choices[0]?.message?.content || '';
