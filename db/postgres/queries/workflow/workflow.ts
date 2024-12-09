@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import { db } from "../db";
-import { InsertWorkflow, InsertWorkflowStep, InsertWorkflowVariable, workflows, workflowSteps, workflowVariables } from "../schema/workflows";
-import { apiEndpoints } from "../schema/apis";
-import { chats } from "../schema/chats";
+import { db } from "../../db";
+import { InsertWorkflow, InsertWorkflowStep, InsertWorkflowVariable, workflows, workflowSteps, workflowVariables } from "../../schema/workflows";
+import { apiEndpoints } from "../../schema/apis";
+import { chats } from "../../schema/chats";
 
 export async function getWorkflowSteps(workflowId: string) {
 	return await db.select().from(workflowSteps).where(eq(workflowSteps.workflowId, workflowId));

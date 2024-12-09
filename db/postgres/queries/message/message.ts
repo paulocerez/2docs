@@ -1,6 +1,6 @@
-import { db } from "../db";
+import { db } from "../../db";
 import { eq } from "drizzle-orm";
-import { chats, InsertMessage, messages, SelectMessage } from "../schema/chats";
+import { chats, InsertMessage, messages, SelectMessage } from "../../schema/chats";
 
 export async function getAllMessagesForChat(chatId: string): Promise<SelectMessage[]> {
   try {

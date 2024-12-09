@@ -1,5 +1,5 @@
-import { db } from "../db";
-import { InsertUser, users } from "../schema/users";
+import { db } from "../../db";
+import { InsertUser, users } from "../../schema/users";
 import { eq } from "drizzle-orm";
 
 

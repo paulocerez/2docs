@@ -1,7 +1,7 @@
-import { db } from "../db";
+import { db } from "../../db";
 import { desc, eq } from "drizzle-orm";
-import { chatApiLinks, chats, InsertChat, messages, SelectChat } from "../schema/chats";
-import { apiDocumentations } from "../schema/apis";
+import { chatApiLinks, chats, InsertChat, messages, SelectChat } from "../../schema/chats";
+import { apiDocumentations } from "../../schema/apis";
 
 export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
   return await db.select().from(chats).where(eq(chats.userId, userId)).orderBy(desc(chats.lastActivityAt));
@@ -26,7 +26,7 @@ export async function getChatById(chatId: string): Promise<SelectChat | null> {
 export async function deleteChatById(chatId: string): Promise<SelectChat | undefined> {
 	const [deletedChat] = await db.delete(chats).where(eq(chats.id, chatId)).returning();
 	return deletedChat;
-}
+}	
 
 export async function createChatApiLinks(chatId: string, apiDocumentationIds: string[]) {
 	const values = apiDocumentationIds.map(apiDocumentationId => ({ chatId, apiDocumentationId }))
