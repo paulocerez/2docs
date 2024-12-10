@@ -26,7 +26,13 @@ const shapeVariants = {
   }),
 };
 
-export default function ScrapingApiLoading() {
+interface WorkflowLoadingStepsProps {
+  currentStep: string;
+}
+
+export default function ScrapingApiLoading({
+  currentStep,
+}: WorkflowLoadingStepsProps) {
   return (
     <div className="flex flex-col h-full bg-gray-50 pt-16">
       <div className="flex-grow overflow-y-auto pt-4 pb-16">
@@ -70,17 +76,11 @@ export default function ScrapingApiLoading() {
                   ))}
                 </div>
               </motion.div>
-              <div>
-                <motion.div
-                  className="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{
-                    duration: 5,
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                  }}
-                >
+              <div className="flex flex-col items-center space-y-8">
+                <p className="mt-2 text-center text-gray-400 text-sm">
+                  {currentStep}
+                </p>
+                <motion.div className="w-2/3 h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
                   <motion.div
                     className="h-full bg-blue-500"
                     initial={{ width: "0%" }}

@@ -1,5 +1,5 @@
 // function to scrape a url and return the markdown
-import FirecrawlApp from "@mendable/firecrawl-js";
+import FirecrawlApp, { ScrapeResponse } from "@mendable/firecrawl-js";
 
 const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
 
@@ -12,28 +12,27 @@ export async function scrapeURL(url: string): Promise<{ markdown: string; status
 	}
 
   try {
-    const crawlResponse = await app.crawlUrl(url, {
-      limit: 100,
-      scrapeOptions: {
-        formats: ["markdown", "html"],
-      },
-    });
+    const scrapeResponse = await app.scrapeUrl(url, {
+      formats: ["markdown", "html"],
+    }) as ScrapeResponse;
 
-	console.log("Crawl response: ", crawlResponse);
+	console.log("Scrape response: ", scrapeResponse);
 
-    if (!crawlResponse.success) {
-      throw new Error(`Failed to crawl: ${crawlResponse.error || 'Unknown error'}`);
+    if (!scrapeResponse.success) {
+      throw new Error(`Failed to crawl: ${scrapeResponse.error || 'Unknown error'}`);
     }
 
-    const markdown = crawlResponse.data?.[0]?.markdown;
+    const markdown = scrapeResponse.markdown;
 
     if (!markdown) {
       throw new Error('No markdown content found in the crawl response');
     }
 
+	console.log("Markdown: ", markdown);
+
 
     return {
-      markdown: markdown,
+      markdown,
       statusCode: 200
     };
 

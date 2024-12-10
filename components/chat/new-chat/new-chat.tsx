@@ -19,13 +19,16 @@ const queryClient = new QueryClient();
 function NewChatPageContent({ userId }: { userId: string }) {
   const router = useRouter();
   const [isAiResponding, setIsAiResponding] = useState(false);
-  const [chatTitle, setChatTitle] = useState("");
+  const [title, setTitle] = useState("");
   const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const isFormValid = checklist.every(Boolean);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [currentStep, setCurrentStep] = useState<string>(
+    "Scraping API documentation..."
+  );
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
@@ -38,6 +41,10 @@ function NewChatPageContent({ userId }: { userId: string }) {
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, [links]);
 
+  useEffect(() => {
+    console.log("UserId:", userId, "Links:", links);
+  }, [userId, links]);
+
   const scrapeDocsAndGenerateWorkflow = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -47,9 +54,11 @@ function NewChatPageContent({ userId }: { userId: string }) {
       setError(null);
 
       try {
+        setCurrentStep("Scraping API documentation...");
         // TODOstill need to check if links are pointing to valid api references
         // const validatedLinks = await validateLinks(links);
         const apiDocIds = [];
+        console.log("UserId:", userId, "Links:", links);
         // Scrape and process each api reference
         for (const link of links) {
           const { apiDocId } = await scrapeUrlMutation.mutateAsync({
@@ -59,18 +68,30 @@ function NewChatPageContent({ userId }: { userId: string }) {
           apiDocIds.push(apiDocId);
         }
 
+        console.log(
+          "title:",
+          title,
+          "prompt:",
+          prompt,
+          "apiDocIds:",
+          apiDocIds,
+          "userId:",
+          userId
+        );
         // Generate and save the workflow, receiving the saved workflow with its ID
+        setCurrentStep("Generating workflow...");
         const { workflow } = await workflowMutation.mutateAsync({
           prompt,
           apiDocIds,
           userId,
-          title: chatTitle,
+          title,
         });
 
+        setCurrentStep("Saving workflow, creating a new chat...");
         // create chat and add user message
         const { chat } = await userMessageMutation.mutateAsync({
           prompt,
-          title: chatTitle,
+          title,
           workflowId: workflow.id,
         });
 
@@ -93,8 +114,8 @@ function NewChatPageContent({ userId }: { userId: string }) {
       chatApiLinksMutation,
       router,
       links,
-      chatTitle,
       prompt,
+      title,
       isFormValid,
       scrapeUrlMutation,
       userId,
@@ -111,7 +132,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const handleChatTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newTitle = e.target.value;
-      setChatTitle(newTitle);
+      setTitle(newTitle);
       setChecklist((prev) => [newTitle.trim() !== "", prev[1], prev[2]]);
     },
     []
@@ -135,13 +156,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
   if (!userId) return null;
 
   if (isProcessing) {
-    return <ScrapingApiLoading />;
+    return <ScrapingApiLoading currentStep={currentStep} />;
   }
 
   return (
     <AuthenticatedLayout
       userId={userId}
-      currentPageTitle={chatTitle || "Build a workflow"}
+      currentPageTitle={title || "Build a workflow"}
     >
       <div className="flex flex-col h-full bg-gray-50 pt-16">
         <div className="flex-grow overflow-y-auto pt-4 pb-16">
@@ -163,7 +184,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
                   <div className="max-w-sm w-full space-y-1">
                     <input
                       type="text"
-                      value={chatTitle}
+                      value={title}
                       onChange={handleChatTitleChange}
                       placeholder="Name your workflow"
                       className="w-full px-3 py-2 border rounded-full text-xs focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200"
