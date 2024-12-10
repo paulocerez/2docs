@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import ChatContent from "./ChatContent";
-import { getChatById } from "@/db/postgres/queries/chat";
+import { getChatById } from "@/db/postgres/queries/chat/chat";
 
 export default async function ChatPage({
   params,

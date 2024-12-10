@@ -1,7 +1,7 @@
 import { searchVectors } from "@/db/qdrant/vector";
 import { generateEmbedding } from "@/lib/vector-search/generateEmbedding";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
-import { getApiDocumentation } from "@/db/postgres/queries/api";
+import { getApiDocumentation } from "@/db/postgres/queries/api/api";
 
 export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {
 	console.log(prompt, apiDocIds, userId, chatTitle)

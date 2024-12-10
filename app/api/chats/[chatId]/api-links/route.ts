@@ -1,4 +1,4 @@
-import { createChatApiLinks, getChatApiLinks } from "@/db/postgres/queries/chat"
+import { createChatApiLinks, getChatApiLinks } from "@/db/postgres/queries/chat/chat";
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET (request: NextRequest, { params }: { params: { chatId: string}}): Promise<NextResponse> {

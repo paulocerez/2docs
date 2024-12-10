@@ -1,4 +1,4 @@
-import { getApiInfoWithEndpoints } from "@/db/postgres/queries/api";
+import { getApiInfoWithEndpoints } from "@/db/postgres/queries/api/api";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 
 export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {

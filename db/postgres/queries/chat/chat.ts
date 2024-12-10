@@ -6,12 +6,12 @@ import { apiDocumentations } from "../../schema/apis";
 export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
   return await db.select().from(chats).where(eq(chats.userId, userId)).orderBy(desc(chats.lastActivityAt));
 }
-export async function createChat(chatData: InsertChat, initialPrompt: string) {
+export async function createChat(chatData: InsertChat) {
 	// destructuring the variable as returning () returns an array -> returns the first element/object of the array (that only has one element in total)
 	const [chat] = await db.insert(chats).values(chatData).returning();
 	const [message] = await db.insert(messages).values({
 		chatId: chat.id,
-		content: initialPrompt,
+		content: chatData.prompt,
 		role: 'user',
 	}).returning();
 	const result = { chat, message };

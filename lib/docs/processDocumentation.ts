@@ -1,6 +1,6 @@
-import { createApiDocumentation } from "@/db/postgres/queries/scrape";
+import { createApiDocumentation } from "@/db/postgres/queries/scrape/scrape";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
-import { createApiEndpoint } from "@/db/postgres/queries/api";
+import { createApiEndpoint } from "@/db/postgres/queries/api/api";
 import { parseMarkdownForEndpointsUsingLLM } from "./parse-markdown/llmParseMarkdown";
 
 export async function processDocumentation(markdown: string, userId: string, url: string) {

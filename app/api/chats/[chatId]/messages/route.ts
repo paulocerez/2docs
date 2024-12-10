@@ -1,4 +1,4 @@
-import { createMessage, getAllMessagesForChat } from "@/db/postgres/queries/message";
+import { createMessage, getAllMessagesForChat } from "@/db/postgres/queries/message/message";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(

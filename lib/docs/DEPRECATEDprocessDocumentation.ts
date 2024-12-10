@@ -1,9 +1,9 @@
-import { createApiDocumentation } from "@/db/postgres/queries/scrape";
+import { createApiDocumentation } from "@/db/postgres/queries/scrape/scrape";
 import { initializeCollection } from "@/db/qdrant/apiCollection";
 import { upsertVectors } from "@/db/qdrant/vector";
 import { generateEmbedding } from "@/lib/vector-search/generateEmbedding";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
-import { createApiEndpoint, createVectorEmbedding } from "@/db/postgres/queries/api";
+import { createApiEndpoint, createVectorEmbedding } from "@/db/postgres/queries/api/api";
 import { parseMarkdownForEndpointsUsingLLM } from "./parse-markdown/llmParseMarkdown";
 
 export async function processDocumentation(markdown: string, userId: string, url: string) {

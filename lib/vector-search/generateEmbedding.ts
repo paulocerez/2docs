@@ -1,4 +1,3 @@
-import { OpenAI } from "openai";
 import { client } from "@/lib/language-model/client";
 
 export async function generateEmbedding(text: string): Promise<number[]> {

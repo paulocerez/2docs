@@ -1,4 +1,4 @@
-import { getUserNameAndImageByUserId } from "@/db/postgres/queries/user";
+import { getUserNameAndImageByUserId } from "@/db/postgres/queries/user/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET (request: NextRequest, { params }: { params: { userId: string}}): Promise<NextResponse> {

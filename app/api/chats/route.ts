@@ -1,10 +1,12 @@
-import { createChat, getAllChatsByUserId } from "@/db/postgres/queries/chat";
+
+import { createChat, getAllChatsByUserId } from "@/db/postgres/queries/chat/chat";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET (request: NextRequest): Promise<NextResponse> {
 	const userId = request.nextUrl.searchParams.get("userId")
 	
 	if (!userId) {
+
 		return NextResponse.json({error: "User Id is not provided"}, { status: 400 })
 	}
 	try {
@@ -18,7 +20,7 @@ export async function GET (request: NextRequest): Promise<NextResponse> {
 export async function POST (request: NextRequest): Promise<NextResponse> {
 	const body = await request.json();
 	try {
-		const result = await createChat(body, body.prompt, body.workflowId);
+		const result = await createChat(body);
 		return NextResponse.json(result, { status: 201 })
 	} catch (error) {
 		console.error("Error creating chat", error)
