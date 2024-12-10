@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import * as chatCompletionModule from '@/lib/language-model/chat-completion';
-import { generateWorkflow } from './generateWorkflow';
+import { describe, expect, it, vi } from "vitest";
+import { generateWorkflow } from "./generateWorkflow";
+
 
 describe('generateWorkflow', () => {
   it('should generate a workflow based on API info and prompt', async () => {
