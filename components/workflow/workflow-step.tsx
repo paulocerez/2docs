@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, ChevronUp, Code, Eye, FileText } from "lucide-react";
-import { FullCodeSnippet } from "./full-code-snippet";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface DataFlow {
-  input?: string;
-  output?: string;
-}
 
 export interface WorkflowStepProps {
   id: string;
   title: string;
   endpoint: string;
+  method: string;
   order: number;
+  inputMapping?: string | Record<string, any>;
+  outputMapping?: string | Record<string, any>;
+  loop?: {
+    over: string;
+    action: string;
+  };
   codeSnippet: string;
-  dataFlow: DataFlow;
 }
 
 function StepNumber({ number }: { number: number }) {
@@ -38,19 +38,53 @@ function StepNumber({ number }: { number: number }) {
 }
 
 export function WorkflowStep({
-  id,
   title,
   endpoint,
+  method,
   order,
-  dataFlow,
+  inputMapping,
+  outputMapping,
   codeSnippet,
 }: WorkflowStepProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showCode, setShowCode] = useState(false);
 
-  const toggleCodeView = () => {
-    setShowCode(!showCode);
+  const formattedInput =
+    typeof inputMapping === "string"
+      ? inputMapping
+      : JSON.stringify(inputMapping, null, 2);
+
+  const formattedOutput =
+    typeof outputMapping === "string"
+      ? outputMapping
+      : JSON.stringify(outputMapping, null, 2);
+
+  const generateCodeSnippet = () => {
+    return `// ${title}
+fetch("${endpoint}", {
+  method: "${method}",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer ${"{YOUR_API_KEY}"}"
+  }${
+    inputMapping
+      ? `,
+  body: JSON.stringify(${formattedInput})`
+      : ""
+  }
+})
+.then(response => response.json())
+.then(data => {
+  ${
+    formattedOutput
+      ? `// Map the response data
+  const mappedData = ${formattedOutput};`
+      : "// Process the response data"
+  }
+})
+.catch(error => console.error('Error:', error));`;
   };
+
+  const displayedCodeSnippet = codeSnippet || generateCodeSnippet();
 
   return (
     <motion.div
@@ -81,28 +115,34 @@ export function WorkflowStep({
         <p className="text-sm text-gray-600">/{endpoint}</p>
         {isExpanded && (
           <>
-            <FullCodeSnippet codeSnippet={codeSnippet} />
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="mt-4 space-y-2">
-                <div className="bg-gray-100 p-2 rounded-md">
-                  <h4 className="font-semibold text-sm text-purple-600">
-                    Input:
-                  </h4>
-                  <pre className="text-xs overflow-x-auto text-gray-700">
-                    {dataFlow.input || "No input mapping specified"}
+              <div className="mt-4 space-y-4 px-4">
+                <div className="bg-gray-800 rounded-md p-4">
+                  <pre className="text-xs text-gray-200 overflow-x-auto">
+                    {displayedCodeSnippet}
                   </pre>
                 </div>
-                <div className="bg-gray-100 p-2 rounded-md">
-                  <h4 className="font-semibold text-sm text-purple-600">
-                    Output:
-                  </h4>
-                  <pre className="text-xs overflow-x-auto text-gray-700">
-                    {dataFlow.output || "No output mapping specified"}
-                  </pre>
+                <div className="space-y-2">
+                  <div className="bg-gray-100 p-2 rounded-md">
+                    <h4 className="font-semibold text-sm text-purple-600">
+                      Input:
+                    </h4>
+                    <pre className="text-xs overflow-x-auto text-gray-700">
+                      {formattedInput || "No input mapping specified"}
+                    </pre>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-md">
+                    <h4 className="font-semibold text-sm text-purple-600">
+                      Output:
+                    </h4>
+                    <pre className="text-xs overflow-x-auto text-gray-700">
+                      {formattedOutput || "No output mapping specified"}
+                    </pre>
+                  </div>
                 </div>
               </div>
             </motion.div>

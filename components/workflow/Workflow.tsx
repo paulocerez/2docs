@@ -23,6 +23,7 @@ interface WorkflowProps {
     title: string;
     steps: WorkflowStepProps[];
     variables: WorkflowVariableProps[];
+    codeSnippet: string;
   };
   onSave?: (workflow: any) => void;
 }
@@ -30,11 +31,18 @@ interface WorkflowProps {
 type ViewMode = "steps" | "json" | "fullCode";
 
 export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
+  const workflow = {
+    title: initialWorkflow?.title || "Untitled Workflow",
+    steps: initialWorkflow?.steps || [],
+    variables: initialWorkflow?.variables || [],
+    codeSnippet: initialWorkflow?.codeSnippet,
+  };
+
   const [showVariables, setShowVariables] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("steps");
   const [copied, setCopied] = useState(false);
   const [workflowCode, setWorkflowCode] = useState(
-    JSON.stringify(initialWorkflow, null, 2)
+    JSON.stringify(workflow, null, 2)
   );
   const [error, setError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -54,7 +62,7 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fullCodeSnippet = initialWorkflow.steps
+  const fullCodeSnippet = workflow.steps
     .map((step) => `// ${step.title}\n${step.codeSnippet}`)
     .join("\n\n");
 
@@ -69,7 +77,7 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
     <div className="max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold text-gray-800 px-2">
-          {initialWorkflow.title || "Untitled Workflow"}
+          {workflow.title}
         </h1>
         <div className="relative" ref={dropdownRef}>
           <button
@@ -209,7 +217,7 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {initialWorkflow.variables.map((variable) => (
+                {workflow.variables.map((variable) => (
                   <motion.div
                     key={variable.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -224,7 +232,7 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
           </motion.div>
 
           <div className="space-y-6">
-            {initialWorkflow.steps.map((step) => (
+            {workflow.steps.map((step) => (
               <motion.div
                 key={step.id}
                 className="relative"
