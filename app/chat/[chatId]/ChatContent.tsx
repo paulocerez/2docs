@@ -49,6 +49,8 @@ function ChatContentInner({
   const { data: workflow, isLoading: isWorkflowLoading } =
     useWorkflow(currentChatId);
 
+  console.log("Workflow data:", workflow);
+
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
   };
@@ -165,9 +167,18 @@ function ChatContentInner({
     <AuthenticatedLayout userId={userId} currentPageTitle={currentChatTitle}>
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
-          <div className="mx-auto px-4 w-full max-w-2xl">
+          <div className="mx-auto px-4 w-full max-w-2xl space-y-8">
             <MessageList messages={messages || []} />
-            {workflow && <Workflow initialWorkflow={workflow} />}
+            {workflow && (
+              <Workflow
+                initialWorkflow={{
+                  title: workflow.title,
+                  steps: workflow.steps,
+                  variables: workflow.variables,
+                  codeSnippet: workflow.codeSnippet,
+                }}
+              />
+            )}
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">
                 <LoadingSpinner />
