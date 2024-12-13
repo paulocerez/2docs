@@ -22,11 +22,9 @@ const mockWorkflowSteps: WorkflowStepProps[] = [
 	});
 	return response.results as NotionPage[];
   }`,
-    dataFlow: {
-      input:
-        '{"filter": {"property": "SendToMochi", "checkbox": {"equals": true}}}',
-      output: '{"results": [{"id": "page_id", "properties": {...}}]}',
-    },
+    inputMapping:
+      '{"filter": {"property": "SendToMochi", "checkbox": {"equals": true}}}',
+    outputMapping: '{"results": [{"id": "page_id", "properties": {...}}]}',
   },
   {
     id: "2",
@@ -39,10 +37,9 @@ const mockWorkflowSteps: WorkflowStepProps[] = [
 	const back = entry.properties.Back.rich_text[0].plain_text;
 	return { front, back };
   }`,
-    dataFlow: {
-      input: '{"entry": {"properties": {"Front": {...}, "Back": {...}}}}',
-      output: '{"front": "Card Front Content", "back": "Card Back Content"}',
-    },
+    inputMapping: '{"entry": {"properties": {"Front": {...}, "Back": {...}}}}',
+    outputMapping:
+      '{"front": "Card Front Content", "back": "Card Back Content"}',
   },
   {
     id: "3",

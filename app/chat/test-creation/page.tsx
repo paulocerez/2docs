@@ -16,7 +16,7 @@ export default function TestCreationPage() {
   }>({ type: null, message: "" });
 
   const [chatTitle, setChatTitle] = useState(
-    "Notion and Coda Flashcard Generator"
+    "Mochi and Coda Flashcard Generator"
   );
   const [apiLinks, setApiLinks] = useState<string[]>([
     "https://mochi.cards/docs/api",
@@ -114,6 +114,8 @@ export default function TestCreationPage() {
         body: JSON.stringify({
           prompt,
           apiDocIds,
+          description: prompt,
+          includeEndpoints: true,
         }),
       });
 

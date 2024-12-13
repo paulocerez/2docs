@@ -4,8 +4,9 @@ import { SelectChat } from "@/db/postgres/schema/chats";
 import { ChatList } from "./chat-list";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { GrChat, GrStorage } from "react-icons/gr";
-import { TbPrompt } from "react-icons/tb";
 import SidebarItem from "./SidebarItem";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -18,10 +19,14 @@ interface SidebarProps {
 }
 
 const sidebarItems = [
-  { name: "Chat", icon: GrChat, hotkey: "c" },
-  { name: "Workflows", icon: GrStorage, hotkey: "w" },
-  { name: "Documentations", icon: IoDocumentTextOutline, hotkey: "a" },
-  //   { name: "Prompts", icon: TbPrompt, hotkey: "p" },
+  { name: "Chat", icon: GrChat, hotkey: "c", path: "/chat" },
+  { name: "Workflows", icon: GrStorage, hotkey: "w", path: "/workflows" },
+  {
+    name: "Documentations",
+    icon: IoDocumentTextOutline,
+    hotkey: "a",
+    path: "/documentations",
+  },
 ];
 
 export default function Sidebar({
@@ -33,6 +38,11 @@ export default function Sidebar({
   chats,
   isLoading,
 }: SidebarProps) {
+  const pathname = usePathname();
+  const activeItem = sidebarItems.find((item) =>
+    pathname === "/" ? item.path === "/chat" : pathname.startsWith(item.path)
+  );
+
   return (
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
@@ -49,6 +59,8 @@ export default function Sidebar({
               name={item.name}
               Icon={item.icon}
               hotkey={item.hotkey}
+              path={item.path}
+              isActive={activeItem?.name === item.name}
             />
           ))}
         </div>
