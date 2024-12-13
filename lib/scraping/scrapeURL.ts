@@ -5,7 +5,7 @@ const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
 
 export async function scrapeURL(url: string): Promise<{ markdown: string; statusCode: number }> {
 
-	console.log("Scraping URL: ", url);
+	console.log("Scrape URL function: ", url);
 
 	if (!process.env.FIRECRAWL_API_KEY) {
 		throw new Error("FIRECRAWL_API_KEY is not set");
@@ -16,7 +16,7 @@ export async function scrapeURL(url: string): Promise<{ markdown: string; status
       formats: ["markdown", "html"],
     }) as ScrapeResponse;
 
-	console.log("Scrape response: ", scrapeResponse);
+	console.log("Scrape response in scrapeURL function: ", scrapeResponse);
 
     if (!scrapeResponse.success) {
       throw new Error(`Failed to crawl: ${scrapeResponse.error || 'Unknown error'}`);
@@ -28,7 +28,7 @@ export async function scrapeURL(url: string): Promise<{ markdown: string; status
       throw new Error('No markdown content found in the crawl response');
     }
 
-	console.log("Markdown: ", markdown);
+	console.log("Markdown in scrapeURL function: ", markdown);
 
 
     return {

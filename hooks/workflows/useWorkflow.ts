@@ -8,7 +8,8 @@ export function useWorkflow(chatId: string) {
       if (!response.ok) {
         throw new Error("Failed to fetch workflow");
       }
-      return response.json();
+      const data = await response.json();
+      return data.workflow;
     }
   });
 }

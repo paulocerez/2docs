@@ -13,12 +13,12 @@ export async function processDocumentation(markdown: string, userId: string, url
 		content: markdown,
 	  });
   
-	  console.log("API Documentation created:", apiDoc);
+	  console.log("API Documentation created in processDocumentation function:", apiDoc);
   
 	  // parse markdown for endpoints
 	  const endpoints = await parseMarkdownForEndpointsUsingLLM(markdown);
-	  console.log("Parsed endpoints:", endpoints);
-  
+	  console.log("Parsed endpoints in processDocumentation function:", endpoints);
+	  
 	  // create api endpoints in postgres
 	  for (const endpoint of endpoints) {
 		try {
@@ -26,15 +26,15 @@ export async function processDocumentation(markdown: string, userId: string, url
 			apiDocumentationId: apiDoc.id,
 			...endpoint,
 		  });
-		  console.log("Created endpoint:", createdEndpoint);
+		  console.log("Created endpoint in processDocumentation function:", createdEndpoint);
 		} catch (endpointError) {
-		  console.error("Error creating endpoint:", endpointError);
+		  console.error("Error creating endpoint in processDocumentation function:", endpointError);
 		}
 	  }
   
 	  return apiDoc.id;
 	} catch (error) {
-	  console.error("Error in processDocumentation:", error);
+	  console.error("Error in processDocumentation function:", error);
 	  throw error;
 	}
   }
