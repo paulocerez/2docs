@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { apiDocumentations, apiEndpoints, InsertApiDocumentation, InsertApiEndpoint, InsertVectorEmbedding, vectorEmbeddings } from "../../schema/apis";
 
@@ -92,9 +92,10 @@ export async function getApiEndpointsWithEmbeddings(apiDocId: string) {
   .leftJoin(vectorEmbeddings, eq(apiEndpoints.id, vectorEmbeddings.apiEndpointId));
 }
 
-export async function getPublicApiDocumentations() {
-	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.isPublic, true));
-}
+export async function getPublicApiDocumentations() {  
+	return await db.select({ name: apiDocumentations.name, baseUrl: apiDocumentations.baseUrl, version: apiDocumentations.version, lastScrapedAt: apiDocumentations.lastScrapedAt }).from(apiDocumentations).where(sql`${apiDocumentations.isPublic} = true`);
+  }
+  
 
 export async function getApiDocumentationsPerUser(userId: string) {
 	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.createdBy, userId));

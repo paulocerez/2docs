@@ -21,8 +21,6 @@ function DocumentationContentInner({ userId }: { userId: string }) {
     error: documentationError,
   } = useDocumentation();
 
-  console.log("Documentation", documentation);
-
   if (isDocumentationLoading) return <div>Loading...</div>;
   if (documentationError) return <div>Error loading documentation</div>;
 
@@ -32,25 +30,16 @@ function DocumentationContentInner({ userId }: { userId: string }) {
         {documentation.length === 0 ? (
           <NoDataAvailable title="Documentation" />
         ) : (
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 items-center">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {documentation.map((doc: Documentation, index: number) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg p-4 flex flex-col space-y-2 hover:shadow-md transition-shadow duration-200"
+                  className="border border-gray-200 rounded-lg p-4 flex flex-col space-y-2 hover:shadow-md transition-shadow duration-200 w-96"
                 >
                   <div className="flex flex-row items-center justify-between">
-                    <div className="flex flex-row items-center space-x-2">
-                      <div className="rounded-full h-4 w-4 bg-green-500"></div>
-                      <h1 className="text-md font-semibold">{doc.name}</h1>
-                    </div>
-                    <p className="text-gray-500 text-sm">v{doc.version}</p>
-                  </div>
-                  <p className="text-gray-500 text-sm">{doc.description}</p>
-                  <div className="flex flex-col items-start justify-center mt-auto space-y-2">
-                    <p className="text-gray-500 text-sm">
-                      Last updated at {doc.lastScrapedAt}
-                    </p>
+                    <p className="text-sm font-normal">{doc.name}</p>
+                    <p className="text-gray-500 text-sm">{doc.version}</p>
                   </div>
                 </div>
               ))}

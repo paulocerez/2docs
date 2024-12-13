@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, uniqueIndex, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const apiDocumentations = pgTable("api_documentation", {
