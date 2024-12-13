@@ -10,7 +10,7 @@ export const workflows = pgTable("workflow", {
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
-    description: text("description").notNull(),
+    description: text("description"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isPublished: boolean("is_published").notNull().default(false),
@@ -41,12 +41,11 @@ export const workflowSteps = pgTable("workflow_step", {
     workflowId: text("workflow_id")
         .notNull()
         .references(() => workflows.id, { onDelete: "cascade" }),
-    endpointId: text("endpoint_id")
-        .notNull()
-        .references(() => apiEndpoints.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 255 }).notNull(),
     order: integer("order").notNull(),
-    inputMapping: text("input_mapping").notNull(),
-    outputMapping: text("output_mapping").notNull(),
+    inputMapping: text("input_mapping"),
+    outputMapping: text("output_mapping"),
+    codeSnippet: text("code_snippet"),
 });
 
 // reusable variables across a workflow sequence
@@ -60,6 +59,16 @@ export const workflowVariables = pgTable("workflow_variable", {
     name: varchar("name", { length: 255 }).notNull(),
     defaultValue: text("default_value"),
     description: text("description"),
+});
+
+export const workflowStepEndpoints = pgTable("workflow_step_endpoints", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    workflowStepId: text("workflow_step_id")
+        .notNull()
+        .references(() => workflowSteps.id, { onDelete: "cascade" }),
+    endpointId: text("endpoint_id")
+        .notNull()
+        .references(() => apiEndpoints.id, { onDelete: "cascade" }),
 });
 
 export const workflowRuns = pgTable("workflow_run", {
@@ -93,3 +102,5 @@ export type SelectWorkflowVariable = typeof workflowVariables.$inferSelect;
 export type InsertWorkflowRun = typeof workflowRuns.$inferInsert;
 export type SelectWorkflowRun = typeof workflowRuns.$inferSelect;
 
+export type InsertWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferInsert;
+export type SelectWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferSelect;

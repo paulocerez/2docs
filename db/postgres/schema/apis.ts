@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, uniqueIndex, boolean } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const apiDocumentations = pgTable("api_documentation", {
@@ -9,10 +9,7 @@ export const apiDocumentations = pgTable("api_documentation", {
   content: text("content").notNull(),
   lastScrapedAt: timestamp("last_scraped_at").notNull().defaultNow(),
   createdBy: text("created_by").notNull().references(() => users.id),
-// }, (table) => {
-//   return {
-//     nameVersionIdx: uniqueIndex('name_version_idx').on(table.name, table.version),
-//   }
+  isPublic: boolean("is_public").notNull().default(true),
 });
 
 export const apiEndpoints = pgTable("api_endpoint", {
