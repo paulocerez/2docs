@@ -14,6 +14,8 @@ import { Message } from "@/types/message";
 import { Workflow } from "@/components/workflow/Workflow";
 import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
 import { useWorkflow } from "@/hooks/workflows/useWorkflow";
+import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMutation";
+import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
 
 const queryClient = new QueryClient();
 
@@ -43,13 +45,12 @@ function ChatContentInner({
     isLoading: boolean;
     error: Error | null;
   } = useMessages(currentChatId);
+
   const userMessageMutation = useUserMessageMutation(userId);
-  const aiResponseMutation = useAIResponseMutation();
-  const workflowMutation = useWorkflowMutation();
+  const workflowQuestionMutation = useWorkflowQuestionMutation();
+  const workflowUpdateMutation = useWorkflowUpdateMutation();
   const { data: workflow, isLoading: isWorkflowLoading } =
     useWorkflow(currentChatId);
-
-  console.log("Workflow data:", workflow);
 
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
@@ -60,17 +61,17 @@ function ChatContentInner({
   }, [messages]);
 
   useEffect(() => {
-    if (messages && messages.length > 0) {
+    if (!isMessagesLoading && !isWorkflowLoading && messages !== undefined) {
       setIsInitialLoading(false);
     }
-  }, [messages]);
+  }, [isMessagesLoading, isWorkflowLoading, messages]);
 
   const handleSubmit = useCallback(
     async (prompt: string) => {
       setError(null);
       setIsAiResponding(true);
 
-      // Optimistic update
+      // Optimistic update to display the user message immediately
       const optimisticMessage: Message = {
         id: `temp-${Date.now()}`,
         chatId: currentChatId,
@@ -84,39 +85,31 @@ function ChatContentInner({
         (old) => [...(old || []), optimisticMessage]
       );
 
-      const retry = async (fn: () => Promise<any>, maxRetries = 3) => {
-        for (let i = 0; i < maxRetries; i++) {
-          try {
-            return await fn();
-          } catch (error) {
-            if (i === maxRetries - 1) throw error;
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * Math.pow(2, i))
-            );
-          }
-        }
-      };
-
       try {
-        await retry(() =>
-          userMessageMutation.mutateAsync({
-            chatId: currentChatId,
-            title: currentChatTitle,
-            prompt,
-          })
-        );
+        // Add user message
+        await userMessageMutation.mutateAsync({
+          chatId: currentChatId,
+          title: currentChatTitle,
+          prompt,
+        });
 
-        await retry(() =>
-          aiResponseMutation.mutateAsync({
+        // handle mutation based on mode -> question or edit
+        if (mode === "question") {
+          await workflowQuestionMutation.mutateAsync({
             chatId: currentChatId,
             messages: [...(messages || []), { role: "user", content: prompt }],
-          })
-        );
+            codeSnippet: workflow?.codeSnippet || "",
+          });
+        } else {
+          await workflowUpdateMutation.mutateAsync({
+            chatId: currentChatId,
+            prompt,
+            workflow,
+          });
+        }
       } catch (error) {
-        console.error("Failed to send message or generate workflow:", error);
-        setError(
-          "Failed to send message or generate response. Please try again."
-        );
+        console.error("Failed to process message:", error);
+        setError("Failed to process message. Please try again.");
 
         // Remove optimistic update on error
         queryClient.setQueryData<Message[]>(
@@ -128,8 +121,11 @@ function ChatContentInner({
       }
     },
     [
+      mode,
+      workflow,
       userMessageMutation,
-      aiResponseMutation,
+      workflowQuestionMutation,
+      workflowUpdateMutation,
       currentChatId,
       messages,
       currentChatTitle,
@@ -168,22 +164,26 @@ function ChatContentInner({
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl space-y-8">
-            <MessageList messages={messages || []} />
-            {workflow && (
-              <Workflow
-                initialWorkflow={{
-                  title: workflow.title,
-                  steps: workflow.steps,
-                  variables: workflow.variables,
-                  codeSnippet: workflow.codeSnippet,
-                }}
-              />
-            )}
+            <MessageList
+              messages={messages}
+              workflow={
+                workflow
+                  ? {
+                      title: workflow.title,
+                      steps: workflow.steps,
+                      variables: workflow.variables,
+                      codeSnippet: workflow.codeSnippet,
+                    }
+                  : undefined
+              }
+            />
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">
                 <LoadingSpinner />
                 <p className="text-sm text-gray-400 flex items-center">
-                  Workflow is generated...
+                  {mode === "question"
+                    ? "Workflow is being explained..."
+                    : "Workflow is being updated..."}
                 </p>
               </div>
             )}

@@ -7,9 +7,18 @@ import rehypeSanitize from "rehype-sanitize";
 import "./MessageList.module.css";
 import { lightfair } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { Message } from "@/types/message";
+import { Workflow } from "@/components/workflow/Workflow";
+import { WorkflowStepProps } from "@/types/workflow";
+import { WorkflowVariableProps } from "../workflow/workflow-variable";
 
 interface MessageListProps {
   messages: Message[] | undefined;
+  workflow?: {
+    title: string;
+    steps: WorkflowStepProps[];
+    variables: WorkflowVariableProps[];
+    codeSnippet: string;
+  };
 }
 
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
@@ -31,15 +40,20 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   );
 };
 
-export default function MessageList({ messages }: MessageListProps) {
+export default function MessageList({ messages, workflow }: MessageListProps) {
   return (
     <div className="flex flex-col space-y-10 w-full h-full">
       {Array.isArray(messages) && messages.length > 0 ? (
-        messages.map(
-          (message: Partial<Message> | null, index) =>
-            message && (
+        messages.map((message: Partial<Message> | null, index) => {
+          if (!message) return null;
+
+          // Insert workflow after the first user message
+          const showWorkflow =
+            workflow && message.role === "user" && index === 0;
+
+          return (
+            <React.Fragment key={index}>
               <div
-                key={index}
                 className={`flex ${
                   message.role === "user" ? "justify-end" : "justify-start"
                 }`}
@@ -67,8 +81,12 @@ export default function MessageList({ messages }: MessageListProps) {
                   </Markdown>
                 </div>
               </div>
-            )
-        )
+              {showWorkflow && (
+                <Workflow initialWorkflow={workflow} className="w-full mt-8" />
+              )}
+            </React.Fragment>
+          );
+        })
       ) : (
         <div className="flex justify-center items-center h-32">
           <p className="text-gray-500 text-sm">Looking for messages...</p>

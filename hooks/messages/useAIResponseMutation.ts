@@ -12,7 +12,7 @@ export function useAIResponseMutation() {
 
   return useMutation({
     mutationFn: async ({ chatId, messages }: AIResponseMutationData ) => {
-      const response = await fetch(`/api/chats/${chatId}/generate`, {
+      const response = await fetch(`/api/chats/${chatId}/ai-response`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages }),

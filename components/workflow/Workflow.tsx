@@ -1,28 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import {
-  AlertCircle,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Code,
-  Copy,
-  Eye,
-  FileText,
-  Save,
-} from "lucide-react";
-import { WorkflowStep } from "./workflow-step";
-import { WorkflowVariable, WorkflowVariableProps } from "./workflow-variable";
-import Button from "../ui/button";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { useEffect, useState } from "react";
 import { WorkflowStepProps } from "@/types/workflow";
 import JsonMode from "./mode/json-mode";
 import CodeMode from "./mode/code-mode";
 import StepMode from "./mode/step-mode";
 import ModeDropdown from "./mode-dropdown";
 import CopySaveButton from "./copy-save-button";
+import { WorkflowVariableProps } from "./workflow-variable";
 
 interface WorkflowProps {
   initialWorkflow: {
@@ -32,11 +17,16 @@ interface WorkflowProps {
     codeSnippet: string;
   };
   onSave?: (workflow: any) => void;
+  className?: string;
 }
 
 type ViewMode = "steps" | "json" | "fullCode";
 
-export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
+export function Workflow({
+  initialWorkflow,
+  onSave,
+  className = "",
+}: WorkflowProps) {
   const workflow = {
     title: initialWorkflow?.title || "Untitled Workflow",
     steps: initialWorkflow?.steps || [],
@@ -45,6 +35,7 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
   };
 
   const [showVariables, setShowVariables] = useState(false);
+  const [showDiff, setShowDiff] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("steps");
   const [copied, setCopied] = useState(false);
   const [workflowCode, setWorkflowCode] = useState(
@@ -56,8 +47,18 @@ export function Workflow({ initialWorkflow, onSave }: WorkflowProps) {
     .map((step) => `// ${step.title}\n${step.codeSnippet}`)
     .join("\n\n");
 
+  useEffect(() => {
+    if (initialWorkflow) {
+      setShowDiff(true);
+      const timer = setTimeout(() => setShowDiff(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [initialWorkflow]);
+
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800">
+    <div
+      className={`max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800 ${className}`}
+    >
       <div className="flex justify-between items-center">
         <h1 className="text-md font-semibold text-gray-800 px-2">
           {workflow.title}

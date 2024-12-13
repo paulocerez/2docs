@@ -46,6 +46,7 @@ export const workflowSteps = pgTable("workflow_step", {
     inputMapping: text("input_mapping"),
     outputMapping: text("output_mapping"),
     codeSnippet: text("code_snippet"),
+	description: text("description"),
 });
 
 // reusable variables across a workflow sequence
