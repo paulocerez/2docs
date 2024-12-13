@@ -1,10 +1,13 @@
+import { createMessage } from "@/db/postgres/queries/message/message";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest, { params }: { params: { chatId: string } }) {
   try {
 	const { messages, codeSnippet } = await request.json();
+	console.log("Workflow Question Request", messages, codeSnippet);
 	const chatId = params.chatId;
+	console.log("Chat ID", chatId);
 
 	const systemPrompt = `You are an AI assistant helping users understand a workflow. 
     The workflow code is: ${codeSnippet}
@@ -15,13 +18,17 @@ export async function POST(request: NextRequest, { params }: { params: { chatId:
 		...messages,
 	]);
 
+	const newMessage = await createMessage({
+		chatId,
+		content: response,
+		role: 'assistant',
+		timestamp: new Date(),
+	});
+
+	console.log("Workflow Question Response", response);
+
 	return NextResponse.json({
-		message: {
-		  role: 'assistant',
-		  content: response,
-		  chatId,
-		  timestamp: new Date()
-		}
+		message: newMessage
 	  }, { status: 201 });
   } catch (error) {
 	console.error("Error generating workflow explanation", error);

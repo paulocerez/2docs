@@ -24,6 +24,7 @@ export function useWorkflowQuestionMutation() {
 		return response.json();
 	  },
 	  onSuccess: (data, variables) => {
+		// update client side cache
 		queryClient.setQueryData<Message[]>(
 		  ["messages", variables.chatId],
 		  (oldMessages = []) => [...oldMessages, data.message]
