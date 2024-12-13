@@ -12,6 +12,20 @@ export async function getApiDocumentation(id: string) {
 	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.id, id));
 }
 
+export async function getApiDocumentationByUrl(url: string) {
+	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.baseUrl, url)).limit(1);
+  }
+
+export async function getApiEndpoints() {
+	return await db.select().from(apiEndpoints);
+}
+
+export async function getApiDocumentations() {
+	return await db.select().from(apiDocumentations);
+}
+
+  
+
 // API ENDPOINT
 export async function createApiEndpoint(data: InsertApiEndpoint) {
 	const [result] = await db.insert(apiEndpoints).values(data).returning();
@@ -36,18 +50,20 @@ export async function getApiInfoWithEndpoints(apiDocId: string) {
 	const endpoints = result.map(r => r.endpoints).filter(e => e !== null);
   
 	return {
-	  name: apiDoc.name,
-	  baseUrl: apiDoc.baseUrl,
-	  version: apiDoc.version,
-	  endpoints: endpoints.map(endpoint => ({
-		path: endpoint.path,
-		method: endpoint.method,
-		operation: endpoint.operation,
-		summary: endpoint.summary,
-		description: endpoint.description,
-		parameters: endpoint.parameters,
-		requestBody: endpoint.requestBody,
-		responses: endpoint.responses,
+		id: apiDoc.id,
+		name: apiDoc.name,
+		baseUrl: apiDoc.baseUrl,
+		version: apiDoc.version,
+		endpoints: endpoints.map(endpoint => ({
+			id: endpoint.id,
+			path: endpoint.path,
+			method: endpoint.method,
+			operation: endpoint.operation,
+			summary: endpoint.summary,
+			description: endpoint.description,
+			parameters: endpoint.parameters,
+			requestBody: endpoint.requestBody,
+			responses: endpoint.responses,
 	  })),
 	};
   }
@@ -74,4 +90,12 @@ export async function getApiEndpointsWithEmbeddings(apiDocId: string) {
   .from(apiEndpoints)
   .where(eq(apiEndpoints.apiDocumentationId, apiDocId))
   .leftJoin(vectorEmbeddings, eq(apiEndpoints.id, vectorEmbeddings.apiEndpointId));
+}
+
+export async function getPublicApiDocumentations() {
+	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.isPublic, true));
+}
+
+export async function getApiDocumentationsPerUser(userId: string) {
+	return await db.select().from(apiDocumentations).where(eq(apiDocumentations.createdBy, userId));
 }
