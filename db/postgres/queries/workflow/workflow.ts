@@ -3,7 +3,6 @@ import { db } from "../../db";
 import { InsertWorkflow, InsertWorkflowStep, InsertWorkflowVariable, workflows, workflowStepEndpoints, workflowSteps, workflowVariables } from "../../schema/workflows";
 import { apiEndpoints } from "../../schema/apis";
 import { chats } from "../../schema/chats";
-import { WorkflowStepProps } from "@/components/workflow/workflow-step";
 import { normalizePath, normalizeStepPaths } from "@/utils/normalizeEndpointPath";
 import { getApiEndpoints } from "../api/api";
 

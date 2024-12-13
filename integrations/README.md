@@ -8,6 +8,7 @@
 - Trello -> OpenAPI Specs: https://dac-static.atlassian.com/cloud/trello/swagger.v3.json?_v=1.576.0
 - Mailchimp -> OpenAPI Specs: https://api.mailchimp.com/schema/3.0/Swagger.json?expand
 - Sendgrid -> OpenAPI Specs: https://github.com/twilio/sendgrid-oai?tab=readme-ov-file
+- Gmail -> OpenAPI Specs: https://tryapisproxy.com/spec/googlemail
 
 ### Most popular API's
 
