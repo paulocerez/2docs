@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 function NewChatPageContent({ userId }: { userId: string }) {
   const router = useRouter();
   const [isAiResponding, setIsAiResponding] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("Mochi and Coda Flashcard Generator");
   const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
@@ -58,9 +58,9 @@ function NewChatPageContent({ userId }: { userId: string }) {
         // TODOstill need to check if links are pointing to valid api references
         // const validatedLinks = await validateLinks(links);
         const apiDocIds = [];
-        console.log("UserId:", userId, "Links:", links);
         // Scrape and process each api reference
         for (const link of links) {
+          console.log("Checking/Scraping link:", link);
           const { apiDocId } = await scrapeUrlMutation.mutateAsync({
             userId,
             url: link,

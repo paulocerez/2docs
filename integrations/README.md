@@ -5,6 +5,9 @@
 - Hubspot CRM API -> Full Docs in Postman here: https://www.postman.com/hubspot/hubspot-public-api-workspace/documentation/pcr9jwv/crm-api-collections
 - Booking -> Full Postman here: https://www.postman.com/clientapi/apitude-by-hotelbeds/documentation/h58zuu9/bookingapi
 - Coda (Notion Alternative) -> OpenAPI Specs here: https://coda.io/apis/v1/openapi.yaml
+- Trello -> OpenAPI Specs: https://dac-static.atlassian.com/cloud/trello/swagger.v3.json?_v=1.576.0
+- Mailchimp -> OpenAPI Specs: https://api.mailchimp.com/schema/3.0/Swagger.json?expand
+- Sendgrid -> OpenAPI Specs: https://github.com/twilio/sendgrid-oai?tab=readme-ov-file
 
 ### Most popular API's
 

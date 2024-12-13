@@ -9,7 +9,10 @@ interface LinkInputsProps {
 
 const LinkInputs: React.FC<LinkInputsProps> = React.memo(
   ({ onSubmit, onInputChange }) => {
-    const [linkInputs, setLinkInputs] = useState<string[]>(["", ""]);
+    const [linkInputs, setLinkInputs] = useState<string[]>([
+      "https://mochi.cards/docs/api",
+      "https://coda.io/apis/v1/openapi.yaml",
+    ]);
     const [activeInput, setActiveInput] = useState<number | null>(null);
 
     const updateLinks = useCallback(

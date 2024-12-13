@@ -3,11 +3,7 @@ import Header from "@/components/header/Header";
 import Sidebar from "@/components/sidebar/Sidebar";
 import { SelectChat } from "@/db/postgres/schema/chats";
 import { useChats } from "@/hooks/chats/useChats";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
