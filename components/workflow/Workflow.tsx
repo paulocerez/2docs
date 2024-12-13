@@ -56,9 +56,7 @@ export function Workflow({
   }, [initialWorkflow]);
 
   return (
-    <div
-      className={`max-w-2xl mx-auto p-6 space-y-8 bg-white text-gray-800 ${className}`}
-    >
+    <div className={`max-w-2xl space-y-8 bg-white text-gray-800 ${className}`}>
       <div className="flex justify-between items-center">
         <h1 className="text-md font-semibold text-gray-800 px-2">
           {workflow.title}

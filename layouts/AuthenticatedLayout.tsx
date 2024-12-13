@@ -55,7 +55,6 @@ export default function AuthenticatedLayout({
           toggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
           currentPageTitle={currentPageTitle}
-          chatId={currentChat?.id}
         />
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>

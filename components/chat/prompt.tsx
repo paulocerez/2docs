@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  FaChevronDown,
-  FaEdit,
-  FaPaperPlane,
-  FaQuestionCircle,
-} from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
-import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
-import Toggle from "../ui/toggle";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 export interface PromptProps {
@@ -111,14 +104,20 @@ export default function Prompt({
                 aria-labelledby="options-menu"
               >
                 <button
-                  onClick={() => setMode("question")}
+                  onClick={() => {
+                    setMode("question");
+                    setIsDropdownOpen(false);
+                  }}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
                   role="menuitem"
                 >
                   Ask a question
                 </button>
                 <button
-                  onClick={() => setMode("editing")}
+                  onClick={() => {
+                    setMode("editing");
+                    setIsDropdownOpen(false);
+                  }}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
                   role="menuitem"
                 >

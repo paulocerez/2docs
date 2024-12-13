@@ -47,7 +47,7 @@ export default function Sidebar({
     <div
       className={`flex flex-col justify-between p-4 h-full w-64 fixed left-0 top-0 bottom-0 
 	  transition-transform duration-300 ease-in-out 
-	  bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-10
+	  bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-20
 	  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="space-y-4">

@@ -1,8 +1,6 @@
-import { Check } from "lucide-react";
+"use client";
 
-import { Copy } from "lucide-react";
-
-import { Save } from "lucide-react";
+import { Check, Copy, Share } from "lucide-react";
 import Button from "../ui/button";
 import { useState } from "react";
 
@@ -39,7 +37,7 @@ export default function CopySaveButton({
       />
       <Button
         border
-        icon={<Save className="h-5 w-5" />}
+        icon={<Share className="h-4 w-4" />}
         onClick={() => onSave && onSave(JSON.parse(workflowCode))}
         disabled={!!error}
       />

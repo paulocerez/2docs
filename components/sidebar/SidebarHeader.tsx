@@ -17,20 +17,31 @@ export interface SidebarHeaderProps {
 
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 
+const getUserFromStorage = (userId: string): UserData | null => {
+  const stored = sessionStorage.getItem(`user-${userId}`);
+  return stored ? JSON.parse(stored) : null;
+};
+
 export default function SidebarHeader({
   toggleSidebar,
   userId,
 }: SidebarHeaderProps) {
   const [showAccountTooltip, setShowAccountTooltip] = useState<boolean>(false);
   const [showSidebarTooltip, setShowSidebarTooltip] = useState<boolean>(false);
+  const [cachedUser] = useState<UserData | null>(() =>
+    getUserFromStorage(userId)
+  );
 
-  const { data: user, isLoading } = useQuery<UserData>({
+  const { data: user } = useQuery<UserData>({
     queryKey: ["user", userId],
     queryFn: async () => {
       const response = await fetch(`/api/users/${userId}`);
-      return response.json();
+      const data = await response.json();
+      sessionStorage.setItem(`user-${userId}`, JSON.stringify(data));
+      return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
+    initialData: cachedUser || undefined,
   });
 
   return (
@@ -39,31 +50,25 @@ export default function SidebarHeader({
         className="flex items-center space-x-2 relative hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-md transition-colors duration-200"
         onClick={() => setShowAccountTooltip((prev) => !prev)}
       >
-        {isLoading ? (
-          <div className="text-xs">Loading...</div>
-        ) : (
-          <>
-            {user?.image && (
-              <Image
-                src={user.image}
-                alt="User Image"
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-            )}
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              {user?.name || "User"}
-            </p>
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                showAccountTooltip ? "rotate-180" : ""
-              }`}
-            >
-              <IoIosArrowDown />
-            </div>
-          </>
+        {user?.image && (
+          <Image
+            src={user.image}
+            alt="User Image"
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
         )}
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          {user?.name || "User"}
+        </p>
+        <div
+          className={`transition-transform duration-300 ease-in-out ${
+            showAccountTooltip ? "rotate-180" : ""
+          }`}
+        >
+          <IoIosArrowDown />
+        </div>
         {showAccountTooltip && (
           <div className="absolute text-left top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg p-2 z-10 text-xs">
             <Link
