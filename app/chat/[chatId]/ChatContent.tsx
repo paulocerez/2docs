@@ -117,9 +117,13 @@ function ChatContentInner({
             return;
           }
           const chunkSize = 5;
-          setStreamingContent((current) =>
-            fullContent.slice(0, index + chunkSize)
-          );
+          setStreamingContent((current) => {
+            const newContent = fullContent.slice(0, index + chunkSize);
+            setTimeout(() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, 0);
+            return newContent;
+          });
           index += chunkSize;
         }, 1);
       };
