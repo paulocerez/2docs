@@ -19,6 +19,7 @@ interface MessageListProps {
     variables: WorkflowVariableProps[];
     codeSnippet: string;
   };
+  workflowRef?: React.RefObject<HTMLDivElement>;
 }
 
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
@@ -40,7 +41,11 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   );
 };
 
-export default function MessageList({ messages, workflow }: MessageListProps) {
+export default function MessageList({
+  messages,
+  workflow,
+  workflowRef,
+}: MessageListProps) {
   return (
     <div className="flex flex-col space-y-10 w-full h-full">
       {Array.isArray(messages) && messages.length > 0 ? (
@@ -82,7 +87,11 @@ export default function MessageList({ messages, workflow }: MessageListProps) {
                 </div>
               </div>
               {showWorkflow && (
-                <Workflow initialWorkflow={workflow} className="w-full mt-8" />
+                <Workflow
+                  initialWorkflow={workflow}
+                  className="w-full mt-8"
+                  workflowRef={workflowRef}
+                />
               )}
             </React.Fragment>
           );

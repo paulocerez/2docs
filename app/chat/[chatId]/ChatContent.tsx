@@ -16,6 +16,8 @@ import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
 import { useWorkflow } from "@/hooks/workflows/useWorkflow";
 import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMutation";
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
+import { IoIosArrowUp } from "react-icons/io";
+import Button from "@/components/ui/button";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ function ChatContentInner({
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [mode, setMode] = useState<"question" | "editing">("question");
+  const workflowRef = useRef<HTMLDivElement>(null);
 
   const {
     data: messages,
@@ -46,6 +49,8 @@ function ChatContentInner({
     error: Error | null;
   } = useMessages(currentChatId);
 
+  console.log("Chat Messages", messages);
+
   const userMessageMutation = useUserMessageMutation(userId);
   const workflowQuestionMutation = useWorkflowQuestionMutation();
   const workflowUpdateMutation = useWorkflowUpdateMutation();
@@ -54,6 +59,19 @@ function ChatContentInner({
 
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
+  };
+
+  const scrollToWorkflow = () => {
+    if (workflowRef.current) {
+      const padding = 70;
+      const elementPosition = workflowRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - padding;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
   };
 
   useEffect(() => {
@@ -163,7 +181,15 @@ function ChatContentInner({
     <AuthenticatedLayout userId={userId} currentPageTitle={currentChatTitle}>
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
-          <div className="mx-auto px-4 w-full max-w-2xl space-y-8">
+          <div className="mx-auto px-4 w-full max-w-2xl relative">
+            {workflow && (
+              <button
+                onClick={scrollToWorkflow}
+                className="fixed left-1/2 -translate-x-1/2 bottom-28 bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
+              >
+                <IoIosArrowUp className="h-4 w-4" />
+              </button>
+            )}
             <MessageList
               messages={messages}
               workflow={
@@ -176,6 +202,7 @@ function ChatContentInner({
                     }
                   : undefined
               }
+              workflowRef={workflowRef}
             />
             {isAiResponding && (
               <div className="flex flex-row justify-start items-center space-x-2 mt-4">

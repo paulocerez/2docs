@@ -18,6 +18,7 @@ interface WorkflowProps {
   };
   onSave?: (workflow: any) => void;
   className?: string;
+  workflowRef?: React.RefObject<HTMLDivElement>;
 }
 
 type ViewMode = "steps" | "json" | "fullCode";
@@ -26,6 +27,7 @@ export function Workflow({
   initialWorkflow,
   onSave,
   className = "",
+  workflowRef,
 }: WorkflowProps) {
   const workflow = {
     title: initialWorkflow?.title || "Untitled Workflow",
@@ -56,7 +58,10 @@ export function Workflow({
   }, [initialWorkflow]);
 
   return (
-    <div className={`max-w-2xl space-y-8 bg-white text-gray-800 ${className}`}>
+    <div
+      ref={workflowRef}
+      className={`max-w-2xl space-y-8 bg-white text-gray-800 ${className}`}
+    >
       <div className="flex justify-between items-center">
         <h1 className="text-md font-semibold text-gray-800 px-2">
           {workflow.title}

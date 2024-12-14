@@ -35,7 +35,7 @@ function DocumentationContentInner({ userId }: { userId: string }) {
               {documentation.map((doc: Documentation, index: number) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg p-4 flex flex-col space-y-2 hover:shadow-md transition-shadow duration-200 w-96"
+                  className="border border-gray-200 rounded-lg p-3 flex flex-col space-y-2 hover:shadow-md transition-shadow duration-200 w-80"
                 >
                   <div className="flex flex-row items-center justify-between">
                     <p className="text-sm font-normal">{doc.name}</p>
