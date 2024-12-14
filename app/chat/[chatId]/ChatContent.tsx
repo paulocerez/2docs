@@ -58,41 +58,6 @@ function ChatContentInner({
     setMode(selectedMode);
   };
 
-  const streamResponse = (fullContent: string) => {
-    let index = 0;
-    setStreamingContent("");
-    setIsAiResponding(false);
-
-    const interval = setInterval(() => {
-      if (index >= fullContent.length) {
-        clearInterval(interval);
-
-        // Update the messages query data with the complete message
-        queryClient.setQueryData<Message[]>(
-          ["messages", currentChatId],
-          (old = []) => [
-            ...old,
-            {
-              id: `response-${Date.now()}`,
-              chatId: currentChatId,
-              role: "assistant",
-              content: fullContent,
-              timestamp: new Date(),
-            },
-          ]
-        );
-
-        setStreamingContent(""); // Clear streaming content after it's added to messages
-        return;
-      }
-
-      // Increase chunk size for faster streaming
-      const chunkSize = 5; // Adjust this value to control speed
-      setStreamingContent((current) => fullContent.slice(0, index + chunkSize));
-      index += chunkSize;
-    }, 1); // Minimum interval time
-  };
-
   const scrollToWorkflow = () => {
     if (workflowRef.current) {
       const padding = 70;
@@ -126,6 +91,38 @@ function ChatContentInner({
     async (prompt: string) => {
       setError(null);
       setIsAiResponding(true);
+
+      const streamResponse = (fullContent: string) => {
+        let index = 0;
+        setStreamingContent("");
+        setIsAiResponding(false);
+
+        const interval = setInterval(() => {
+          if (index >= fullContent.length) {
+            clearInterval(interval);
+            queryClient.setQueryData<Message[]>(
+              ["messages", currentChatId],
+              (old = []) => [
+                ...old,
+                {
+                  id: `response-${Date.now()}`,
+                  chatId: currentChatId,
+                  role: "assistant",
+                  content: fullContent,
+                  timestamp: new Date(),
+                },
+              ]
+            );
+            setStreamingContent("");
+            return;
+          }
+          const chunkSize = 5;
+          setStreamingContent((current) =>
+            fullContent.slice(0, index + chunkSize)
+          );
+          index += chunkSize;
+        }, 1);
+      };
 
       // Optimistic update to display the user message immediately
       const optimisticMessage: Message = {
