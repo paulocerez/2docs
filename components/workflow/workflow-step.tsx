@@ -29,11 +29,7 @@ export function WorkflowStep({
       : JSON.stringify(outputMapping, null, 2);
 
   return (
-    <motion.div
-      layout
-      transition={{ duration: 0.5, type: "spring" }}
-      className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-    >
+    <motion.div layout transition={{ duration: 0.5, type: "spring" }}>
       <div className="flex flex-row items-center justify-between p-4 pb-2">
         <div className="flex flex-col">
           <div className="flex items-center space-x-2">

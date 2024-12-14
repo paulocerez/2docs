@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 
 interface LinkInputsProps {
   onSubmit: (links: string[]) => void;
@@ -14,6 +14,7 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
       "https://coda.io/apis/v1/openapi.yaml",
     ]);
     const [activeInput, setActiveInput] = useState<number | null>(null);
+    const [showInfoTooltip, setShowInfoTooltip] = useState<boolean>(false);
 
     const updateLinks = useCallback(
       (newLinks: string[]) => {
@@ -105,13 +106,35 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
           {activeInput !== null && !isValidUrl(linkInputs[activeInput]) && (
             <span className="text-red-500 text-xs mt-1 block">Invalid URL</span>
           )}
+          <div
+            className="relative"
+            onMouseEnter={() => setShowInfoTooltip(true)}
+            onMouseLeave={() => setShowInfoTooltip(false)}
+          >
+            <Info className="w-4 h-4 text-gray-400 cursor-help" />
+            {showInfoTooltip && (
+              <div className="absolute left-0 top-6 w-80 z-10">
+                <div
+                  className={`
+                    bg-gray-50 text-gray-900 rounded-lg p-3 shadow-lg border border-gray-200
+                    transform transition-all duration-200 ease-in-out
+                    ${
+                      showInfoTooltip
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-1 pointer-events-none"
+                    }
+                  `}
+                >
+                  <p className="text-xs leading-relaxed">
+                    Make sure to point to the OpenAPI Specification file or the
+                    full API Reference Website. Ensure that all the endpoints
+                    are shown on one page (best in cURL or HTTP format).
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <p className="text-[10px] text-gray-400">
-          Make sure to point to the OpenAPI Specification file of the API you
-          want to use. Alternatively, you can point to the full API docs
-          website, e.g. in Postman. Ensure that all the endpoints are shown on
-          one page, possibly in HTTP or cURL format.
-        </p>
       </div>
     );
   }

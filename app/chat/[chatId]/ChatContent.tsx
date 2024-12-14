@@ -116,7 +116,7 @@ function ChatContentInner({
             setStreamingContent("");
             return;
           }
-          const chunkSize = 5;
+          const chunkSize = 10;
           setStreamingContent((current) => {
             const newContent = fullContent.slice(0, index + chunkSize);
             setTimeout(() => {

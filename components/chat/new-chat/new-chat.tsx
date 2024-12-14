@@ -198,17 +198,13 @@ function NewChatPageContent({ userId }: { userId: string }) {
                 <div className="flex flex-col space-y-8">
                   <div className="flex flex-col space-y-4 w-full">
                     <WorkflowRecommendations />
-                    <div className="flex flex-col space-y-4">
-                      <DefaultPrompt
-                        onSubmit={(value: string) => handlePromptChange(value)}
-                        isAiResponding={isAiResponding}
-                        onInputChange={handlePromptChange}
-                      />
-                      <LinkInputs
-                        onSubmit={(value: string[]) => handleLinksChange(value)}
-                        onInputChange={(links: string[]) => setLinks(links)}
-                      />
-                    </div>
+                    <DefaultPrompt
+                      onSubmit={(value: string) => handlePromptChange(value)}
+                      isAiResponding={isAiResponding}
+                      onInputChange={handlePromptChange}
+                      setLinks={setLinks}
+                      handleLinksChange={handleLinksChange}
+                    />
                   </div>
                   <div className="flex flex-row bg-gray-50 w-full justify-center text-xs items-center gap-4 text-gray-400">
                     <ChecklistItem

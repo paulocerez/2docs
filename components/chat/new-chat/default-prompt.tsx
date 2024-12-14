@@ -2,17 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { KeyboardEvent } from "react";
 import LoadingSpinner from "../../ui/loading-spinner";
+import LinkInputs from "./link-inputs";
 
 export interface PromptProps {
   onSubmit: (message: string) => void;
   isAiResponding: boolean;
   onInputChange: (newPrompt: string) => void;
+  setLinks: (links: string[]) => void;
+  handleLinksChange: (links: string[]) => void;
 }
 
 export default function DefaultPrompt({
   onSubmit,
   onInputChange,
   isAiResponding,
+  setLinks,
+  handleLinksChange,
 }: PromptProps) {
   const [inputMessage, setInputMessage] = useState(
     "I want to create a flashcard for each row of a Coda database. There I insert two columns, one containing the respective frontside, the other the respective backside of a flashcard. These should be inserted accordingly in the Mochi app. This should always happen when a third column contains a certain value called create. Suggest ways on how to achieve this."
@@ -45,7 +50,7 @@ export default function DefaultPrompt({
 
   return (
     <div className="w-full">
-      <div className="flex flex-row items-center space-x-2 rounded-lg bg-white w-full border border-gray-200 shadow-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
+      <div className="flex flex-col items-center space-x-2 rounded-lg bg-white w-full border border-gray-200 shadow-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
         <textarea
           ref={textareaRef}
           value={inputMessage}
@@ -55,6 +60,12 @@ export default function DefaultPrompt({
           onChange={handleInput}
           style={{ overflow: "hidden" }}
         />
+        <div className="w-full px-4 pb-4">
+          <LinkInputs
+            onSubmit={(value: string[]) => handleLinksChange(value)}
+            onInputChange={(links: string[]) => setLinks(links)}
+          />
+        </div>
       </div>
     </div>
   );
