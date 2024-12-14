@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MessageLoadingScreen } from "@/components/state/messages-loading";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
-import { useAIResponseMutation } from "@/hooks/messages/useAIResponseMutation";
 import { useMessages } from "@/hooks/messages/useMessages";
 import MessageList from "@/components/chat/message-list";
 import Prompt from "@/components/chat/prompt";
@@ -11,13 +10,10 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Message } from "@/types/message";
-import { Workflow } from "@/components/workflow/Workflow";
-import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
 import { useWorkflow } from "@/hooks/workflows/useWorkflow";
 import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMutation";
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
-import { IoIosArrowUp } from "react-icons/io";
-import Button from "@/components/ui/button";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +34,7 @@ function ChatContentInner({
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [mode, setMode] = useState<"question" | "editing">("question");
   const workflowRef = useRef<HTMLDivElement>(null);
+  const [streamingContent, setStreamingContent] = useState("");
 
   const {
     data: messages,
@@ -61,6 +58,41 @@ function ChatContentInner({
     setMode(selectedMode);
   };
 
+  const streamResponse = (fullContent: string) => {
+    let index = 0;
+    setStreamingContent("");
+    setIsAiResponding(false);
+
+    const interval = setInterval(() => {
+      if (index >= fullContent.length) {
+        clearInterval(interval);
+
+        // Update the messages query data with the complete message
+        queryClient.setQueryData<Message[]>(
+          ["messages", currentChatId],
+          (old = []) => [
+            ...old,
+            {
+              id: `response-${Date.now()}`,
+              chatId: currentChatId,
+              role: "assistant",
+              content: fullContent,
+              timestamp: new Date(),
+            },
+          ]
+        );
+
+        setStreamingContent(""); // Clear streaming content after it's added to messages
+        return;
+      }
+
+      // Increase chunk size for faster streaming
+      const chunkSize = 5; // Adjust this value to control speed
+      setStreamingContent((current) => fullContent.slice(0, index + chunkSize));
+      index += chunkSize;
+    }, 1); // Minimum interval time
+  };
+
   const scrollToWorkflow = () => {
     if (workflowRef.current) {
       const padding = 70;
@@ -77,6 +109,12 @@ function ChatContentInner({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    return () => {
+      setStreamingContent(""); // Clear streaming content on unmount
+    };
+  }, []);
 
   useEffect(() => {
     if (!isMessagesLoading && !isWorkflowLoading && messages !== undefined) {
@@ -113,17 +151,34 @@ function ChatContentInner({
 
         // handle mutation based on mode -> question or edit
         if (mode === "question") {
-          await workflowQuestionMutation.mutateAsync({
-            chatId: currentChatId,
-            messages: [...(messages || []), { role: "user", content: prompt }],
-            codeSnippet: workflow?.codeSnippet || "",
-          });
+          const response = await workflowQuestionMutation.mutateAsync(
+            {
+              chatId: currentChatId,
+              messages: [
+                ...(messages || []),
+                { role: "user", content: prompt },
+              ],
+              codeSnippet: workflow?.codeSnippet || "",
+            },
+            {
+              // prevent automatic updates due to streaming
+              onSuccess: () => {},
+            }
+          );
+          streamResponse(response.message.content);
         } else {
-          await workflowUpdateMutation.mutateAsync({
-            chatId: currentChatId,
-            prompt,
-            workflow,
-          });
+          const response = await workflowUpdateMutation.mutateAsync(
+            {
+              chatId: currentChatId,
+              prompt,
+              workflow,
+            },
+            {
+              // prevent automatic updates due to streaming
+              onSuccess: () => {},
+            }
+          );
+          streamResponse(response.message.content);
         }
       } catch (error) {
         console.error("Failed to process message:", error);
@@ -134,8 +189,6 @@ function ChatContentInner({
           ["messages", currentChatId],
           (old) => old?.filter((msg) => msg.id !== optimisticMessage.id) || []
         );
-      } finally {
-        setIsAiResponding(false);
       }
     },
     [
@@ -183,15 +236,30 @@ function ChatContentInner({
         <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl relative">
             {workflow && (
-              <button
-                onClick={scrollToWorkflow}
-                className="fixed left-1/2 -translate-x-1/2 bottom-28 bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
-              >
-                <IoIosArrowUp className="h-4 w-4" />
-              </button>
+              <div className="fixed left-1/2 -translate-x-1/2 bottom-28 flex gap-2">
+                <button
+                  onClick={scrollToWorkflow}
+                  className="bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
+                  title="Go to Workflow"
+                >
+                  <IoIosArrowUp className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() =>
+                    messagesEndRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                    })
+                  }
+                  className="bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
+                  title="Go to Latest Message"
+                >
+                  <IoIosArrowDown className="h-4 w-4" />
+                </button>
+              </div>
             )}
             <MessageList
               messages={messages}
+              streamingContent={streamingContent}
               workflow={
                 workflow
                   ? {

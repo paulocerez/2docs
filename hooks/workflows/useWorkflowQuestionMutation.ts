@@ -1,16 +1,16 @@
-import { Message } from "@/types/message";
 import { useMutation } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 
 export function useWorkflowQuestionMutation() {
-	const queryClient = useQueryClient();
-  
 	return useMutation({
-	  mutationFn: async ({ chatId, messages, codeSnippet }: {
-		chatId: string;
-		messages: { role: string; content: string }[];
-		codeSnippet: string;
-	  }) => {
+		mutationFn: async ({
+			chatId,
+			messages,
+			codeSnippet,
+		}: {
+			chatId: string;
+			messages: { role: string; content: string }[];
+			codeSnippet: string;
+		}) => {
 		const response = await fetch(`/api/chats/${chatId}/workflow-question`, {
 		  method: "POST",
 		  headers: { "Content-Type": "application/json" },
@@ -23,13 +23,5 @@ export function useWorkflowQuestionMutation() {
   
 		return response.json();
 	  },
-	  onSuccess: (data, variables) => {
-		// update client side cache
-		queryClient.setQueryData<Message[]>(
-		  ["messages", variables.chatId],
-		  (oldMessages = []) => [...oldMessages, data.message]
-		);
-	  },
 	});
-  }
-  
+}

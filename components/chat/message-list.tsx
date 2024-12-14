@@ -10,6 +10,7 @@ import { Message } from "@/types/message";
 import { Workflow } from "@/components/workflow/Workflow";
 import { WorkflowStepProps } from "@/types/workflow";
 import { WorkflowVariableProps } from "../workflow/workflow-variable";
+import ReactMarkdown from "react-markdown";
 
 interface MessageListProps {
   messages: Message[] | undefined;
@@ -20,6 +21,7 @@ interface MessageListProps {
     codeSnippet: string;
   };
   workflowRef?: React.RefObject<HTMLDivElement>;
+  streamingContent?: string;
 }
 
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
@@ -43,59 +45,80 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
 
 export default function MessageList({
   messages,
+  streamingContent,
   workflow,
   workflowRef,
 }: MessageListProps) {
   return (
     <div className="flex flex-col space-y-10 w-full h-full">
       {Array.isArray(messages) && messages.length > 0 ? (
-        messages.map((message: Partial<Message> | null, index) => {
-          if (!message) return null;
+        <>
+          {messages.map((message: Partial<Message> | null, index) => {
+            if (!message) return null;
 
-          // Insert workflow after the first user message
-          const showWorkflow =
-            workflow && message.role === "user" && index === 0;
+            // Insert workflow after the first user message
+            const showWorkflow =
+              workflow && message.role === "user" && index === 0;
 
-          return (
-            <React.Fragment key={index}>
-              <div
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+            return (
+              <React.Fragment key={index}>
                 <div
-                  className={`rounded-lg overflow-hidden ${
-                    message.role === "user"
-                      ? "bg-gray-100 border border-gray-200 shadow-sm p-3"
-                      : "bg-transparent"
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <Markdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                    components={{
-                      code: CodeBlock,
-                    }}
-                    className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
-                      message.role === "user" ? "text-black" : "text-gray-600"
-                    } ${
-                      message.role === "assistant" ? "assistant-message" : ""
+                  <div
+                    className={`rounded-lg overflow-hidden ${
+                      message.role === "user"
+                        ? "bg-gray-100 border border-gray-200 shadow-sm p-3"
+                        : "bg-transparent"
                     }`}
                   >
-                    {message.content || "No content"}
-                  </Markdown>
+                    <Markdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                      components={{
+                        code: CodeBlock,
+                      }}
+                      className={`text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere ${
+                        message.role === "user" ? "text-black" : "text-gray-600"
+                      } ${
+                        message.role === "assistant" ? "assistant-message" : ""
+                      }`}
+                    >
+                      {message.content || "No content"}
+                    </Markdown>
+                  </div>
                 </div>
+                {showWorkflow && (
+                  <Workflow
+                    initialWorkflow={workflow}
+                    className="w-full mt-8"
+                    workflowRef={workflowRef}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Streaming content */}
+          {streamingContent && (
+            <div className="flex justify-start">
+              <div className="bg-transparent">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                  components={{
+                    code: CodeBlock,
+                  }}
+                  className="text-sm markdown-content leading-relaxed break-words overflow-wrap-anywhere text-gray-600 assistant-message"
+                >
+                  {streamingContent}
+                </ReactMarkdown>
               </div>
-              {showWorkflow && (
-                <Workflow
-                  initialWorkflow={workflow}
-                  className="w-full mt-8"
-                  workflowRef={workflowRef}
-                />
-              )}
-            </React.Fragment>
-          );
-        })
+            </div>
+          )}
+        </>
       ) : (
         <div className="flex justify-center items-center h-32">
           <p className="text-gray-500 text-sm">Looking for messages...</p>
