@@ -1,7 +1,10 @@
 export interface WorkflowStepProps {
 	id: string;
 	title: string;
-	endpoints: string[];
+	endpoints: {
+		method: string;
+		path: string;
+	}[];
 	method: string;
 	order: number;
 	inputMapping?: string | Record<string, any>;

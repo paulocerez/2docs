@@ -50,7 +50,10 @@ export const ChatList = React.memo(function ChatList({
             <Link
               href={`/chat/${chat.id}`}
               className="w-full text-left truncate mr-2"
-              onClick={() => setCurrentChatId(chat.id)}
+              onClick={() => {
+                console.log("Setting current chat ID to:", chat.id);
+                setCurrentChatId(chat.id);
+              }}
             >
               {chat.title}
             </Link>

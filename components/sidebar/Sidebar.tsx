@@ -39,9 +39,16 @@ export default function Sidebar({
   isLoading,
 }: SidebarProps) {
   const pathname = usePathname();
-  const activeItem = sidebarItems.find((item) =>
-    pathname === "/" ? item.path === "/chat" : pathname.startsWith(item.path)
-  );
+
+  const isCustomChatPage = pathname.startsWith("/chat/");
+  const activeItem = sidebarItems.find((item) => {
+    if (isCustomChatPage) {
+      return false;
+    }
+    return pathname === "/"
+      ? item.path === "/chat"
+      : pathname.startsWith(item.path);
+  });
 
   return (
     <div

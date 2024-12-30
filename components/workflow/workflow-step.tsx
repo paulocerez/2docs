@@ -36,6 +36,14 @@ export function WorkflowStep({
             <StepNumber number={order} />
             <p className="text-sm font-normal text-slate-700">{title}</p>
           </div>
+          {endpoints.map((endpoint) => (
+            <p
+              className="text-xs text-gray-500 mt-1 ml-8"
+              key={`${endpoint.method}-${endpoint.path}`}
+            >
+              {endpoint.method} {endpoint.path}
+            </p>
+          ))}
           {description && (
             <p className="text-xs text-gray-500 mt-1 ml-8">
               {description || "No description"}
