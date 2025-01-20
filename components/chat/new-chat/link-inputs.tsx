@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { Info, Plus } from "lucide-react";
+import { Info, Plus, Check } from "lucide-react";
 
 interface LinkInputsProps {
   onSubmit: (links: string[]) => void;
@@ -40,23 +40,33 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
       setActiveInput(activeInput === index ? null : index);
     };
 
-    const getColorClass = (index: number) => {
-      switch (index) {
-        case 0:
-          return "bg-indigo-500";
-        case 1:
-          return "bg-blue-500";
-        case 2:
-          return "bg-slate-500";
-        case 3:
-          return "bg-amber-300";
-        case 4:
-          return "bg-green-400";
-        case 5:
-          return "bg-violet-500";
-        default:
-          return "bg-indigo-500";
+    const getButtonStyle = (input: string, index: number) => {
+      const baseStyle =
+        "flex flex-row justify-center items-center gap-2 p-2 border rounded-lg shadow-sm transition-all duration-300 min-w-fit";
+
+      if (!input.trim()) {
+        return `${baseStyle} bg-gray-100 hover:bg-gray-200 border-gray-300`;
       }
+
+      return isValidUrl(input)
+        ? `${baseStyle} bg-green-50 hover:bg-green-100 border-green-300`
+        : `${baseStyle} bg-red-50 hover:bg-red-100 border-red-300`;
+    };
+
+    const getStatusIndicator = (input: string) => {
+      if (!input.trim()) {
+        return (
+          <div className="w-4 h-4 rounded-full bg-gray-300 flex-shrink-0"></div>
+        );
+      }
+
+      return isValidUrl(input) ? (
+        <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+          <Check className="w-3 h-3 text-white" />
+        </div>
+      ) : (
+        <div className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0"></div>
+      );
     };
 
     return (
@@ -66,14 +76,12 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
             <div key={index} className="relative">
               <button
                 type="button"
-                className={`flex flex-row justify-center items-center gap-2 p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
+                className={`${getButtonStyle(input, index)} ${
                   activeInput === index ? "w-64" : "w-auto"
                 }`}
                 onClick={() => toggleInput(index)}
               >
-                <div
-                  className={`rounded-full w-4 h-4 ${getColorClass(index)}`}
-                ></div>
+                {getStatusIndicator(input)}
                 {activeInput === index ? (
                   <input
                     type="text"
@@ -86,19 +94,12 @@ const LinkInputs: React.FC<LinkInputsProps> = React.memo(
                 ) : (
                   <span className="text-xs font-medium">API {index + 1}</span>
                 )}
-                <div
-                  className={`rounded-full w-1 h-1 ${
-                    isValidUrl(linkInputs[index])
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                  }`}
-                ></div>
               </button>
             </div>
           ))}
           <button
             type="button"
-            className="p-2 border rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="p-2 border rounded-lg shadow-sm hover:bg-gray-50"
             onClick={addInputField}
           >
             <Plus className="w-4 h-4 text-gray-400" />

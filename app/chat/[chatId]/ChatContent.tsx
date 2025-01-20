@@ -265,9 +265,13 @@ function ChatContentInner({
                 workflow
                   ? {
                       title: workflow.title,
+                      description: workflow.description,
                       steps: workflow.steps,
                       variables: workflow.variables,
-                      codeSnippet: workflow.codeSnippet,
+                      orchestrator: workflow.orchestrator,
+                      utils: workflow.utils,
+                      dbHandlers: workflow.dbHandlers,
+                      setup: workflow.setup,
                     }
                   : undefined
               }

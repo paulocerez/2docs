@@ -29,14 +29,12 @@ export default function CopySaveButton({
   return (
     <div className="flex flex-row justify-between transition-all duration-200">
       <Button
-        title={copied ? "Copied!" : "Copy Workflow"}
         icon={
           copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />
         }
         onClick={copyTextToClipboard}
       />
       <Button
-        border
         icon={<Share className="h-4 w-4" />}
         onClick={() => onSave && onSave(JSON.parse(workflowCode))}
         disabled={!!error}

@@ -60,7 +60,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
         const apiDocIds = [];
         // Scrape and process each api reference
         for (const link of links) {
-          console.log("Checking/Scraping link:", link);
           const { apiDocId } = await scrapeUrlMutation.mutateAsync({
             userId,
             url: link,
@@ -68,16 +67,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
           apiDocIds.push(apiDocId);
         }
 
-        console.log(
-          "title:",
-          title,
-          "prompt:",
-          prompt,
-          "apiDocIds:",
-          apiDocIds,
-          "userId:",
-          userId
-        );
         // Generate and save the workflow, receiving the saved workflow with its ID
         setCurrentStep("Generating workflow...");
         const { workflow } = await workflowMutation.mutateAsync({
@@ -187,7 +176,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
                       value={title}
                       onChange={handleChatTitleChange}
                       placeholder="Name your workflow"
-                      className="w-full px-3 py-2 border rounded-full text-xs focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 border rounded-full text-xs transition-all duration-200"
                     />
                     <p className="text-[10px] text-gray-400">
                       &quot;Insert Google Calendar events based on a Notion

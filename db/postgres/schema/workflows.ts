@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, varchar, uuid, jsonb } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { apiEndpoints } from "./apis";
 
@@ -11,7 +11,11 @@ export const workflows = pgTable("workflow", {
         .references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    orchestrator: jsonb("orchestrator"),
+    utils: jsonb("utils"),
+    dbHandlers: jsonb("db_handlers"),
+    setup: jsonb("setup"),
+    createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isPublished: boolean("is_published").notNull().default(false),
     publishedAt: timestamp("published_at"),

@@ -35,12 +35,6 @@ export const vectorEmbeddings = pgTable("vector_embedding", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// possible additional tables:
-// - apiCategories
-// - apiTags
-// - webhooks
-// - userPreferences
-
 
 export type InsertApiDocumentation = typeof apiDocumentations.$inferInsert;
 export type SelectApiDocumentation = typeof apiDocumentations.$inferSelect;

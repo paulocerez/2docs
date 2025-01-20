@@ -8,18 +8,12 @@ import "./MessageList.module.css";
 import { lightfair } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { Message } from "@/types/message";
 import { Workflow } from "@/components/workflow/Workflow";
-import { WorkflowStepProps } from "@/types/workflow";
-import { WorkflowVariableProps } from "../workflow/workflow-variable";
 import ReactMarkdown from "react-markdown";
+import { WorkflowProps } from "@/types/workflow";
 
 interface MessageListProps {
   messages: Message[] | undefined;
-  workflow?: {
-    title: string;
-    steps: WorkflowStepProps[];
-    variables: WorkflowVariableProps[];
-    codeSnippet: string;
-  };
+  workflow?: WorkflowProps;
   workflowRef?: React.RefObject<HTMLDivElement>;
   streamingContent?: string;
 }
@@ -92,7 +86,7 @@ export default function MessageList({
                 </div>
                 {showWorkflow && (
                   <Workflow
-                    initialWorkflow={workflow}
+                    workflow={workflow}
                     className="w-full mt-8"
                     workflowRef={workflowRef}
                   />

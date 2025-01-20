@@ -44,8 +44,6 @@ export async function insertWorkflowStepEndpoints(stepId: string, endpointIds: s
     );
 }
 
-
-
 export async function getWorkflowsWithDetails() {
     const workflowsWithSteps = await db.select({
         workflow: workflows,
@@ -79,13 +77,16 @@ export async function getWorkflowsWithDetails() {
     return workflowsWithEndpoints;
 }
 
-
-export async function saveWorkflow(workflowData: { title: string; description: string; steps: any[]; variables: any[]; }, userId: string) {
+export async function saveWorkflow(workflowData: any, userId: string) {
 	console.log("Saving workflow in saveWorkflow function...");
 	const workflow: InsertWorkflow = {
 		createdById: userId,
 		title: workflowData.title,
-		description: workflowData.description
+		description: workflowData.description,
+		orchestrator: workflowData.orchestrator || null,
+		utils: workflowData.utils || null,
+		dbHandlers: workflowData.dbHandlers || null,
+		setup: workflowData.setup || null
 	}
 
 	const [savedWorkflow] = await createWorkflow(workflow);
@@ -95,48 +96,67 @@ export async function saveWorkflow(workflowData: { title: string; description: s
 
 	console.log("Available endpoints:", endpoints.map(e => ({
 		method: e.method,
-		path: e.path,
-		normalizedPath: normalizePath(e.path)
+		path: e.path
 	})));
 	
 	// Save workflow steps
 	if (Array.isArray(workflowData.steps)) {
-        for (const step of workflowData.steps) {
-            const normalizedStepPaths = normalizeStepPaths(step.endpoint);
+		for (const step of workflowData.steps) {
+			// Log the current step being processed
+			console.log("Processing step:", {
+				method: step.method,
+				endpoint: step.endpoint
+			});
 
-            console.log(`Trying to match step:`, {
-                method: step.method,
-                originalPaths: step.endpoint,
-                normalizedPaths: normalizedStepPaths
-            });
+			// Try to find a matching endpoint with more flexible matching
+			const matchingEndpoint = endpoints.find(e => {
+				const endpointPathParts = e.path.split('/').filter(Boolean);
+				const stepPathParts = step.endpoint.split('/').filter(Boolean);
 
-            const matchingEndpoint = endpoints.find(e => {
-				const normalizedEndpointPath = normalizePath(e.path);
-				const normalizedStepPath = normalizePath(step.endpoint);
-				return normalizedEndpointPath === normalizedStepPath && 
-					   e.method.toLowerCase() === step.method.toLowerCase();
-			  });
-			  
-			  if (!matchingEndpoint) {
-				console.error(`No match found. Looking for: ${step.method} ${normalizedStepPaths}`);
-				console.error(`Available endpoints:`, endpoints.map(e => 
-				  `${e.method} ${normalizePath(e.path)}`
-				));
-				throw new Error(`No matching endpoint found for ${step.method} ${step.endpoint}`);
-			  }
+				// Check if the paths have the same structure (same number of segments)
+				if (endpointPathParts.length !== stepPathParts.length) {
+					return false;
+				}
 
-			  try {
-				  const savedStep = await insertWorkflowStep(step, savedWorkflow.id);
-				  if (savedStep.id) {
+				// Check if method matches (case-insensitive)
+				if (e.method.toLowerCase() !== step.method.toLowerCase()) {
+					return false;
+				}
+
+				// Compare path segments, allowing for parameter placeholders
+				return endpointPathParts.every((segment, index) => {
+					const stepSegment = stepPathParts[index];
+					// If the endpoint segment starts with {, it's a parameter
+					// If the step segment is in the format YOUR_SOMETHING_ID, it's a placeholder
+					return segment === stepSegment || 
+						   segment.startsWith('{') || 
+						   stepSegment.includes('YOUR_') ||
+						   stepSegment.includes('_ID');
+				});
+			});
+
+			if (!matchingEndpoint) {
+				console.error("No matching endpoint found. Available endpoints:", endpoints);
+				console.error("Step being matched:", step);
+				throw new Error(
+					`No matching endpoint found for ${step.method} ${step.endpoint}. ` +
+					`Available endpoints: ${endpoints.map(e => `${e.method} ${e.path}`).join(', ')}`
+				);
+			}
+
+			try {
+				const savedStep = await insertWorkflowStep(step, savedWorkflow.id);
+				if (savedStep.id) {
 					await insertWorkflowStepEndpoints(savedStep.id, [matchingEndpoint.id]);
-				  } else {
+				} else {
 					throw new Error("Saved step is missing an ID");
-				  }
+				}
 			} catch (error) {
 				console.error("Error inserting workflow step:", error);
+				throw error;
 			}
-        }
-    }
+		}
+	}
 	
 	// Save workflow variables
 	if (Array.isArray(workflowData.variables) && workflowData.variables.length > 0) {
@@ -188,6 +208,10 @@ export async function getWorkflowByChatId(chatId: string) {
 		title: workflow.title,
 		description: workflow.description,
 		steps: stepEndpoints,
-		variables: variables
+		variables: variables,
+		orchestrator: workflow.orchestrator,
+		utils: workflow.utils,
+		dbHandlers: workflow.dbHandlers,
+		setup: workflow.setup
 	};
 }

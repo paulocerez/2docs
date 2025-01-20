@@ -24,7 +24,6 @@ export async function getApiDocumentations() {
 	return await db.select().from(apiDocumentations);
 }
 
-  
 
 // API ENDPOINT
 export async function createApiEndpoint(data: InsertApiEndpoint) {

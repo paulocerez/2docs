@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
 	const { prompt, apiDocIds, userId, title } = await request.json();
-	console.log(prompt, apiDocIds, userId, title)
 	console.log("Generating workflow in workflows route...");
 	try {
 		const workflowData = await generateWorkflow(prompt, apiDocIds, userId, title)

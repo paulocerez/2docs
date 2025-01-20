@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
-export interface WorkflowVariableProps {
-  id: string;
-  name: string;
-  defaultValue?: string;
-  description?: string;
-  onChange?: (updatedVariable: WorkflowVariableProps) => void;
-}
+import { WorkflowVariableProps } from "@/types/workflow";
 
 export function WorkflowVariable({
   id,

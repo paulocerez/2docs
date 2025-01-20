@@ -23,7 +23,7 @@ export default function TestCreationPage() {
     "https://coda.io/apis/v1/openapi.yaml",
   ]);
   const [prompt, setPrompt] = useState(
-    "I want to create a flashcard for each row of a Coda database. There I insert two columns, one containing the respective frontside, the other the respective backside of a flashcard. These should be inserted accordingly in the Mochi app. This should always happen when a third column contains a certain value called create. Suggest ways on how to achieve this."
+    "I want to create a flashcard for each row of a Coda database. There I insert two columns, one containing the respective frontside, the other the respective backside of a flashcard. These should be inserted accordingly in the Mochi app. This should always happen when a third column contains a certain value called create."
   );
 
   const handleAddApiLink = () => {

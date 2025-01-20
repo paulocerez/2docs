@@ -32,13 +32,15 @@ export function WorkflowStep({
     <motion.div layout transition={{ duration: 0.5, type: "spring" }}>
       <div className="flex flex-row items-center justify-between p-4 pb-2">
         <div className="flex flex-col">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4">
             <StepNumber number={order} />
-            <p className="text-sm font-normal text-slate-700">{title}</p>
+            <div className="flex flex-col">
+              <p className="text-sm font-normal text-slate-700">{title}</p>
+            </div>
           </div>
           {endpoints.map((endpoint) => (
             <p
-              className="text-xs text-gray-500 mt-1 ml-8"
+              className="text-xs text-gray-500 mt-1 ml-10"
               key={`${endpoint.method}-${endpoint.path}`}
             >
               {endpoint.method} {endpoint.path}

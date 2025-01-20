@@ -1,12 +1,8 @@
 import { getApiInfoWithEndpoints } from "@/db/postgres/queries/api/api";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
-import { escapeCodeSnippet } from "@/utils/escapeCodeSnippet";
 
 export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {
-	console.log("Generating workflow for API Docs:", apiDocIds);
   let allApiInfo = await Promise.all(apiDocIds.map(getApiInfoWithEndpoints));
-  console.log("Retrieved API info:", JSON.stringify(allApiInfo, null, 2));
-
 
   const context = allApiInfo.map(api => `
 API Name: ${api.name}
@@ -296,18 +292,27 @@ Generate a production-ready workflow JSON implementing these components, ensurin
   ]);
 
   try {
-    const cleanedContent = workflowResponse
-      .split('```json')[1]
-      .split('```')[0]
-      .trim();
-    console.log(cleanedContent);
-    const workflow = JSON.parse(cleanedContent);
-
+    const jsonMatch = workflowResponse.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("No JSON object found in response");
+    }
+    
+    const jsonContent = jsonMatch[0]
+      .replace(/\\"/g, '"')        // Fix escaped quotes
+      .replace(/\n/g, '')         // Remove newlines
+      .replace(/\r/g, '')         // Remove carriage returns
+      .replace(/\t/g, '')         // Remove tabs
+      .replace(/\\/g, '\\\\')     // Escape backslashes properly
+      .replace(/"\s+"/g, '" "');  // Fix spaces between strings
+      
+    let workflow = JSON.parse(jsonContent);
+    
     workflow.title = chatTitle;
-    console.log(workflow);
+    console.log("Generated workflow:", workflow);
     return workflow;
   } catch (error) {
     console.error("Failed to parse workflow JSON:", error);
+    console.error("Raw response:", workflowResponse);
     throw new Error("Failed to generate valid workflow");
   }
 }
