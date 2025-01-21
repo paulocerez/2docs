@@ -125,7 +125,7 @@ const workflow = {
 export default function WorkflowPage() {
   return (
     <div className="min-h-screen py-12">
-      <Workflow initialWorkflow={workflow} />
+      {/* <Workflow initialWorkflow={workflow} /> */}
     </div>
   );
 }
