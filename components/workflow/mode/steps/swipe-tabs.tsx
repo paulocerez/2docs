@@ -8,11 +8,11 @@ import {
   Database,
   Layers2,
 } from "lucide-react";
-import {
-  EnvironmentProps,
-  UtilsProps,
-  DbHandlersProps,
-} from "@/types/workflow";
+import { UtilsProps, DbHandlersProps, ConfigProps } from "@/types/workflow";
+import CodeBlock from "./code-block";
+import DbHandlerBlock from "./tabs/db-handler-block";
+import UtilsBlock from "./tabs/utils-block";
+import SetupBlock from "./tabs/setup-block";
 
 const tabs = [
   { id: "setup", icon: <Layers2 />, label: "Setup" },
@@ -21,7 +21,7 @@ const tabs = [
 ];
 
 interface SwipeTabsProps {
-  setup?: EnvironmentProps;
+  setup?: ConfigProps;
   utils?: UtilsProps[];
   dbHandlers?: DbHandlersProps[];
 }
@@ -51,18 +51,20 @@ export default function SwipeTabs({
           <ChevronLeft className="h-4 w-4 text-gray-600" />
         </button>
 
-        <div className="flex-1 flex justify-center">
+        <div className="flex-1 flex justify-center gap-2">
           {tabs.map((tab, index) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(index)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`text-sm rounded-full font-medium transition-colors ${
                 activeTab === index
-                  ? "text-blue-600 border-b-2 border-blue-600"
+                  ? "text-blue-600 bg-blue-100"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              {tab.icon}
+              <div className="p-2 rounded-full h-8 w-8 flex items-center justify-center">
+                {tab.icon}
+              </div>
             </button>
           ))}
         </div>
@@ -84,9 +86,9 @@ export default function SwipeTabs({
           transition={{ duration: 0.2 }}
           className="p-4"
         >
-          {activeTab === 0 && <div>Setup Content</div>}
-          {activeTab === 1 && <div>Utils Content</div>}
-          {activeTab === 2 && <div>DB Handlers Content</div>}
+          {activeTab === 0 && <SetupBlock setup={setup} />}
+          {activeTab === 1 && <UtilsBlock utils={utils || []} />}
+          {activeTab === 2 && <DbHandlerBlock dbHandlers={dbHandlers || []} />}
         </motion.div>
       </AnimatePresence>
     </div>

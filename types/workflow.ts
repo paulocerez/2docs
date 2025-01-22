@@ -25,12 +25,6 @@ export interface WorkflowStepProps {
 	onChange?: (updatedVariable: WorkflowVariableProps) => void;
   }
 
-  export interface EnvironmentProps {
-	name: string;
-	dependencies: string[];
-	configuration: string;
-  }
-
   export interface DbHandlersProps {
 	name: string;
 	operation: string;
@@ -42,10 +36,14 @@ export interface WorkflowStepProps {
 	errorHandling: string;
   }
 
+  export interface ConfigProps {
+	tsconfig: string;
+	env: string[];
+  }
+
   export interface SetupProps {
-	environment: EnvironmentProps;
-	utils: UtilsProps[];
-	dbHandlers: DbHandlersProps[];
+	configuration: ConfigProps;
+	dependencies: string[];
   }
 
   export interface OrchestratorProps {

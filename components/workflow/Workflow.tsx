@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { WorkflowStepProps, WorkflowProps } from "@/types/workflow";
 import JsonMode from "./mode/json-mode";
 import CodeMode from "./mode/code-mode";
-import StepMode from "./mode/step-mode";
+import StepMode from "./mode/steps/step-mode";
 import ModeDropdown from "./mode-dropdown";
 import CopySaveButton from "./copy-save-button";
 
@@ -65,9 +65,6 @@ export function Workflow({
           </div>
           <p className="text-sm text-gray-500">
             {workflow.description || "No description"}
-          </p>
-          <p className="text-sm text-gray-500">
-            {workflow.dbHandlers?.map((handler) => handler.name).join(", ")}
           </p>
         </div>
       </div>

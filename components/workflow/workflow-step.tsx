@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Code, ArrowRight } from "lucide-react";
 import { WorkflowStepProps } from "@/types/workflow";
 import { StepNumber } from "./workflow-step-number";
+import CodeBlock from "./mode/steps/code-block";
 
 export function WorkflowStep({
   title,
@@ -29,80 +30,85 @@ export function WorkflowStep({
       : JSON.stringify(outputMapping, null, 2);
 
   return (
-    <motion.div layout transition={{ duration: 0.5, type: "spring" }}>
-      <div className="flex flex-row items-center justify-between p-4 pb-2">
-        <div className="flex flex-col">
-          <div className="flex items-center space-x-4">
-            <StepNumber number={order} />
-            <div className="flex flex-col">
-              <p className="text-sm font-normal text-slate-700">{title}</p>
-            </div>
-          </div>
-          {endpoints.map((endpoint) => (
-            <p
-              className="text-xs text-gray-500 mt-1 ml-10"
-              key={`${endpoint.method}-${endpoint.path}`}
-            >
-              {endpoint.method} {endpoint.path}
-            </p>
-          ))}
-          {description && (
-            <p className="text-xs text-gray-500 mt-1 ml-8">
-              {description || "No description"}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
-            aria-label={isExpanded ? "Collapse" : "Expand"}
-          >
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
+    <div className="border border-gray-100 rounded-lg transition-all duration-200">
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex flex-row items-center justify-between p-4 cursor-pointer transition-colors duration-200"
+      >
+        <div className="flex items-center space-x-4">
+          <StepNumber number={order} />
+          <div className="flex flex-col">
+            <h3 className="text-sm font-normal text-gray-500">{title}</h3>
+            {!isExpanded && description && (
+              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                {description}
+              </p>
             )}
-          </button>
+          </div>
         </div>
+        <ChevronDown
+          className={`h-4 w-4 text-gray-400 transition-transform duration-200 hover:text-gray-500 ${
+            isExpanded ? "rotate-180" : ""
+          }`}
+        />
       </div>
-      <div className="p-1">
-        {isExpanded && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="mt-4 space-y-4 px-4">
-                <div className="bg-gray-800 rounded-md p-4">
-                  <pre className="text-xs text-gray-200 overflow-x-auto">
-                    {codeSnippet}
+
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="px-4 pb-4 space-y-4"
+        >
+          {description && (
+            <p className="text-sm text-gray-600 ml-10">{description}</p>
+          )}
+
+          <div className="ml-10 space-y-2">
+            {endpoints.map((endpoint) => (
+              <div
+                key={`${endpoint.method}-${endpoint.path}`}
+                className="flex items-center space-x-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-md"
+              >
+                <span className="font-mono uppercase text-blue-600">
+                  {endpoint.method}
+                </span>
+                <ArrowRight className="h-3 w-3 text-gray-400" />
+                <span className="font-mono">{endpoint.path}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="ml-10 space-y-4">
+            <div className="space-y-2">
+              <h4 className="text-xs font-medium text-gray-500">
+                Code Implementation
+              </h4>
+              <CodeBlock content={codeSnippet} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-gray-500">Inputs</h4>
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                    {formattedInput || "No input mapping specified"}
                   </pre>
                 </div>
-                <div className="space-y-2">
-                  <div className="bg-gray-100 p-2 rounded-md">
-                    <h4 className="font-semibold text-sm text-purple-600">
-                      Input:
-                    </h4>
-                    <pre className="text-xs overflow-x-auto text-gray-700">
-                      {formattedInput || "No input mapping specified"}
-                    </pre>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-md">
-                    <h4 className="font-semibold text-sm text-purple-600">
-                      Output:
-                    </h4>
-                    <pre className="text-xs overflow-x-auto text-gray-700">
-                      {formattedOutput || "No output mapping specified"}
-                    </pre>
-                  </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-gray-500">Outputs</h4>
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                    {formattedOutput || "No output mapping specified"}
+                  </pre>
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </div>
-    </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 }

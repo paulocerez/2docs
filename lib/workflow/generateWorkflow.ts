@@ -45,11 +45,6 @@ Generate a detailed workflow as a JSON object that includes:
 
 {
   "setup": {
-    "environment": {
-      "runtime": {
-        "node": "version",
-        "typescript": "version"
-      },
       "dependencies": {
         "name": "version",
         "purpose": "why needed"
@@ -60,7 +55,6 @@ Generate a detailed workflow as a JSON object that includes:
           "VARIABLE_NAME": "description and purpose"
         }
       }
-    }
   },
   "utils": [
     {

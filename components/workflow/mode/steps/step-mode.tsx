@@ -1,9 +1,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { WorkflowVariable } from "../workflow-variable";
-import { WorkflowStep } from "../workflow-step";
+import { WorkflowVariable } from "../../workflow-variable";
+import { WorkflowStep } from "../../workflow-step";
 import type { WorkflowProps } from "@/types/workflow";
-import { TabGroup } from "./tabGroup";
-import { CodeBlock } from "./codeblock";
 import Orchestrator from "./orchestrator";
 import SwipeTabs from "./swipe-tabs";
 
@@ -16,7 +14,7 @@ export default function StepMode({
   showVariables: boolean;
   workflow: WorkflowProps;
 }) {
-  console.log(workflow.steps);
+  console.log(workflow.dbHandlers);
 
   return (
     <div className="space-y-6">
@@ -62,9 +60,9 @@ export default function StepMode({
           ))}
       </div>
       <SwipeTabs
-        setup={workflow.setup?.environment}
-        utils={workflow.setup?.utils}
-        dbHandlers={workflow.setup?.dbHandlers}
+        setup={workflow.setup}
+        utils={workflow.utils}
+        dbHandlers={workflow.dbHandlers}
       />
     </div>
   );

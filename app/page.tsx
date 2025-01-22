@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import AuthForm from "@/components/auth/AuthForm";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -8,7 +7,7 @@ export default async function Home() {
 
   if (userId) {
     redirect("/chat");
+  } else {
+    redirect("/signup");
   }
-
-  return <AuthForm />;
 }
