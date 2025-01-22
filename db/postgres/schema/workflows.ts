@@ -1,6 +1,5 @@
-import { boolean, integer, pgTable, text, timestamp, varchar, uuid, jsonb } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, varchar, jsonb } from "drizzle-orm/pg-core";
 import { users } from "./users";
-import { apiEndpoints } from "./apis";
 
 export const workflows = pgTable("workflow", {
     id: text("id")
@@ -11,10 +10,9 @@ export const workflows = pgTable("workflow", {
         .references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
+    problemDescription: text("problem_description"),
+    technicalOverview: text("technical_overview"),
     orchestrator: jsonb("orchestrator"),
-    utils: jsonb("utils"),
-    dbHandlers: jsonb("db_handlers"),
-    setup: jsonb("setup"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isPublished: boolean("is_published").notNull().default(false),
@@ -37,7 +35,6 @@ export const userWorkflows = pgTable("user_workflow", {
 	addedAt: timestamp("added_at").notNull().defaultNow(),
 });
 
-// sequence of steps that make up a workflow
 export const workflowSteps = pgTable("workflow_step", {
     id: text("id")
         .primaryKey()
@@ -47,34 +44,14 @@ export const workflowSteps = pgTable("workflow_step", {
         .references(() => workflows.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
     order: integer("order").notNull(),
-    inputMapping: text("input_mapping"),
-    outputMapping: text("output_mapping"),
-    codeSnippet: text("code_snippet"),
-	description: text("description"),
-});
-
-// reusable variables across a workflow sequence
-export const workflowVariables = pgTable("workflow_variable", {
-    id: text("id")
-        .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
-    workflowId: text("workflow_id")
-        .notNull()
-        .references(() => workflows.id, { onDelete: "cascade" }),
-    name: varchar("name", { length: 255 }).notNull(),
-    defaultValue: text("default_value"),
     description: text("description"),
+    apiEndpoints: jsonb("api_endpoints"),
+    input: text("input"),
+    output: text("output"),
+    codeSnippet: text("code_snippet"),
+    additionalDetails: text("additional_details"),
 });
 
-export const workflowStepEndpoints = pgTable("workflow_step_endpoints", {
-    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-    workflowStepId: text("workflow_step_id")
-        .notNull()
-        .references(() => workflowSteps.id, { onDelete: "cascade" }),
-    endpointId: text("endpoint_id")
-        .notNull()
-        .references(() => apiEndpoints.id, { onDelete: "cascade" }),
-});
 
 export const workflowRuns = pgTable("workflow_run", {
     id: text("id")
@@ -101,11 +78,5 @@ export type SelectUserWorkflow = typeof userWorkflows.$inferSelect;
 export type InsertWorkflowStep = typeof workflowSteps.$inferInsert;
 export type SelectWorkflowStep = typeof workflowSteps.$inferSelect;
 
-export type InsertWorkflowVariable = typeof workflowVariables.$inferInsert;
-export type SelectWorkflowVariable = typeof workflowVariables.$inferSelect;
-
 export type InsertWorkflowRun = typeof workflowRuns.$inferInsert;
 export type SelectWorkflowRun = typeof workflowRuns.$inferSelect;
-
-export type InsertWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferInsert;
-export type SelectWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferSelect;
