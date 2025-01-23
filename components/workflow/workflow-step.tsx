@@ -5,13 +5,18 @@ import { motion } from "framer-motion";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { StepNumber } from "./workflow-step-number";
 import CodeBlock from "./mode/steps/code-block";
-import type { WorkflowStepProps } from "@/types/workflow";
+import type { WorkflowEndpoint, WorkflowStepProps } from "@/types/workflow";
+
+interface EndpointProps {
+  method: string;
+  path: string;
+}
 
 export function WorkflowStep({
   title,
   order,
   description,
-  apiEndpoints,
+  endpoint,
   input,
   output,
   codeSnippet,
@@ -25,7 +30,7 @@ export function WorkflowStep({
   const formattedOutput =
     typeof output === "string" ? output : JSON.stringify(output, null, 2);
 
-  console.log(apiEndpoints);
+  console.log(endpoint);
 
   return (
     <div className="border border-gray-100 rounded-lg transition-all duration-200">
@@ -59,18 +64,15 @@ export function WorkflowStep({
           )}
 
           <div className="ml-10 space-y-2">
-            {apiEndpoints?.map((endpoint: any) => (
-              <div
-                key={`${endpoint.method}-${endpoint.path}`}
-                className="flex items-center space-x-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-md"
-              >
+            {endpoint && (
+              <div className="flex items-center space-x-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-md">
                 <span className="font-mono uppercase text-blue-600">
                   {endpoint.method}
                 </span>
                 <ArrowRight className="h-3 w-3 text-gray-400" />
                 <span className="font-mono">{endpoint.path}</span>
               </div>
-            ))}
+            )}
           </div>
 
           <div className="ml-10 space-y-4">
