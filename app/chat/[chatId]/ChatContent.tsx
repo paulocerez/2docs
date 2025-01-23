@@ -264,14 +264,13 @@ function ChatContentInner({
               workflow={
                 workflow
                   ? {
+                      id: workflow.id,
                       title: workflow.title,
                       description: workflow.description,
                       steps: workflow.steps,
-                      variables: workflow.variables,
-                      orchestrator: workflow.orchestrator,
-                      utils: workflow.utils,
-                      dbHandlers: workflow.dbHandlers,
-                      setup: workflow.setup,
+                      mainFunction: workflow.mainFunction,
+                      technicalOverview: workflow.technicalOverview,
+                      deploymentSuggestions: workflow.deploymentSuggestions,
                     }
                   : undefined
               }

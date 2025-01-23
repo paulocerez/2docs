@@ -1,69 +1,48 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { WorkflowVariable } from "../../workflow-variable";
+import type { WorkflowProps, WorkflowStepProps } from "@/types/workflow";
 import { WorkflowStep } from "../../workflow-step";
-import type { WorkflowProps } from "@/types/workflow";
-import Orchestrator from "./orchestrator";
-import SwipeTabs from "./swipe-tabs";
+import MainFunctionBlock from "./main-function-block";
+import DeploymentCarousel from "./deployment-carousel";
 
-export default function StepMode({
-  setShowVariables,
-  showVariables,
-  workflow,
-}: {
-  setShowVariables: (show: boolean) => void;
-  showVariables: boolean;
-  workflow: WorkflowProps;
-}) {
-  console.log(workflow.dbHandlers);
-
+export default function StepMode({ workflow }: { workflow: WorkflowProps }) {
   return (
     <div className="space-y-6">
-      <div className="border border-gray-200 rounded-lg p-2">
-        <button
-          onClick={() => setShowVariables(!showVariables)}
-          className="w-full flex justify-between items-center p-1 text-gray-800 rounded-md transition-colors duration-200 text-sm"
-        >
-          <span>Workflow Variables</span>
-          {showVariables ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </button>
-        {showVariables && (
-          <div className="mt-4 space-y-2">
-            {workflow.variables.length > 0 ? (
-              workflow.variables.map((variable) => (
-                <div key={variable.id}>
-                  <WorkflowVariable {...variable} />
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500 p-2">
-                No variables needed for this workflow
-              </p>
-            )}
-          </div>
-        )}
+      <div className="space-y-4">
+        <h3 className="text-sm font-medium text-gray-700">
+          Technical Overview
+        </h3>
+        <p className="text-sm text-gray-600 leading-6">
+          {workflow.technicalOverview}
+        </p>
       </div>
-      {workflow.orchestrator && (
-        <Orchestrator orchestrator={workflow.orchestrator} />
+
+      {workflow.mainFunction && (
+        <MainFunctionBlock mainFunction={workflow.mainFunction} />
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-4">
+        <h3 className="text-sm font-medium text-gray-700">
+          Implementation Steps
+        </h3>
         {workflow.steps
-          .sort((a, b) => a.order - b.order)
-          .map((step) => (
+          .sort(
+            (a: WorkflowStepProps, b: WorkflowStepProps) => a.order - b.order
+          )
+          .map((step: WorkflowStepProps) => (
             <div key={step.id}>
               <WorkflowStep {...step} />
             </div>
           ))}
       </div>
-      <SwipeTabs
-        setup={workflow.setup}
-        utils={workflow.utils}
-        dbHandlers={workflow.dbHandlers}
-      />
+
+      {workflow.deploymentSuggestions &&
+        workflow.deploymentSuggestions.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700">
+              Deployment Suggestions
+            </h3>
+            <DeploymentCarousel suggestions={workflow.deploymentSuggestions} />
+          </div>
+        )}
     </div>
   );
 }

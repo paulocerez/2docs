@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WorkflowStepProps, WorkflowProps } from "@/types/workflow";
 import JsonMode from "./mode/json-mode";
 import CodeMode from "./mode/code-mode";
 import StepMode from "./mode/steps/step-mode";
 import ModeDropdown from "./mode-dropdown";
 import CopySaveButton from "./copy-save-button";
+import type { WorkflowProps } from "@/types/workflow";
 
 type ViewMode = "steps" | "json" | "fullCode";
 
 interface WorkflowComponentProps {
   workflow: WorkflowProps;
-  onSave?: (workflow: any) => void;
+  onSave?: (workflow: WorkflowProps) => void;
   className?: string;
   workflowRef?: React.RefObject<HTMLDivElement>;
 }
@@ -23,7 +23,6 @@ export function Workflow({
   className = "",
   workflowRef,
 }: WorkflowComponentProps) {
-  const [showVariables, setShowVariables] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("steps");
   const [copied, setCopied] = useState(false);
@@ -34,9 +33,7 @@ export function Workflow({
 
   const fullCodeSnippet = workflow?.steps
     ? workflow.steps
-        .map(
-          (step: WorkflowStepProps) => `// ${step.title}\n${step.codeSnippet}`
-        )
+        .map((step: any) => `// ${step.title}\n${step.codeSnippet}`)
         .join("\n\n")
     : "";
 
@@ -61,7 +58,15 @@ export function Workflow({
             <h1 className="text-md font-semibold text-gray-800">
               {workflow?.title || "Untitled Workflow"}
             </h1>
-            <ModeDropdown viewMode={viewMode} setViewMode={setViewMode} />
+            <div className="flex flex-row items-center space-x-2">
+              <CopySaveButton
+                viewMode={viewMode}
+                workflowCode={workflowCode}
+                fullCodeSnippet={fullCodeSnippet}
+                onSave={onSave || (() => {})}
+              />
+              <ModeDropdown viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
           </div>
           <p className="text-sm text-gray-500">
             {workflow.description || "No description"}
@@ -83,22 +88,7 @@ export function Workflow({
           setWorkflowCode={setWorkflowCode}
         />
       )}
-
-      {viewMode === "steps" && (
-        <StepMode
-          setShowVariables={setShowVariables}
-          showVariables={showVariables}
-          workflow={workflow}
-        />
-      )}
-
-      <CopySaveButton
-        viewMode={viewMode}
-        workflowCode={workflowCode}
-        fullCodeSnippet={fullCodeSnippet}
-        onSave={onSave || (() => {})}
-        error={error || ""}
-      />
+      {viewMode === "steps" && <StepMode workflow={workflow} />}
     </div>
   );
 }

@@ -2,32 +2,30 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, ChevronUp, Code, ArrowRight } from "lucide-react";
-import { WorkflowStepProps } from "@/types/workflow";
+import { ChevronDown, ArrowRight } from "lucide-react";
 import { StepNumber } from "./workflow-step-number";
 import CodeBlock from "./mode/steps/code-block";
+import type { WorkflowStepProps } from "@/types/workflow";
 
 export function WorkflowStep({
   title,
-  endpoints,
-  method,
   order,
-  inputMapping,
-  outputMapping,
-  codeSnippet,
   description,
+  apiEndpoints,
+  input,
+  output,
+  codeSnippet,
+  additionalDetails,
 }: WorkflowStepProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formattedInput =
-    typeof inputMapping === "string"
-      ? inputMapping
-      : JSON.stringify(inputMapping, null, 2);
+    typeof input === "string" ? input : JSON.stringify(input, null, 2);
 
   const formattedOutput =
-    typeof outputMapping === "string"
-      ? outputMapping
-      : JSON.stringify(outputMapping, null, 2);
+    typeof output === "string" ? output : JSON.stringify(output, null, 2);
+
+  console.log(apiEndpoints);
 
   return (
     <div className="border border-gray-100 rounded-lg transition-all duration-200">
@@ -37,14 +35,7 @@ export function WorkflowStep({
       >
         <div className="flex items-center space-x-4">
           <StepNumber number={order} />
-          <div className="flex flex-col">
-            <h3 className="text-sm font-normal text-gray-500">{title}</h3>
-            {!isExpanded && description && (
-              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                {description}
-              </p>
-            )}
-          </div>
+          <h3 className="text-sm font-normal text-gray-500">{title}</h3>
         </div>
         <ChevronDown
           className={`h-4 w-4 text-gray-400 transition-transform duration-200 hover:text-gray-500 ${
@@ -61,11 +52,14 @@ export function WorkflowStep({
           className="px-4 pb-4 space-y-4"
         >
           {description && (
-            <p className="text-sm text-gray-600 ml-10">{description}</p>
+            <div className="ml-10 space-y-2">
+              <h4 className="text-xs font-medium text-gray-500">Description</h4>
+              <p className="text-sm text-gray-600">{description}</p>
+            </div>
           )}
 
           <div className="ml-10 space-y-2">
-            {endpoints.map((endpoint) => (
+            {apiEndpoints?.map((endpoint: any) => (
               <div
                 key={`${endpoint.method}-${endpoint.path}`}
                 className="flex items-center space-x-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-md"
@@ -106,6 +100,15 @@ export function WorkflowStep({
                 </div>
               </div>
             </div>
+
+            {additionalDetails && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-gray-500">
+                  Additional Details
+                </h4>
+                <p className="text-sm text-gray-600">{additionalDetails}</p>
+              </div>
+            )}
           </div>
         </motion.div>
       )}

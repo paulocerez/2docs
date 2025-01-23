@@ -9,13 +9,11 @@ export default function CopySaveButton({
   workflowCode,
   fullCodeSnippet,
   onSave,
-  error,
 }: {
   viewMode: string;
   workflowCode: string;
   fullCodeSnippet: string;
   onSave: (workflow: any) => void;
-  error: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -37,7 +35,6 @@ export default function CopySaveButton({
       <Button
         icon={<Share className="h-4 w-4" />}
         onClick={() => onSave && onSave(JSON.parse(workflowCode))}
-        disabled={!!error}
       />
     </div>
   );
