@@ -8,8 +8,8 @@ export default function getWorkflowPrompt(prompt: string, context: string) {
   
   **Instructions:**
   
-  1. **Problem Description:**
-	 - Provide a short description of the problem based on the user's request.
+  1. **Description:**
+	 - Provide a short description of the workflow based on the user's request.
   
   2. **Technical Overview:**
 	 - Give an overview of the technical solution.
@@ -74,7 +74,6 @@ export default function getWorkflowPrompt(prompt: string, context: string) {
 	  // Additional steps...
 	],
 	"mainFunction": {
-	  "name": "Name of the main function",
 	  "description": "Description of how it orchestrates the steps.",
 	  "codeSnippet": "// Code snippet of the main function."
 	},

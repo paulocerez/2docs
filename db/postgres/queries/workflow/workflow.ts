@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import { InsertWorkflow, InsertWorkflowStep, workflows, workflowSteps } from "../../schema/workflows";
 import { chats } from "../../schema/chats";
+import { WorkflowProps } from "@/types/workflow";
 
 export async function getWorkflowSteps(workflowId: string) {
 	return await db.select().from(workflowSteps).where(eq(workflowSteps.workflowId, workflowId));
@@ -62,15 +63,17 @@ export async function saveWorkflow(workflowData: any, userId: string) {
 		createdById: userId,
 		title: workflowData.title,
 		description: workflowData.description,
-		orchestrator: workflowData.orchestrator,
-		problemDescription: workflowData.problemDescription,
+		mainFunction: workflowData.mainFunction,
+		deploymentSuggestions: workflowData.deploymentSuggestions,
 		technicalOverview: workflowData.technicalOverview,
 	}
 
 	const [savedWorkflow] = await createWorkflow(workflow);
+
+	const steps = workflowData.workflowSteps || workflowData.steps;
 	
-	if (Array.isArray(workflowData.workflowSteps)) {
-        for (const [index, step] of workflowData.workflowSteps.entries()) {
+	if (Array.isArray(steps)) {
+        for (const [index, step] of steps.entries()) {
             step.order = step.order || index + 1;
 
             try {
@@ -115,8 +118,8 @@ export async function getWorkflowByChatId(chatId: string) {
 		title: workflow.title,
 		description: workflow.description,
 		steps: parsedSteps,
-		orchestrator: workflow.orchestrator,
-		problemDescription: workflow.problemDescription,
+		mainFunction: workflow.mainFunction,
 		technicalOverview: workflow.technicalOverview,
+		deploymentSuggestions: workflow.deploymentSuggestions,
 	};
 }
