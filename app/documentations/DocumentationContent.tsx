@@ -5,11 +5,13 @@ import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useDocumentation } from "@/hooks/documentations/useDocumentation";
 import NoDataAvailable from "@/components/state/no-data-screen";
-interface Documentation {
+
+export interface Documentation {
   name: string;
   version: string;
   description: string;
   lastScrapedAt: string;
+  imageUrl?: string;
 }
 
 const queryClient = new QueryClient();
