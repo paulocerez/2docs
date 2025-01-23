@@ -24,11 +24,9 @@ ${api.endpoints.map(endpoint => `
 `).join('\n')}
   `).join('\n\n---\n\n');
 
-  const workflowPrompt = getWorkflowPrompt(prompt, context);
-
   const workflowResponse = await generateChatCompletion([
-    { role: 'system', content: 'You are an advanced API workflow generator. Create accurate, detailed, and seamlessly integrated step-by-step workflows based on the given API documentation and user request. Return the workflow as a valid JSON object.' },
-    { role: 'user', content: workflowPrompt }
+    { role: 'system', content: 'You are an advanced API workflow generator. Create accurate, detailed, and seamlessly integrated step-by-step workflows based on the given API documentation and user request. Return the workflow as a valid JSON object. Make sure to include the endpoint ID in the apiEndpoint field of each step.' },
+    { role: 'user', content: getWorkflowPrompt(prompt, context) }
   ]);
 
   try {
@@ -47,9 +45,10 @@ ${api.endpoints.map(endpoint => `
       
     let workflow = JSON.parse(jsonContent);
     
-    workflow.title = chatTitle;
-    console.log("Generated workflow:", workflow);
-    return workflow;
+    return {
+		...workflow,
+		title: chatTitle
+	};
   } catch (error) {
     console.error("Failed to parse workflow JSON:", error);
     console.error("Raw response:", workflowResponse);

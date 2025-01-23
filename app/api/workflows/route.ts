@@ -1,4 +1,4 @@
-import { saveWorkflow } from "@/db/postgres/queries/workflow/workflow";
+import { saveWorkflow } from "@/db/postgres/queries/workflow/postWorkflow";
 import { generateWorkflow } from "@/lib/workflow/generateWorkflow";
 import { NextRequest, NextResponse } from "next/server";
 

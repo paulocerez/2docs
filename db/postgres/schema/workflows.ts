@@ -1,5 +1,6 @@
 import { boolean, integer, pgTable, text, timestamp, varchar, jsonb } from "drizzle-orm/pg-core";
 import { users } from "./users";
+import { apiEndpoints } from "./apis";
 
 export const workflows = pgTable("workflow", {
     id: text("id")
@@ -45,11 +46,23 @@ export const workflowSteps = pgTable("workflow_step", {
     title: varchar("title", { length: 255 }).notNull(),
     order: integer("order").notNull(),
     description: text("description"),
-    apiEndpoints: jsonb("api_endpoints"),
     input: text("input"),
     output: text("output"),
     codeSnippet: text("code_snippet"),
     additionalDetails: text("additional_details"),
+});
+
+export const workflowStepEndpoints = pgTable("workflow_step_endpoint", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    workflowStepId: text("workflow_step_id")
+        .notNull()
+        .references(() => workflowSteps.id, { onDelete: "cascade" }),
+    endpointId: text("endpoint_id")
+        .notNull()
+        .references(() => apiEndpoints.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 
@@ -77,6 +90,9 @@ export type SelectUserWorkflow = typeof userWorkflows.$inferSelect;
 
 export type InsertWorkflowStep = typeof workflowSteps.$inferInsert;
 export type SelectWorkflowStep = typeof workflowSteps.$inferSelect;
+
+export type InsertWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferInsert;
+export type SelectWorkflowStepEndpoint = typeof workflowStepEndpoints.$inferSelect;
 
 export type InsertWorkflowRun = typeof workflowRuns.$inferInsert;
 export type SelectWorkflowRun = typeof workflowRuns.$inferSelect;

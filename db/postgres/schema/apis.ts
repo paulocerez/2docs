@@ -25,22 +25,8 @@ export const apiEndpoints = pgTable("api_endpoint", {
   responses: text("responses"),
 });
 
-export const vectorEmbeddings = pgTable("vector_embedding", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  apiEndpointId: text("api_endpoint_id").notNull().references(() => apiEndpoints.id, { onDelete: "cascade" }),
-  content: text("content").notNull(),
-  metadata: text("metadata"),
-  qdrantVectorId: text("qdrant_vector_id").notNull(), // reference to vector in Qdrant
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-
 export type InsertApiDocumentation = typeof apiDocumentations.$inferInsert;
 export type SelectApiDocumentation = typeof apiDocumentations.$inferSelect;
 
 export type InsertApiEndpoint = typeof apiEndpoints.$inferInsert;
 export type SelectApiEndpoint = typeof apiEndpoints.$inferSelect;
-
-export type InsertVectorEmbedding = typeof vectorEmbeddings.$inferInsert;
-export type SelectVectorEmbedding = typeof vectorEmbeddings.$inferSelect;

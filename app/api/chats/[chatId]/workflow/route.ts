@@ -1,8 +1,8 @@
-import { getWorkflowByChatId } from "@/db/postgres/queries/workflow/workflow";
+import { getWorkflowByChatId } from "@/db/postgres/queries/workflow/getWorkflow";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-	request: Request,
+	request: NextRequest,
 	{ params }: { params: { chatId: string } }
 ) {
 	try {

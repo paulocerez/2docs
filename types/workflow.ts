@@ -1,5 +1,3 @@
-// TODO: Add types for workflow, steps, and variables
-
 export interface WorkflowProps {
     id: string;
     title: string;
@@ -7,7 +5,7 @@ export interface WorkflowProps {
     technicalOverview: string;
     mainFunction: WorkflowMainFunctionProps;
 	steps: WorkflowStepProps[];
-	deploymentSuggestions: DeploymentSuggestion[] | null;
+	deploymentSuggestions: DeploymentSuggestion[];
 }
 
 export interface DeploymentSuggestion {
@@ -16,17 +14,26 @@ export interface DeploymentSuggestion {
     downsides: string[];
 }
 
+export interface WorkflowEndpoint {
+    id: string;
+    path: string;
+    method: string;
+    operation?: string;
+    summary?: string;
+    description?: string;
+}
+
 export interface WorkflowStepProps {
     id: string;
     workflowId: string;
     title: string;
     order: number;
-    description: string | null;
-    apiEndpoints: string[] | null;
-    input: string | null;
-    output: string | null;
-    codeSnippet: string | null;
-    additionalDetails: string | null;
+    description: string;
+    input?: string;
+    output?: string;
+    codeSnippet?: string;
+    additionalDetails?: string;
+    endpoint?: WorkflowEndpoint;
 }
 
 export interface WorkflowMainFunctionProps {

@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "../../db";
-import { apiDocumentations, apiEndpoints, InsertApiDocumentation, InsertApiEndpoint, InsertVectorEmbedding, vectorEmbeddings } from "../../schema/apis";
+import { apiDocumentations, apiEndpoints, InsertApiDocumentation, InsertApiEndpoint } from "../../schema/apis";
 
 // API DOCUMENTATION
 export async function createApiDocumentation(data: InsertApiDocumentation) {
@@ -66,30 +66,6 @@ export async function getApiInfoWithEndpoints(apiDocId: string) {
 	  })),
 	};
   }
-
-// VECTOR EMBEDDING
-export async function createVectorEmbedding(data: InsertVectorEmbedding) {
-	return await db.insert(vectorEmbeddings).values(data).returning();
-}
-
-export async function getVectorEmbeddings(apiEndpointId: string) {
-	return await db.select().from(vectorEmbeddings).where(eq(vectorEmbeddings.apiEndpointId, apiEndpointId));
-}
-
-export async function getVectorEmbedding(id: string) {
-	return await db.select().from(vectorEmbeddings).where(eq(vectorEmbeddings.id, id));
-}
-
-export async function getApiEndpointsWithEmbeddings(apiDocId: string) {
-	return await db
-  .select({
-	endpoint: apiEndpoints,
-	embedding: vectorEmbeddings,
-  })
-  .from(apiEndpoints)
-  .where(eq(apiEndpoints.apiDocumentationId, apiDocId))
-  .leftJoin(vectorEmbeddings, eq(apiEndpoints.id, vectorEmbeddings.apiEndpointId));
-}
 
 export async function getPublicApiDocumentations() {  
 	return await db.select({ name: apiDocumentations.name, baseUrl: apiDocumentations.baseUrl, version: apiDocumentations.version, lastScrapedAt: apiDocumentations.lastScrapedAt }).from(apiDocumentations).where(sql`${apiDocumentations.isPublic} = true`);
