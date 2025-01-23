@@ -1,5 +1,4 @@
-import { DbHandlersProps } from "@/types/workflow";
-import CodeBlock from "../code-block";
+import CodeBlock from "./code-block";
 import {
   Database,
   ArrowRight,
@@ -9,11 +8,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function DbHandlerBlock({
-  dbHandlers,
-}: {
-  dbHandlers: DbHandlersProps[];
-}) {
+export default function DbHandlerBlock({ dbHandlers }: { dbHandlers: any[] }) {
   return (
     <div className="flex flex-col space-y-6">
       <p className="text-sm text-gray-500 p-2">
