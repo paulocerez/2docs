@@ -1,31 +1,61 @@
 import { getApiInfoWithEndpoints } from "@/db/postgres/queries/api/api";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
+import { WorkflowEndpoint, WorkflowProps, WorkflowStepProps } from "@/types/workflow";
 import getWorkflowPrompt from "./workflowPrompt";
 
 export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {
+  // Fetch all API information
   let allApiInfo = await Promise.all(apiDocIds.map(getApiInfoWithEndpoints));
+  console.log("Fetched API info:", allApiInfo);
 
+  // Create mappings for endpoints
+  const endpointMap = new Map<string, string>();  // key -> id mapping
+  const endpointDetails = new Map<string, WorkflowEndpoint>();  // id -> full details mapping
+  
+  allApiInfo.forEach(api => {
+    api.endpoints.forEach(endpoint => {
+      if (endpoint.method && endpoint.path) {
+        const key = `${endpoint.method.toUpperCase()}-${endpoint.path}`;
+        endpointMap.set(key, endpoint.id);
+        
+        // Store full endpoint details
+        endpointDetails.set(endpoint.id, {
+          id: endpoint.id,
+          path: endpoint.path,
+          method: endpoint.method,
+          operation: endpoint.operation || undefined,
+          summary: endpoint.summary || undefined,
+          description: endpoint.description || undefined,
+          parameters: endpoint.parameters || undefined,
+          requestBody: endpoint.requestBody || undefined,
+          responses: endpoint.responses || undefined,
+        });
+
+        console.log(`Mapped endpoint: ${key} -> ${endpoint.id}`);
+      }
+    });
+  });
+
+  // Create simplified context for the LLM
   const context = allApiInfo.map(api => `
 API Name: ${api.name}
 Base URL: ${api.baseUrl}
 Version: ${api.version}
 
-Endpoints:
+Available Endpoints:
 ${api.endpoints.map(endpoint => `
-	ID: ${endpoint.id}
-  Path: ${endpoint.path}
   Method: ${endpoint.method}
-  Operation: ${endpoint.operation}
-  Summary: ${endpoint.summary}
-  Description: ${endpoint.description}
-  Parameters: ${endpoint.parameters}
-  Request Body: ${endpoint.requestBody}
-  Responses: ${endpoint.responses}
+  Path: ${endpoint.path}
+  Summary: ${endpoint.summary || 'No summary available'}
 `).join('\n')}
   `).join('\n\n---\n\n');
 
+  // Generate the workflow using the LLM
   const workflowResponse = await generateChatCompletion([
-    { role: 'system', content: 'You are an advanced API workflow generator. Create accurate, detailed, and seamlessly integrated step-by-step workflows based on the given API documentation and user request. Return the workflow as a valid JSON object. Make sure to include the endpoint ID in the apiEndpoint field of each step.' },
+    { 
+      role: 'system', 
+      content: 'You are an advanced API workflow generator. For each step that requires an API call, specify only the method and path that best matches the needed functionality. Be precise with the method and path to ensure exact matches.' 
+    },
     { role: 'user', content: getWorkflowPrompt(prompt, context) }
   ]);
 
@@ -36,19 +66,50 @@ ${api.endpoints.map(endpoint => `
     }
     
     const jsonContent = jsonMatch[0]
-      .replace(/\\"/g, '"')        // Fix escaped quotes
-      .replace(/\n/g, '')         // Remove newlines
-      .replace(/\r/g, '')         // Remove carriage returns
-      .replace(/\t/g, '')         // Remove tabs
-      .replace(/\\/g, '\\\\')     // Escape backslashes properly
-      .replace(/"\s+"/g, '" "');  // Fix spaces between strings
+      .replace(/\\"/g, '"')
+      .replace(/\n/g, '')
+      .replace(/\r/g, '')
+      .replace(/\t/g, '')
+      .replace(/\\/g, '\\\\')
+      .replace(/"\s+"/g, '" "');
       
-    let workflow = JSON.parse(jsonContent);
+    let workflow = JSON.parse(jsonContent) as WorkflowProps;
+    console.log("Parsed workflow:", workflow);
+
+    // Enrich steps with full endpoint details
+    if (workflow.steps) {
+      workflow.steps = workflow.steps.map((step: WorkflowStepProps) => {
+        if (step.endpoint && typeof step.endpoint === 'object' && 
+            step.endpoint.method && step.endpoint.path) {
+          const key = `${step.endpoint.method.toUpperCase()}-${step.endpoint.path}`;
+          const endpointId = endpointMap.get(key);
+          
+          if (endpointId) {
+            const fullEndpointDetails = endpointDetails.get(endpointId);
+            if (fullEndpointDetails) {
+              console.log(`Enriching step "${step.title}" with endpoint details:`, fullEndpointDetails);
+              step.endpoint = {
+                ...fullEndpointDetails,
+                method: step.endpoint.method, // Keep original method
+                path: step.endpoint.path,     // Keep original path
+              };
+            }
+          } else {
+            console.warn(`No matching endpoint found for ${key} in step "${step.title}"`);
+          }
+        }
+        return step;
+      });
+    }
     
-    return {
-		...workflow,
-		title: chatTitle
-	};
+    const finalWorkflow = {
+      ...workflow,
+      title: chatTitle
+    };
+
+    console.log("Final workflow:", finalWorkflow);
+    return finalWorkflow;
+
   } catch (error) {
     console.error("Failed to parse workflow JSON:", error);
     console.error("Raw response:", workflowResponse);

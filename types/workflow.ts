@@ -15,13 +15,16 @@ export interface DeploymentSuggestion {
 }
 
 export interface WorkflowEndpoint {
-    id: string;
-    path: string;
-    method: string;
-    operation?: string;
-    summary?: string;
-    description?: string;
-}
+	id: string;
+	method: string;
+	path: string;
+	operation?: string;
+	summary?: string;
+	description?: string;
+	parameters?: string;
+	requestBody?: string;
+	responses?: string;
+  }
 
 export interface WorkflowStepProps {
     id: string;

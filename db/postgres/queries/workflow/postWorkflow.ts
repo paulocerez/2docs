@@ -51,7 +51,7 @@ export async function saveWorkflow(workflowData: any, userId: string) {
 	  }).returning();
   
 	  // Create steps with endpoint relationships
-	  const steps = workflowData.workflowSteps || workflowData.steps;
+	  const steps = workflowData.steps;
 	  if (Array.isArray(steps)) {
 		for (const [index, step] of steps.entries()) {
 		  step.order = step.order || index + 1;

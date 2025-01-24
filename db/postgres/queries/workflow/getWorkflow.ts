@@ -39,11 +39,14 @@ export async function getWorkflowById(workflowId: string) {
 	  additionalDetails: step.additionalDetails ? JSON.parse(step.additionalDetails) : null,
 	  endpoint: endpoint ? {
 		id: endpoint.id,
-		path: endpoint.path,
-		method: endpoint.method,
-		operation: endpoint.operation,
-		summary: endpoint.summary,
-		description: endpoint.description,
+      path: endpoint.path,
+      method: endpoint.method,
+      operation: endpoint.operation,
+      summary: endpoint.summary,
+      description: endpoint.description,
+      parameters: endpoint.parameters,
+      requestBody: endpoint.requestBody,
+      responses: endpoint.responses,
 	  } : null,
 	}));
   
@@ -79,5 +82,7 @@ export async function getWorkflowById(workflowId: string) {
   }
 
   export async function getWorkflowSteps(workflowId: string) {
-	return await db.select().from(workflowSteps).where(eq(workflowSteps.workflowId, workflowId));
-}
+	return await db.select().from(workflowSteps)
+	  .where(eq(workflowSteps.workflowId, workflowId))
+	  .orderBy(workflowSteps.order);
+  }

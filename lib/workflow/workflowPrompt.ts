@@ -1,99 +1,76 @@
-export default function getWorkflowPrompt(prompt: string, context: string) {	
-  return `
-  You are an expert API workflow architect specializing in creating enterprise-grade integrations.
+export default function getWorkflowPrompt(prompt: string, context: string) {  
+	return `
+	You are an expert API workflow architect. Your task is to create a detailed workflow that accomplishes the following request:
   
-  **Your Task:**
+	${prompt}
   
-  Create a comprehensive workflow that combines multiple APIs, includes necessary utility functions, database operations, and a main orchestrator function to fulfill the user's request.
+	Guidelines for creating the workflow:
   
-  **Instructions:**
+	1. Analyze the available API endpoints and identify which ones are needed to accomplish the task.
+	2. Create a step-by-step workflow where each step either:
+	   - Makes an API call
+	   - Processes data
+	   - Handles setup/configuration
+	   - Manages error handling
   
-  1. **Description:**
-	 - Provide a short description of the workflow based on the user's request.
-  
-  2. **Technical Overview:**
-	 - Give an overview of the technical solution.
-  
-  3. **Workflow Steps:**
-	 - Identify the relevant endpoints from each API that are necessary to fulfill the request.
-	 - Include both code-related steps and steps required in native or external applications (e.g., setting up API keys, configuring services).
-	 - Each step should be an object containing:
-	   - **"id"**: Unique identifier for the step.
-	   - **"title"**: A clear, descriptive title.
-	   - **"description"**: A high-level description of the step.
-	   - **"apiEndpoints"**: Any API endpoints being used or exposed in this step.
-	   - **"input"**: Inputs required for the step.
-	   - **"output"**: Outputs produced by the step.
-	   - **"codeSnippet"**: Implementation code (if applicable).
-	   - **"additionalDetails"**: Any other necessary details to mention.
-	 - For steps not involving code snippets, provide only high-level descriptions (e.g., how to create an API key in a service's interface).
-  
-  4. **Main Orchestrator Function:**
-	 - Include a main function that calls the endpoints and executes the steps in order.
-	 - Provide a code snippet for the orchestrator.
-	 - Explain how the steps are coordinated within this function.
-  
-  5. **Deployment Suggestions:**
-	 - Provide simple deployment options with explanations of benefits and downsides for each solution.
-  
-  6. **Code Snippets Guidelines:**
-	 - Use TypeScript with Node.js and the built-in 'fetch' API for HTTP requests.
-	 - Include error handling with try/catch blocks.
-	 - Use async/await syntax for asynchronous operations.
-	 - Include comments explaining key parts of the code.
-	 - Ensure the code is executable as a standalone async function.
-	 - Use appropriate TypeScript types.
-  
-  **API Documentation:**
-  
-  ${context}
-  
-  **User Request:**
-  
-  ${prompt}
-  
-  **Output Format:**
-  
-  Generate the detailed workflow as a JSON object that includes:
-  
-  \`\`\`json
-  {
-	"problemDescription": "A short description of the problem.",
-	"technicalOverview": "A technical overview of the solution.",
-	"workflowSteps": [
-	  {
-		"id": "step1",
-		"title": "Title of the step",
-		"description": "High-level description of the step.",
-		"apiEndpoints": ["List of API endpoints used"],
-		"input": "Inputs required for the step",
-		"output": "Outputs produced by the step",
-		"codeSnippet": "// Code snippet (if applicable)",
-		"additionalDetails": "Any additional details"
+	For steps that make API calls, include ONLY:
+	{
+	  "title": "Clear and concise title",
+	  "description": "Detailed description of what this step accomplishes",
+	  "endpoint": {
+		"method": "EXACT HTTP method from available endpoints",
+		"path": "EXACT path from available endpoints"
 	  },
-	  // Additional steps...
-	],
-	"mainFunction": {
-	  "description": "Description of how it orchestrates the steps.",
-	  "codeSnippet": "// Code snippet of the main function."
-	},
-	"deploymentSuggestions": [
-	  {
-		"option": "Deployment option",
-		"benefits": ["List of benefits"],
-		"downsides": ["List of downsides"]
+	  "input": "Description of required input data",
+	  "output": "Description of expected output data",
+	  "codeSnippet": "TypeScript code implementing this step"
+	}
+  
+	For non-API steps, omit the endpoint field and include:
+	{
+	  "title": "Clear and concise title",
+	  "description": "Detailed description of what this step accomplishes",
+	  "input": "Description of required input data (if any)",
+	  "output": "Description of expected output data (if any)",
+	  "codeSnippet": "TypeScript code implementing this step (if needed)"
+	}
+  
+	Available API Endpoints:
+	${context}
+  
+	Return the workflow as a JSON object with this structure:
+	{
+	  "description": "Clear description of what the workflow accomplishes",
+	  "technicalOverview": "Technical overview of how the workflow works",
+	  "steps": [
+		// Array of step objects as described above
+	  ],
+	  "mainFunction": {
+		"description": "Description of how the steps work together",
+		"codeSnippet": "TypeScript code that orchestrates all steps"
 	  },
-	  // Additional deployment options...
-	]
+	  "deploymentSuggestions": [
+		{
+		  "option": "Name of deployment option",
+		  "benefits": ["List of benefits"],
+		  "downsides": ["List of downsides"]
+		}
+	  ]
+	}
+  
+	IMPORTANT REQUIREMENTS:
+	1. Use EXACT method and path matches from the available endpoints
+	2. Include proper error handling in all code snippets
+	3. Use TypeScript with proper typing
+	4. Use async/await for asynchronous operations
+	5. Include comments explaining complex logic
+	6. Ensure the mainFunction properly coordinates all steps
+	7. Make steps modular and reusable where possible
+	8. Include only realistic deployment suggestions
+	9. Ensure all code snippets are complete and executable
+	10. Use clear, descriptive names for variables and functions
+  
+	The workflow should be practical, maintainable, and follow best practices for enterprise-grade applications.
+	`;
   }
-  \`\`\`
   
-  **Important Notes:**
-  
-  - Ensure the workflow addresses the user's request accurately.
-  - Include a main function to execute the steps.
-  - Structure the workflow according to the instructions.
-  - For steps without code snippets, provide only high-level descriptions.
-  - Make sure the JSON is valid and properly formatted.
-  `;  
-}
