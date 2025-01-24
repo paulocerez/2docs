@@ -12,6 +12,7 @@ export interface Documentation {
   description: string;
   lastScrapedAt: string;
   imageUrl?: string;
+  baseUrl: string;
 }
 
 const queryClient = new QueryClient();

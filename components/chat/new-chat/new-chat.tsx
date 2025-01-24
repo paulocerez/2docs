@@ -76,6 +76,8 @@ function NewChatPageContent({ userId }: { userId: string }) {
           title,
         });
 
+        console.log("Workflow in NewChatPageContent", workflow);
+
         setCurrentStep("Saving workflow, creating a new chat...");
         // create chat and add user message
         const { chat } = await userMessageMutation.mutateAsync({
@@ -127,18 +129,21 @@ function NewChatPageContent({ userId }: { userId: string }) {
     []
   );
 
-  function isValidUrl(url: string): boolean {
+  function isValidUrl(input: string): boolean {
     try {
-      new URL(url);
+      new URL(input);
       return true;
     } catch {
-      return false;
+      // If it's not a URL, it might be a documentation name which is valid
+      return true;
     }
   }
 
   const handleLinksChange = useCallback((newLinks: string[]) => {
     setLinks(newLinks);
-    const allLinksValid = newLinks.every((link) => isValidUrl(link));
+    const allLinksValid =
+      newLinks.length >= 2 && // Require at least 2 links total
+      newLinks.every((link) => isValidUrl(link));
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, []);
 

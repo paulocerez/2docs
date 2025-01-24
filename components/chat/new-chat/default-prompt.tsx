@@ -20,10 +20,17 @@ export default function DefaultPrompt({
   handleLinksChange,
 }: PromptProps) {
   const [inputMessage, setInputMessage] = useState(
-    "I want to create a flashcard for each row of a Coda database. There I insert two columns, one containing the respective frontside, the other the respective backside of a flashcard. These should be inserted accordingly in the Mochi app. This should always happen when a third column contains a certain value called create."
+    "I want to create a flashcard for each row of a Coda database..."
   );
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [manualLinks, setManualLinks] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [selectedLinks, setSelectedLinks] = useState<string[]>([]);
+
+  useEffect(() => {
+    const allLinks = [...selectedDocs, ...manualLinks];
+    handleLinksChange(allLinks);
+    setLinks(allLinks);
+  }, [selectedDocs, manualLinks, handleLinksChange, setLinks]);
 
   useEffect(() => {
     if (onInputChange) {
@@ -38,21 +45,16 @@ export default function DefaultPrompt({
     }
   }, [inputMessage]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (inputMessage.trim()) {
-      onSubmit(inputMessage);
-      setInputMessage("");
-    }
-  };
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputMessage(e.target.value);
   };
 
-  const handleDocumentationSelect = (links: string[]) => {
-    setSelectedLinks(links);
-    handleLinksChange(links);
-    setLinks(links);
+  const handleDocumentationSelect = (docs: string[]) => {
+    setSelectedDocs(docs);
+  };
+
+  const handleManualLinksChange = (links: string[]) => {
+    setManualLinks(links);
   };
 
   return (
@@ -69,12 +71,12 @@ export default function DefaultPrompt({
         />
         <div className="w-full px-4 pb-4 space-y-4">
           <LinkInputs
-            onSubmit={(value: string[]) => handleLinksChange(value)}
-            onInputChange={(links: string[]) => setLinks(links)}
+            onSubmit={(value: string[]) => handleManualLinksChange(value)}
+            onInputChange={(links: string[]) => handleManualLinksChange(links)}
           />
           <DocumentationSelector
             onSelect={handleDocumentationSelect}
-            selectedLinks={selectedLinks}
+            selectedLinks={selectedDocs}
           />
         </div>
       </div>

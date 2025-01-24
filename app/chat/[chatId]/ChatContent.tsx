@@ -14,6 +14,7 @@ import { useWorkflow } from "@/hooks/workflows/useWorkflow";
 import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMutation";
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import ScrollButtons from "@/components/ui/scroll-buttons";
 
 const queryClient = new QueryClient();
 
@@ -56,19 +57,6 @@ function ChatContentInner({
 
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
-  };
-
-  const scrollToWorkflow = () => {
-    if (workflowRef.current) {
-      const padding = 70;
-      const elementPosition = workflowRef.current.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - padding;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
   };
 
   useEffect(() => {
@@ -231,32 +219,18 @@ function ChatContentInner({
     );
   }
 
+  console.log("Workflow in ChatContent", workflow);
+
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={currentChatTitle}>
       <div className="flex flex-col h-full pt-16">
         <div className="flex-grow overflow-y-auto pb-32">
           <div className="mx-auto px-4 w-full max-w-2xl relative">
             {workflow && (
-              <div className="fixed left-1/2 -translate-x-1/2 bottom-28 flex gap-2">
-                <button
-                  onClick={scrollToWorkflow}
-                  className="bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
-                  title="Go to Workflow"
-                >
-                  <IoIosArrowUp className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() =>
-                    messagesEndRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                    })
-                  }
-                  className="bg-white border border-gray-200 transition-all duration-200 z-50 p-1 hover:bg-gray-100 rounded-md"
-                  title="Go to Latest Message"
-                >
-                  <IoIosArrowDown className="h-4 w-4" />
-                </button>
-              </div>
+              <ScrollButtons
+                workflowRef={workflowRef}
+                messagesEndRef={messagesEndRef}
+              />
             )}
             <MessageList
               messages={messages}
