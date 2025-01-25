@@ -1,7 +1,6 @@
 "use client";
 
 import { Workflow } from "@/components/workflow/Workflow";
-import { WorkflowVariableProps } from "@/types/workflow";
 import { WorkflowStepProps } from "@/types/workflow";
 
 // const mockWorkflowSteps: WorkflowStepProps[] = [
@@ -113,12 +112,9 @@ import { WorkflowStepProps } from "@/types/workflow";
 
 const mockWorkflowSteps: WorkflowStepProps[] = [];
 
-const sampleVariables: WorkflowVariableProps[] = [];
-
 const workflow = {
   title: "Sample Workflow",
   steps: mockWorkflowSteps,
-  variables: sampleVariables,
   codeSnippet: "Sample code snippet",
 };
 

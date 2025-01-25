@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/2docs-logo.svg" alt="2docs Logo" width="180" height="180" />
+<img src="public/logo.png" alt="2docs Logo" width="64" height="64" />
 
 <h1 style="margin-top: 8px;">2docs</h1>
 
@@ -78,11 +78,11 @@ Some API's change quite frequently. This might take quite some time to be reflec
 <summary>User Stories</summary>
 
 ```
-”As a developer, I want to implement two or more API's quickly so our product can access 3rd party data to build a better product for our clients.”
+"As a developer, I want to implement two or more API's quickly so our product can access 3rd party data to build a better product for our clients."
 ```
 
 ```
-”As a Product Manager, I want to easily understand the requirements on how to integrate different services using custom code to improve our product and automate boring stuff.”
+"As a Product Manager, I want to easily understand the requirements on how to integrate different services using custom code to improve our product and automate boring stuff."
 ```
 
 </details>
@@ -547,52 +547,51 @@ graph TD
 
 ### Cyber security measures
 
-##### Security Measures in the User Flow
+#### Authentication & Authorization
 
-| Entry Point                | Threat                                    | Mitigation                                                                                     | Security Benefit/Urgency Level | Implemented?                            |
-| -------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------- |
-| Login                      | OAuth Phishing, Access Token interception | Implement secure OAuth 2.0 flow through Auth.js, use HTTPS, token validation, (user education) | High/Urgent                    | ✅ ❌ (all except for token validation) |
-| Login                      | CSRF Attack                               | Implement CSRF tokens for all forms and state-changing requests                                | High/Urgent                    | ❌                                      |
-| New Chat Page              | XSS (Cross-Site Scripting)                | Input sanitization, use of Content Security Policy (CSP) headers                               | High/Urgent                    | ❌                                      |
-| Prompt Insertion           | Malicious prompt injection                | Input validation and sanitization, implement prompt filtering                                  | Medium/Important               | ❌                                      |
-| Links insertion            | Malicious URL injection                   | URL validation and sanitization, implement whitelist of allowed domains                        | High/Urgent                    | ❌                                      |
-| Workflow Generation        | Prompt manipulation                       | Implement safeguards in the workflow generation logic, sanitize inputs                         | Medium/Important               | ❌                                      |
-| Workflow Generation        | DDOS                                      | Rate Limiting                                                                                  | High/Urgent                    | ❌                                      |
-| Application Logic          | Business Logic Flaws                      | Thorough code reviews and security audits ("simulated pentesting")                             | High/Urgent                    | ✅                                      |
-| API Endpoints              | Insecure Direct Object References (IDOR)  | Implement proper authorization checks for all API endpoints                                    | High/Urgent                    | ❌                                      |
-| All Network Communications | Man-in-the-Middle Attacks                 | Use HTTPS for all communications                                                               | High/Urgent                    | ✅                                      |
-| Error Handling             | Information Disclosure                    | Implement proper error handling to avoid leaking sensitive information                         | Medium/Important               | ❌                                      |
-| Server Configuration       | Misconfiguration                          | Implement secure server configurations, use security headers                                   | Medium/Important               | ❌                                      |
+| Threat               | Entry Point         | Mitigation                                                                                                                                                                                                                           | Impact/Urgency                                                               | Status                                             |
+| -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| OAuth Token Theft    | Authentication Flow | • Implement secure OAuth 2.0 with PKCE extension<br/>• Use short-lived access tokens with refresh token rotation<br/>• Store tokens securely using HttpOnly cookies<br/>• Implement token revocation on suspicious activity          | Critical/Immediate<br/><br/>Impact: Account takeover and unauthorized access | ✅ Basic OAuth<br/>❌ PKCE<br/>❌ Token rotation   |
+| Session Hijacking    | User Sessions       | • Implement secure session management<br/>• Use session timeouts and automatic invalidation<br/>• Bind sessions to IP addresses<br/>• Implement device fingerprinting<br/>• Add multi-factor authentication for sensitive operations | High/Urgent<br/><br/>Impact: Unauthorized access to user accounts            | ✅ Basic session mgmt<br/>❌ IP binding<br/>❌ MFA |
+| Privilege Escalation | API Endpoints       | • Implement Role-Based Access Control (RBAC)<br/>• Validate permissions on every request<br/>• Audit logs for privilege changes<br/>• Principle of least privilege                                                                   | Critical/Immediate<br/><br/>Impact: Unauthorized access to admin functions   | ❌                                                 |
 
-<br />
+#### API & Data Security
 
-##### Security Measures in external services or dependencies
+| Threat            | Entry Point         | Mitigation                                                                                                                                                                   | Impact/Urgency                                                     | Status                                                   |
+| ----------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------- |
+| API Abuse         | Workflow Generation | • Rate limiting per user/IP<br/>• Request throttling<br/>• Implement API key rotation<br/>• Monitor for unusual patterns<br/>• Add CAPTCHA for sensitive operations          | High/Urgent<br/><br/>Impact: Service degradation, cost inflation   | ❌ Rate limiting<br/>❌ Monitoring                       |
+| Data Exfiltration | Database Queries    | • Encrypt sensitive data at rest<br/>• Implement field-level encryption<br/>• Add query result limiting<br/>• Monitor for large data transfers<br/>• Regular security audits | Critical/Immediate<br/><br/>Impact: Data breach, privacy violation | ✅ Basic encryption<br/>❌ Field-level<br/>❌ Monitoring |
+| SSRF Attacks      | Web Crawler         | • Strict URL validation<br/>• Whitelist allowed domains<br/>• Disable internal DNS resolution<br/>• Block private IP ranges<br/>• Implement request timeouts                 | High/Urgent<br/><br/>Impact: Internal system exposure              | ❌                                                       |
 
-| Entry Point                    | Threat                             | Mitigation                                                                         | Security Benefit/Urgency Level | Implemented?                                  |
-| ------------------------------ | ---------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------- |
-| Web Crawler                    | SSRF (Server-Side Request Forgery) | Strict URL validation, whitelist allowed domains, restrict to HTTP/HTTPS protocols | High/Urgent                    | ❌                                            |
-| API Requests (Crawler, OpenAI) | API Abuse                          | Implement rate limiting, use API keys, monitor for unusual activity (logging)      | Medium/Important               | ✅                                            |
-| Dependencies                   | Known Vulnerabilities              | Regular updates and patches of all dependencies, dependency scanning tools (Snyk)  | High/Urgent                    | ✅ ❌ (no dependency scanning tool right now) |
+#### Input Validation & XSS Prevention
 
-<br />
+| Threat           | Entry Point         | Mitigation                                                                                                                                                 | Impact/Urgency                                                 | Status                           |
+| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------- |
+| XSS Attacks      | User Input Fields   | • Content Security Policy (CSP) headers<br/>• Input sanitization<br/>• Output encoding<br/>• Use trusted template systems<br/>• Regular security scanning  | Critical/Immediate<br/><br/>Impact: Client-side code execution | ❌ CSP<br/>✅ Basic sanitization |
+| Prompt Injection | Chat Interface      | • Input validation<br/>• Implement prompt filtering<br/>• Rate limit prompt submissions<br/>• Sanitize LLM inputs/outputs<br/>• Monitor for abuse patterns | High/Urgent<br/><br/>Impact: LLM manipulation, data leakage    | ❌                               |
+| CSRF Attacks     | Forms/State Changes | • Implement CSRF tokens<br/>• SameSite cookie attributes<br/>• Verify origin headers<br/>• Add request signing                                             | High/Urgent<br/><br/>Impact: Unauthorized state changes        | ❌                               |
 
-##### Database Security Measures
+#### Infrastructure Security
 
-| Entry Point   | Threat              | Mitigation                                                            | Security Benefit/Urgency Level | Implemented? |
-| ------------- | ------------------- | --------------------------------------------------------------------- | ------------------------------ | ------------ |
-| Database      | SQL Injection       | Parameterized queries via DrizzleORM, limit database user privileges  | High/Urgent                    | ✅           |
-| Database      | Data Breach         | Encrypt sensitive data at rest, use strong access controls            | High/Urgent                    | ❌           |
-| Database      | Unauthorized Access | Implement proper authentication and authorization for database access | High/Urgent                    | ✅           |
-| User Sessions | Session Hijacking   | Use secure session management practices, implement session timeouts   | High/Urgent                    | ✅           |
+| Threat                     | Entry Point      | Mitigation                                                                                                                                                             | Impact/Urgency                                                | Status                                       |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| Dependency Vulnerabilities | Third-party Code | • Regular dependency updates<br/>• Automated vulnerability scanning<br/>• Lock dependency versions<br/>• Security patch automation<br/>• Maintain dependency inventory | High/Urgent<br/><br/>Impact: Known vulnerability exploitation | ✅ Regular updates<br/>❌ Automated scanning |
+| Information Disclosure     | Error Handling   | • Custom error pages<br/>• Sanitize error messages<br/>• Log sensitive errors server-side<br/>• Implement proper CORS policies                                         | Medium/Important<br/><br/>Impact: System information leakage  | ❌                                           |
+| Server Misconfiguration    | Infrastructure   | • Security headers (HSTS, X-Frame-Options)<br/>• Disable directory listing<br/>• Remove unnecessary services<br/>• Regular security audits<br/>• Implement WAF         | High/Urgent<br/><br/>Impact: System compromise                | ❌                                           |
 
-<br />
+#### Future Features Security
 
-##### Security Measures regarding features that are currently not implemented
+| Threat                       | Entry Point        | Mitigation                                                                                                                                         | Impact/Urgency                                             | Status |
+| ---------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ |
+| Unauthorized Workflow Access | Community Features | • Granular permission system<br/>• Access control lists<br/>• Workflow encryption<br/>• Audit logging<br/>• Version control with signed commits    | High/Urgent<br/><br/>Impact: Intellectual property theft   | ❌     |
+| Data Privacy Violations      | User Data Handling | • Data classification system<br/>• Privacy by design principles<br/>• Data minimization<br/>• Automated PII detection<br/>• Regular privacy audits | Critical/Immediate<br/><br/>Impact: Privacy law violations | ❌     |
 
-| Entry Point                    | Threat                                       | Mitigation                                                                                                              | Security Benefit/Urgency Level                       | Implemented? |
-| ------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------ |
-| Sharing Workflows to Community | Unauthorized Write Access                    | Implement role-based access control per workflow, verify user permissions before allowing edits (editor, viewer, admin) | High/Urgent (once workflow community is implemented) | ❌           |
-| Viewing Community Workflows    | Information Leakage/Unauthorized View Access | Proper access controls, no exposure of unpublished workflows                                                            | High/Urgent                                          | ❌           |
+#### Monitoring & Incident Response
+
+| Threat             | Entry Point    | Mitigation                                                                                                                                                          | Impact/Urgency                                                        | Status |
+| ------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------ |
+| Security Incidents | System-wide    | • Security incident response plan<br/>• Automated threat detection<br/>• Real-time alerting system<br/>• Regular security training<br/>• Incident playbooks         | High/Urgent<br/><br/>Impact: Delayed incident response                | ❌     |
+| Audit Trail Gaps   | All Operations | • Comprehensive logging<br/>• Log integrity protection<br/>• Centralized log management<br/>• Regular log analysis<br/>• Automated alerts for suspicious activities | High/Urgent<br/><br/>Impact: Inability to detect/investigate breaches | ❌     |
 
 ### Current external dependencies
 
