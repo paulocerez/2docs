@@ -15,6 +15,7 @@ import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMu
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ScrollButtons from "@/components/ui/scroll-buttons";
+import { QuotaExceededAlert } from "@/components/chat/new-chat/quota-exceeded-alert";
 
 const queryClient = new QueryClient();
 
@@ -274,6 +275,7 @@ function ChatContentInner({
             />
           </div>
         </div>
+        <QuotaExceededAlert />
       </div>
     </AuthenticatedLayout>
   );

@@ -18,8 +18,20 @@ export interface SidebarHeaderProps {
 type UserData = Pick<SelectUser, "id" | "name" | "image">;
 
 const getUserFromStorage = (userId: string): UserData | null => {
-  const stored = sessionStorage.getItem(`user-${userId}`);
-  return stored ? JSON.parse(stored) : null;
+  try {
+    const stored = sessionStorage.getItem(`user-${userId}`);
+    if (!stored) return null;
+
+    const userData = JSON.parse(stored);
+    return {
+      id: userData.id,
+      name: userData.name,
+      image: userData.image,
+    };
+  } catch (error) {
+    console.error("Error parsing user data from session storage:", error);
+    return null;
+  }
 };
 
 export default function SidebarHeader({

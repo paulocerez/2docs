@@ -7,6 +7,7 @@ import { GrChat, GrStorage } from "react-icons/gr";
 import SidebarItem from "./SidebarItem";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { UsageQuota } from "../chat/new-chat/usage-quota";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -71,6 +72,7 @@ export default function Sidebar({
             />
           ))}
         </div>
+        <UsageQuota />
         <div className="border-t-2 border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 pt-1 text-right">
           No. of Chats: {chats?.length}
         </div>
