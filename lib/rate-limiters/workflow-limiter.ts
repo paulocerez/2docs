@@ -42,4 +42,16 @@ export async function checkWorkflowGenerationLimit(userId: string, isTest = fals
       )} minutes. Daily limit: ${result.limit} workflows.`
     }
   }
+}
+
+export async function getWorkflowQuota(userId: string) {
+  const identifier = `workflow:${userId}`;
+  const currentCount = await redis.get<number>(`ratelimit:workflow:${identifier}`) || 0;
+  const remaining = Math.max(0, 10 - currentCount);
+  
+  return {
+    limit: 10,
+    remaining,
+    reset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  };
 } 

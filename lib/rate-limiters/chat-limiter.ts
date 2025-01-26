@@ -11,11 +11,12 @@ export const chatRateLimit = new Ratelimit({
 // Helper function to get remaining chat quota
 export async function getChatQuota(userId: string) {
   const identifier = `chat:${userId}`;
-  const { remaining, reset } = await chatRateLimit.limit(identifier);
+  const currentCount = await redis.get<number>(`ratelimit:chat:${identifier}`) || 0;
+  const remaining = Math.max(0, 10 - currentCount);
   
   return {
     limit: 10,
-    remaining: Math.max(0, remaining),
-    reset: new Date(reset).toISOString(),
+    remaining,
+    reset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   };
 } 

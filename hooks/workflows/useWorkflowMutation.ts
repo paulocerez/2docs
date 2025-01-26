@@ -1,4 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface WorkflowMutationData {
   prompt: string;
@@ -7,7 +9,9 @@ interface WorkflowMutationData {
   title: string;
 }
 
-export default function useWorkflowMutation() {
+export function useWorkflowMutation() {
+	const router = useRouter();
+	
 	console.log("workflow mutation");
 
   return useMutation({
@@ -21,7 +25,13 @@ export default function useWorkflowMutation() {
       if (!response.ok) {
         throw new Error("Failed to generate and save workflow");
       }
-      return response.json();
+      return response.json(); 
     },
+    onError: (error) => {
+      // Set error state in your store or context
+      toast.error("Failed to generate workflow. Please try again.");
+      // Redirect to workflow creation
+      router.push('/workflow/new');
+    }
   });
 }

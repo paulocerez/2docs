@@ -59,21 +59,18 @@ ${api.endpoints.map(endpoint => `
     { role: 'user', content: getWorkflowPrompt(prompt, context) }
   ]);
 
+  // Clean the response before parsing
+  const cleanResponse = (text: string) => {
+    return text
+      .replace(/```json\s*|\s*```/g, '') // Remove code blocks
+      .replace(/`/g, "'") // Replace backticks with single quotes
+      .replace(/\n/g, ' ') // Remove newlines
+      .trim();
+  };
+
   try {
-    const jsonMatch = workflowResponse.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("No JSON object found in response");
-    }
-    
-    const jsonContent = jsonMatch[0]
-      .replace(/\\"/g, '"')
-      .replace(/\n/g, '')
-      .replace(/\r/g, '')
-      .replace(/\t/g, '')
-      .replace(/\\/g, '\\\\')
-      .replace(/"\s+"/g, '" "');
-      
-    let workflow = JSON.parse(jsonContent) as WorkflowProps;
+    const workflowJson = cleanResponse(workflowResponse);
+    let workflow = JSON.parse(workflowJson) as WorkflowProps;
     console.log("Parsed workflow:", workflow);
 
     // Enrich steps with full endpoint details

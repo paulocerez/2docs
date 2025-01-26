@@ -12,7 +12,7 @@ import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
 import ScrapingApiLoading from "../../state/scraping-api-loading";
 import { useScrapeUrlMutation } from "@/hooks/messages/useScrapeUrlMutation";
-import useWorkflowMutation from "@/hooks/workflows/useWorkflowMutation";
+import { useWorkflowMutation } from "@/hooks/workflows/useWorkflowMutation";
 
 const queryClient = new QueryClient();
 
