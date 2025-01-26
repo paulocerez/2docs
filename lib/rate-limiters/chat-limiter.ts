@@ -1,22 +1,18 @@
-import { Ratelimit } from "@upstash/ratelimit";
 import { redis } from "./redis";
+import { db } from "@/db/postgres/db";
+import { chats } from "@/db/postgres/schema/chats";
+import { eq } from "drizzle-orm";
 
-// Create a new rate limiter instance for chats
-export const chatRateLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(10, "24h"),
-  prefix: "ratelimit:chat",
-});
+const CHAT_LIMIT = process.env.NODE_ENV === 'development' ? 100 : 10;
 
-// Helper function to get remaining chat quota
 export async function getChatQuota(userId: string) {
-  const identifier = `chat:${userId}`;
-  const currentCount = await redis.get<number>(`ratelimit:chat:${identifier}`) || 0;
-  const remaining = Math.max(0, 10 - currentCount);
+  // Get current number of chats for the user
+  const userChats = await db.select().from(chats).where(eq(chats.userId, userId));
+  const currentCount = userChats.length;
   
   return {
-    limit: 10,
-    remaining,
-    reset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    limit: CHAT_LIMIT,
+    remaining: Math.max(0, CHAT_LIMIT - currentCount),
+    total: currentCount
   };
 } 

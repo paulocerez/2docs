@@ -72,6 +72,8 @@ export function useUserMessageMutation(userId: string) {
   
 		  queryClient.setQueryData(["currentChatId"], data.chat.id);
 		}
+		// Invalidate message quota after successful message
+		queryClient.invalidateQueries({ queryKey: ["message-quota"] });
 	  },
 	});
   }

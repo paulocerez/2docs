@@ -1,8 +1,8 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { QuotaExceededAlert } from "@/components/chat/new-chat/quota-exceeded-alert";
-import { ChatQuota } from "@/components/chat/new-chat/chat-quota";
+import { QuotaExceededAlert } from "@/components/chat/new-chat/quota/quota-exceeded-alert";
+import { ChatQuota } from "@/components/chat/new-chat/quota/chat-quota";
 
 // Define the quota type
 type QuotaData = {

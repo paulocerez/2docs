@@ -13,6 +13,9 @@ import SubmitButton from "./submit";
 import ScrapingApiLoading from "../../state/scraping-api-loading";
 import { useScrapeUrlMutation } from "@/hooks/messages/useScrapeUrlMutation";
 import { useWorkflowMutation } from "@/hooks/workflows/useWorkflowMutation";
+import NewChatParagraph from "./new-chat-paragraph";
+import { useQuery } from "@tanstack/react-query";
+import { AlertCircle } from "lucide-react";
 
 const queryClient = new QueryClient();
 
@@ -29,11 +32,21 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [currentStep, setCurrentStep] = useState<string>(
     "Scraping API documentation..."
   );
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
   const workflowMutation = useWorkflowMutation();
+
+  // Add quota check query
+  const { data: quota } = useQuery({
+    queryKey: ["chat-quota"],
+    queryFn: async () => {
+      const response = await fetch("/api/user/chat-quota");
+      return response.json();
+    },
+  });
 
   useEffect(() => {
     const allLinksValid =
@@ -142,10 +155,52 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const handleLinksChange = useCallback((newLinks: string[]) => {
     setLinks(newLinks);
     const allLinksValid =
-      newLinks.length >= 2 && // Require at least 2 links total
-      newLinks.every((link) => isValidUrl(link));
+      newLinks.length >= 2 && newLinks.every((link) => isValidUrl(link)); // Require at least 2 links total
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, []);
+
+  // Show quota alert if no remaining chats
+  if (quota && quota.remaining === 0) {
+    return (
+      <AuthenticatedLayout userId={userId} currentPageTitle="New Chat">
+        <div className="min-h-screen bg-gray-50 pt-16">
+          <div className="max-w-2xl mx-auto px-4 py-12">
+            <div className="text-center space-y-6">
+              <div className="bg-white/50 backdrop-blur-sm rounded-full p-3 w-fit mx-auto">
+                <AlertCircle className="h-8 w-8 text-blue-600" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  You've reached your chat limit
+                </h2>
+                <p className="text-gray-600 max-w-md mx-auto">
+                  You currently have {quota.total} active chats. The maximum
+                  number of chats allowed is {quota.limit}.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="w-full max-w-xs mx-auto bg-gray-100 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
+                    style={{ width: "100%" }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500">
+                  {quota.total} / {quota.limit} chats created
+                </p>
+              </div>
+              <div className="pt-4">
+                <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors gap-2">
+                  Upgrade to Create More Chats
+                  <span aria-hidden="true">&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
 
   if (!userId) return null;
 
@@ -166,29 +221,10 @@ function NewChatPageContent({ userId }: { userId: string }) {
               className="min-h-screen flex items-center justify-center"
             >
               <div className="w-full max-w-2xl px-4 py-8 space-y-16">
-                <div className="flex flex-col items-center space-y-8 text-center">
-                  <h1 className="text-3xl sm:text-5xl font-bold text-gray-900">
-                    What can I help you build?
-                  </h1>
-                  <p className="text-gray-400 text-sm max-w-xl leading-relaxed">
-                    Insert two or more links to the API References you want to
-                    include in your workflow. Provide as much context and
-                    precision as possible in the prompt field.
-                  </p>
-                  <div className="max-w-sm w-full space-y-1">
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={handleChatTitleChange}
-                      placeholder="Name your workflow"
-                      className="w-full px-3 py-2 border rounded-full text-xs transition-all duration-200"
-                    />
-                    <p className="text-[10px] text-gray-400">
-                      &quot;Insert Google Calendar events based on a Notion
-                      database&quot;
-                    </p>
-                  </div>
-                </div>
+                <NewChatParagraph
+                  title={title}
+                  handleChatTitleChange={handleChatTitleChange}
+                />
                 <div className="flex flex-col space-y-8">
                   <div className="flex flex-col space-y-4 w-full">
                     <WorkflowRecommendations />

@@ -1,5 +1,7 @@
 import { createMessage, getAllMessagesForChat } from "@/db/postgres/queries/message/message";
 import { NextRequest, NextResponse } from "next/server";
+import { messageRateLimit } from "@/lib/rate-limiters/message-limiter";
+import { auth } from "@/auth";
 
 export async function GET(
   request: NextRequest,
@@ -27,6 +29,21 @@ export async function POST(
   ): Promise<NextResponse> {
 	const { chatId } = await params;
 	try {
+		const session = await auth();
+		if (!session?.user?.id) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		}
+
+		const identifier = `message:${session.user.id}`;
+		const { success, remaining, reset, limit } = await messageRateLimit.limit(identifier);
+		
+		if (!success) {
+			return NextResponse.json({
+				error: "Message quota exceeded",
+				quota: { limit, remaining: 0, reset: new Date(reset).toISOString() }
+			}, { status: 429 });
+		}
+
 		const { prompt } = await request.json();
 		if (!prompt) {
 		return NextResponse.json({ error: "Prompt is required" }, { status: 400 });

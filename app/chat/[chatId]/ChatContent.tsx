@@ -15,7 +15,9 @@ import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMu
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ScrollButtons from "@/components/ui/scroll-buttons";
-import { QuotaExceededAlert } from "@/components/chat/new-chat/quota-exceeded-alert";
+import { QuotaExceededAlert } from "@/components/chat/new-chat/quota/quota-exceeded-alert";
+import { ChatQuota } from "@/components/chat/new-chat/quota/chat-quota";
+import { MessageQuota } from "@/components/chat/new-chat/quota/message-quota";
 
 const queryClient = new QueryClient();
 
@@ -265,7 +267,8 @@ function ChatContentInner({
           </div>
         </div>
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
-          <div className="max-w-2xl mx-auto px-4 w-full">
+          <div className="max-w-2xl mx-auto px-4 w-full space-y-2">
+            <MessageQuota />
             <Prompt
               mode={mode}
               setMode={selectMode}

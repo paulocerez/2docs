@@ -1,7 +1,7 @@
 import { createChat, getAllChatsByUserId } from "@/db/postgres/queries/chat/chat";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { chatRateLimit } from "@/lib/rate-limiters/chat-limiter";
+import { getChatQuota } from "@/lib/rate-limiters/chat-limiter";
 
 export async function GET (request: NextRequest): Promise<NextResponse> {
 	const userId = request.nextUrl.searchParams.get("userId")
@@ -23,21 +23,19 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
 	const session = await auth();
 	
 	if (!session?.user?.id) {
-		return new NextResponse("Unauthorized", { status: 401 });
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
-	// Check rate limit before creating chat
-	const identifier = `chat:${session.user.id}`;
-	const { success, remaining, reset, limit } = await chatRateLimit.limit(identifier);
-	
-	if (!success) {
-		return NextResponse.json(
-			{
-				error: "Chat quota exceeded",
-				quota: { limit, remaining: 0, reset: new Date(reset).toISOString() },
-			},
-			{ status: 429 }
-		);
+	const quota = await getChatQuota(session.user.id);
+	if (quota.remaining === 0) {
+		return NextResponse.json({
+			error: "Chat quota exceeded",
+			quota: {
+				limit: quota.limit,
+				remaining: 0,
+				total: quota.total
+			}
+		}, { status: 429 });
 	}
 
 	const body = await request.json();
