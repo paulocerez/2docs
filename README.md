@@ -569,7 +569,7 @@ graph TD
 | ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------- |
 | XSS Attacks      | User Input Fields   | • Content Security Policy (CSP) headers<br/>• Input sanitization<br/>• Output encoding<br/>• Use trusted template systems<br/>• Regular security scanning  | Critical/Immediate<br/><br/>Impact: Client-side code execution | ❌ CSP<br/>✅ Basic sanitization |
 | Prompt Injection | Chat Interface      | • Input validation<br/>• Implement prompt filtering<br/>• Rate limit prompt submissions<br/>• Sanitize LLM inputs/outputs<br/>• Monitor for abuse patterns | High/Urgent<br/><br/>Impact: LLM manipulation, data leakage    | ❌                               |
-| CSRF Attacks     | Forms/State Changes | • Implement CSRF tokens<br/>• SameSite cookie attributes<br/>• Verify origin headers<br/>• Add request signing                                             | High/Urgent<br/><br/>Impact: Unauthorized state changes        | ❌                               |
+| CSRF Attacks     | Forms/State Changes | • Implement CSRF tokens<br/>• SameSite cookie attributes<br/>• Verify origin headers<br/>• Add request signing                                             | High/Urgent<br/><br/>Impact: Unauthorized state changes        | ✅                               |
 
 #### Infrastructure Security
 

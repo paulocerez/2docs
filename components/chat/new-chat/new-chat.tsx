@@ -171,7 +171,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
               </div>
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  You've reached your chat limit
+                  You&apos;ve reached your chat limit
                 </h2>
                 <p className="text-gray-600 max-w-md mx-auto">
                   You currently have {quota.total} active chats. The maximum
