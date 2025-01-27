@@ -1,4 +1,4 @@
-import { InsertApiEndpoint } from "@/db/postgres/schema/apis";
+import { InsertApiEndpoint } from "@/db/schema/apis";
 
 export function parseMarkdownForEndpoints(markdown: string): Omit<InsertApiEndpoint, 'id' | 'apiDocumentationId'>[] {
   const endpoints: Omit<InsertApiEndpoint, 'id' | 'apiDocumentationId'>[] = [];

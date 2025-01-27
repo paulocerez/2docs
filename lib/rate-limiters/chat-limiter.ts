@@ -1,6 +1,6 @@
 import { redis } from "./redis";
-import { db } from "@/db/postgres/db";
-import { chats } from "@/db/postgres/schema/chats";
+import { db } from "@/db/db";
+import { chats } from "@/db/schema/chats";
 import { eq } from "drizzle-orm";
 
 const CHAT_LIMIT = process.env.NODE_ENV === 'development' ? 100 : 10;

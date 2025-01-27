@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import { chatApiLinks, chats, InsertChat, messages, SelectChat } from "../../schema/chats";
 import { apiDocumentations } from "../../schema/apis";
 
@@ -28,6 +28,11 @@ export async function deleteChatById(chatId: string): Promise<SelectChat | undef
 	return deletedChat;
 }	
 
+export async function updateChatTitle(chatId: string, title: string) {
+	const [updatedChat] = await db.update(chats).set({ title }).where(eq(chats.id, chatId)).returning();
+	return updatedChat;
+}
+
 export async function createChatApiLinks(chatId: string, apiDocumentationIds: string[]) {
 	const values = apiDocumentationIds.map(apiDocumentationId => ({ chatId, apiDocumentationId }))
 	return await db.insert(chatApiLinks).values(values).returning();
@@ -50,4 +55,20 @@ export async function getUserChatsWithMessagesAndApis(userId: string) {
   .leftJoin(chatApiLinks, eq(chats.id, chatApiLinks.chatId))
   .leftJoin(apiDocumentations, eq(chatApiLinks.apiDocumentationId, apiDocumentations.id))
   .orderBy(desc(chats.lastActivityAt));
+}
+
+export async function getChatsByUserId(userId: string) {
+	return await db.select().from(chats).where(eq(chats.userId, userId));
+}
+
+export async function getChatsByUserIdWithMessages(userId: string) {
+	return await db.select().from(chats).where(eq(chats.userId, userId)).leftJoin(messages, eq(chats.id, messages.chatId));
+}
+
+export async function getChatsByUserIdWithMessagesAndApis(userId: string) {
+	return await db.select().from(chats).where(eq(chats.userId, userId)).leftJoin(messages, eq(chats.id, messages.chatId)).leftJoin(chatApiLinks, eq(chats.id, chatApiLinks.chatId)).leftJoin(apiDocumentations, eq(chatApiLinks.apiDocumentationId, apiDocumentations.id));
+}
+
+export async function getChatOwnership(userId: string, chatId: string) {
+	return await db.select().from(chats).where(and(eq(chats.id, chatId), eq(chats.userId, userId))).limit(1);
 }

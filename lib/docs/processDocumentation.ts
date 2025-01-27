@@ -1,4 +1,4 @@
-import { createApiDocumentation, createApiEndpoint } from "@/db/postgres/queries/api/api";
+import { createApiDocumentation, createApiEndpoint } from "@/db/queries/api/api";
 import { parseMarkdownForEndpointsUsingLLM } from "./parse-markdown/llmParseMarkdown";
 import extractNameFromUrl from "@/utils/extractNameFromUrl";
 

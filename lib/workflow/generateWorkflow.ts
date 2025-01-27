@@ -1,4 +1,4 @@
-import { getApiInfoWithEndpoints } from "@/db/postgres/queries/api/api";
+import { getApiInfoWithEndpoints } from "@/db/queries/api/api";
 import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 import { WorkflowEndpoint, WorkflowProps, WorkflowStepProps } from "@/types/workflow";
 import getWorkflowPrompt from "./workflowPrompt";

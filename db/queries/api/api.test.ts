@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db } from "@/db/postgres/db";
-import { apiDocumentations, apiEndpoints } from "@/db/postgres/schema/apis";
+import { db } from "@/db/db";
+import { apiDocumentations, apiEndpoints } from "@/db/schema/apis";
 import { eq } from 'drizzle-orm';
 import { getApiInfoWithEndpoints } from './api';
 
 describe('getApiInfoWithEndpoints', () => {
   beforeEach(async () => {
-    // Setup: Insert test data
     await db.insert(apiDocumentations).values({
       id: 'test-api-doc-id',
       name: 'Test API',
@@ -35,7 +34,6 @@ describe('getApiInfoWithEndpoints', () => {
   });
 
   afterEach(async () => {
-    // Cleanup: Delete test data
     await db.delete(apiEndpoints).where(eq(apiEndpoints.apiDocumentationId, 'test-api-doc-id'));
     await db.delete(apiDocumentations).where(eq(apiDocumentations.id, 'test-api-doc-id'));
   });
