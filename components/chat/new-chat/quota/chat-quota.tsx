@@ -1,18 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useChatQuota } from "@/hooks/quota/useChatQuota";
 import { motion } from "framer-motion";
-import { AlertCircle, ExternalLink, Link } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 
-export function ChatQuota() {
-  const { data: quota } = useQuery({
-    queryKey: ["chat-quota"],
-    queryFn: async () => {
-      const response = await fetch("/api/user/chat-quota");
-      return response.json();
-    },
-    refetchInterval: 60000,
-  });
+export function ChatQuota({ userId }: { userId: string }) {
+  const { data: quota } = useChatQuota(userId);
 
   if (!quota) return null;
 

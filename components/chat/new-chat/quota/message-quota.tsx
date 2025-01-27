@@ -1,17 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
+import { useMessageQuota } from "@/hooks/quota/useMessageQuota";
 
-export function MessageQuota() {
-  const { data: quota } = useQuery({
-    queryKey: ["message-quota"],
-    queryFn: async () => {
-      const response = await fetch("/api/user/message-quota");
-      return response.json();
-    },
-    refetchInterval: 60000,
-  });
+export function MessageQuota({ userId }: { userId: string }) {
+  const { data: quota } = useMessageQuota(userId);
 
   if (!quota) return null;
 
@@ -21,7 +13,7 @@ export function MessageQuota() {
         <div className="flex-1">
           <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-500 transition-all duration-500"
+              className="h-full bg-blue-500 transition-all duration-500"
               style={{
                 width: `${(quota.remaining / quota.limit) * 100}%`,
               }}
@@ -29,7 +21,7 @@ export function MessageQuota() {
           </div>
         </div>
         <span>
-          {quota.remaining}/{quota.limit} messages remaining this hour
+          {quota.remaining}/{quota.limit} messages remaining
         </span>
       </div>
     </div>

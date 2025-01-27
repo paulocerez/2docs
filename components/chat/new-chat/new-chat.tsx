@@ -16,13 +16,14 @@ import { useWorkflowMutation } from "@/hooks/workflows/useWorkflowMutation";
 import NewChatParagraph from "./new-chat-paragraph";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
+import { useChatQuota } from "@/hooks/quota/useChatQuota";
 
 const queryClient = new QueryClient();
 
 function NewChatPageContent({ userId }: { userId: string }) {
   const router = useRouter();
   const [isAiResponding, setIsAiResponding] = useState(false);
-  const [title, setTitle] = useState("Mochi and Coda Flashcard Generator");
+  const [title, setTitle] = useState("");
   const [checklist, setChecklist] = useState<boolean[]>([false, false, false]);
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
@@ -37,16 +38,10 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
   const chatApiLinksMutation = useChatApiLinksMutation();
-  const workflowMutation = useWorkflowMutation();
+  const workflowMutation = useWorkflowMutation(userId);
 
   // Add quota check query
-  const { data: quota } = useQuery({
-    queryKey: ["chat-quota"],
-    queryFn: async () => {
-      const response = await fetch("/api/user/chat-quota");
-      return response.json();
-    },
-  });
+  const { data: quota } = useChatQuota(userId);
 
   useEffect(() => {
     const allLinksValid =
@@ -85,7 +80,6 @@ function NewChatPageContent({ userId }: { userId: string }) {
         const { workflow } = await workflowMutation.mutateAsync({
           prompt,
           apiDocIds,
-          userId,
           title,
         });
 

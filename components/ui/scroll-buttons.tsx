@@ -23,7 +23,7 @@ export default function ScrollButtons({
   };
   return (
     <div
-      className="fixed left-1/2 -translate-x-1/2 bottom-28 flex gap-2"
+      className="fixed left-1/2 -translate-x-1/2 bottom-32 flex gap-2"
       style={{ zIndex: 9999 }}
     >
       <button

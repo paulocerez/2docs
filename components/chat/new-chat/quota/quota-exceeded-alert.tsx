@@ -1,27 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useChatQuota } from "@/hooks/quota/useChatQuota";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 
-export function QuotaExceededAlert() {
-  const { data: quota } = useQuery({
-    queryKey: ["usage-quota"],
-    queryFn: async () => {
-      const response = await fetch("/api/user/quota");
-      return response.json();
-    },
-    refetchInterval: 60000,
-  });
+export function QuotaExceededAlert({ userId }: { userId: string }) {
+  const { data: quota } = useChatQuota(userId);
 
   if (!quota || quota.remaining > 0) return null;
-
-  // Calculate time until reset
-  const resetTime = new Date(quota.reset);
-  const now = new Date();
-  const hoursUntilReset = Math.ceil(
-    (resetTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-  );
 
   return (
     <motion.div
@@ -34,8 +20,8 @@ export function QuotaExceededAlert() {
         <div className="space-y-1">
           <h3 className="font-medium">Daily Workflow Quota Exceeded</h3>
           <p className="text-sm text-red-500">
-            You&apos;ve used all {quota.limit} workflows for today. Your quota
-            will reset in {hoursUntilReset} hours.
+            You&apos;ve used all {quota.limit} workflows. Upgrade your plan to
+            continue.
           </p>
           <div className="h-1.5 bg-red-100 rounded-full overflow-hidden mt-2">
             <div

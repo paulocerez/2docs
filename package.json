@@ -10,7 +10,8 @@
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "containers": "docker compose up --build"
+    "containers": "docker compose up --build",
+    "snyk": "snyk code test --org=02ef0523-2635-4f95-9066-8e7bde3f8776"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",
@@ -37,6 +38,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
     "framer-motion": "^11.11.11",
+    "isomorphic-dompurify": "^2.20.0",
     "lucide-react": "^0.438.0",
     "next": "^14.2.23",
     "next-auth": "^5.0.0-beta.20",
@@ -60,7 +62,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.2.0",

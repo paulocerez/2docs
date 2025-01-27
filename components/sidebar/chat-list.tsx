@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import ChatTooltip from "../chat/chat-tooltip";
-import { SelectChat } from "@/db/postgres/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 interface ChatListProps {
   chats: SelectChat[] | undefined;
   isLoading: boolean;

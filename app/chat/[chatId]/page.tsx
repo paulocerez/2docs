@@ -1,31 +1,26 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import ChatContent from "./ChatContent";
-import { getChatById } from "@/db/postgres/queries/chat/chat";
+import { getAllMessagesForChat } from "@/db/queries/message/message";
+import { Message } from "@/types/message";
 
 export default async function ChatPage({
-  params,
+  params: { chatId },
 }: {
   params: { chatId: string };
 }) {
-  const { chatId } = await params;
   const session = await auth();
   const userId = session?.user?.id;
+  if (!userId) throw new Error("Not authenticated");
 
-  if (!userId) {
-    redirect("/api/auth/signin?callbackUrl=/chat");
-  }
-  const currentChat = await getChatById(chatId);
-
-  if (!currentChat) {
-    redirect("/chat");
-  }
+  // Fetch initial messages server-side
+  const initialMessages = await getAllMessagesForChat(chatId);
 
   return (
     <ChatContent
       userId={userId}
       currentChatId={chatId}
-      currentChatTitle={currentChat.title}
+      currentChatTitle=""
+      initialMessages={initialMessages as Message[]}
     />
   );
 }

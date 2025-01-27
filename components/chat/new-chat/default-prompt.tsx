@@ -19,9 +19,7 @@ export default function DefaultPrompt({
   setLinks,
   handleLinksChange,
 }: PromptProps) {
-  const [inputMessage, setInputMessage] = useState(
-    "I want to create a flashcard for each row of a Coda database..."
-  );
+  const [inputMessage, setInputMessage] = useState("");
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [manualLinks, setManualLinks] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);

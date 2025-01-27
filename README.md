@@ -559,9 +559,21 @@ graph TD
 
 | Threat            | Entry Point         | Mitigation                                                                                                                                                                   | Impact/Urgency                                                     | Status                                                   |
 | ----------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------- |
-| API Abuse         | Workflow Generation | • Rate limiting per user/IP<br/>• Request throttling<br/>• Implement API key rotation<br/>• Monitor for unusual patterns<br/>• Add CAPTCHA for sensitive operations          | High/Urgent<br/><br/>Impact: Service degradation, cost inflation   | ❌ Rate limiting<br/>❌ Monitoring                       |
+| API Abuse         | Workflow Generation | • Rate limiting per user/IP<br/>• Request throttling<br/>• Implement API key rotation<br/>• Monitor for unusual patterns<br/>• Add CAPTCHA for sensitive operations          | High/Urgent<br/><br/>Impact: Service degradation, cost inflation   | ✅ Rate limiting (messages/chats)<br/>❌ Monitoring      |
 | Data Exfiltration | Database Queries    | • Encrypt sensitive data at rest<br/>• Implement field-level encryption<br/>• Add query result limiting<br/>• Monitor for large data transfers<br/>• Regular security audits | Critical/Immediate<br/><br/>Impact: Data breach, privacy violation | ✅ Basic encryption<br/>❌ Field-level<br/>❌ Monitoring |
 | SSRF Attacks      | Web Crawler         | • Strict URL validation<br/>• Whitelist allowed domains<br/>• Disable internal DNS resolution<br/>• Block private IP ranges<br/>• Implement request timeouts                 | High/Urgent<br/><br/>Impact: Internal system exposure              | ❌                                                       |
+
+#### API & Route Security
+
+| Threat                    | Entry Point     | Mitigation                                                                                                                                                          | Impact/Urgency | Status         |
+| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | -------------- |
+| Unauthorized API Access   | API Routes      | Session-based authentication via NextAuth middleware. All routes require valid session token except `/api/auth/*`. Returns 401 if unauthorized.                     | Critical       | ✅ Implemented |
+| Cross-Origin Attacks      | API Routes      | CORS protection in middleware. Only allows requests from whitelisted origins (configured via `ALLOWED_ORIGINS` env variable). Returns 403 for unauthorized origins. | High           | ✅ Implemented |
+| Invalid HTTP Methods      | API Routes      | Method validation in middleware. Only allows GET, POST, PUT, DELETE methods. Returns 405 for invalid methods.                                                       | Medium         | ✅ Implemented |
+| Request Size Attacks      | API Routes      | Request size limiting in middleware. Maximum 1MB payload size. Returns 413 if exceeded.                                                                             | Medium         | ✅ Implemented |
+| Unauthorized Route Access | Frontend Routes | Protected routes (`/chat`, `/workflows`, `/settings`, `/docs`) require authentication. Redirects to login if unauthorized.                                          | High           | ✅ Implemented |
+| Rate Limiting             | API Routes      | Implemented rate limiting for messages (100/hour) and chats (10 total). Returns 429 when exceeded.                                                                  | High           | ✅ Implemented |
+| Input Validation          | User Inputs     | Comprehensive input validation and sanitization for all user inputs (messages, titles, links, etc.) using Zod schemas and DOMPurify.                                | High           | ✅ Implemented |
 
 #### Input Validation & XSS Prevention
 
@@ -573,11 +585,21 @@ graph TD
 
 #### Infrastructure Security
 
-| Threat                     | Entry Point      | Mitigation                                                                                                                                                             | Impact/Urgency                                                | Status                                       |
-| -------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------- |
-| Dependency Vulnerabilities | Third-party Code | • Regular dependency updates<br/>• Automated vulnerability scanning<br/>• Lock dependency versions<br/>• Security patch automation<br/>• Maintain dependency inventory | High/Urgent<br/><br/>Impact: Known vulnerability exploitation | ✅ Regular updates<br/>❌ Automated scanning |
-| Information Disclosure     | Error Handling   | • Custom error pages<br/>• Sanitize error messages<br/>• Log sensitive errors server-side<br/>• Implement proper CORS policies                                         | Medium/Important<br/><br/>Impact: System information leakage  | ❌                                           |
-| Server Misconfiguration    | Infrastructure   | • Security headers (HSTS, X-Frame-Options)<br/>• Disable directory listing<br/>• Remove unnecessary services<br/>• Regular security audits<br/>• Implement WAF         | High/Urgent<br/><br/>Impact: System compromise                | ❌                                           |
+| Threat                     | Entry Point      | Mitigation                                                                                                                                                             | Impact/Urgency                                                | Status                                                                    |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Dependency Vulnerabilities | Third-party Code | • Regular dependency updates<br/>• Automated vulnerability scanning<br/>• Lock dependency versions<br/>• Security patch automation<br/>• Maintain dependency inventory | High/Urgent<br/><br/>Impact: Known vulnerability exploitation | ✅ Regular updates<br/>✅ Snyk integration<br/>❌ Automated patch updates |
+| Information Disclosure     | Error Handling   | • Custom error pages<br/>• Sanitize error messages<br/>• Log sensitive errors server-side<br/>• Implement proper CORS policies                                         | Medium/Important<br/><br/>Impact: System information leakage  | ❌                                                                        |
+| Server Misconfiguration    | Infrastructure   | • Security headers (HSTS, X-Frame-Options)<br/>• Disable directory listing<br/>• Remove unnecessary services<br/>• Regular security audits<br/>• Implement WAF         | High/Urgent<br/><br/>Impact: System compromise                | ❌                                                                        |
+
+#### Network Security
+
+| Threat                  | Entry Point | Mitigation                                                                                                          | Impact/Urgency | Status    |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------- | --------- |
+| HTTPS Bypass            | All Routes  | Enforce HTTPS using HSTS headers. Redirect all HTTP traffic to HTTPS. Configure `secure` flag on cookies.           | Critical       | ⚠️ Needed |
+| Session Hijacking       | Auth Tokens | Implement secure session handling with HTTPOnly cookies, SameSite=Strict, and secure flags. Short expiration times. | Critical       | ⚠️ Needed |
+| OAuth Interception      | Auth Flow   | Validate OAuth state parameter, use PKCE for auth code flow, validate redirect URIs.                                | High           | ⚠️ Needed |
+| Request Tampering       | API Routes  | Implement request signing or use strong CSRF tokens. Add integrity checks for sensitive operations.                 | High           | ⚠️ Needed |
+| SSL/TLS Vulnerabilities | All Routes  | Use modern TLS 1.3, strong cipher suites, proper certificate validation.                                            | Critical       | ⚠️ Needed |
 
 #### Future Features Security
 
@@ -608,7 +630,3 @@ Auth.js for OAuth authentication. Google as the Identity Provider for Sign-up an
 
 - Crawling service: Currently using FireCrawl Cloud as a 3rd-party library for crawling the API references -> Small vendor-lock-in + DOS risks (and high costs) -> Would like rebuild specifically for API reference standards once the other stuff is done
 - Parsing the API references through openai currently, will implement something more advanced in the future, but unfortunately not all docs are standardized in the same way (that made it difficult for now)
-
-## Feedback? ✨
-
-For any feedback or suggestions, 💌 me here: paulo.ramirez@code.berlin

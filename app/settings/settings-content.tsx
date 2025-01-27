@@ -2,6 +2,8 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { Settings, MessageSquare, Zap } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MessageQuota } from "@/components/chat/new-chat/quota/message-quota";
+import { ChatQuota } from "@/components/chat/new-chat/quota/chat-quota";
 
 const queryClient = new QueryClient();
 
@@ -14,7 +16,7 @@ function SettingsContent({ userId }: { userId: string }) {
             <div className="max-w-4xl mx-auto px-4 py-8">
               <div className="space-y-8">
                 {/* Header */}
-                <div className="flex items-center gap-3 pb-6 border-b border-gray-200">
+                <div className="flex items-center gap-3 pb-6 border-b-4 border-gray-200">
                   <Settings className="h-6 w-6 text-gray-600" />
                   <h1 className="text-2xl font-semibold text-gray-900">
                     Settings
@@ -32,23 +34,13 @@ function SettingsContent({ userId }: { userId: string }) {
                       <p className="text-sm font-medium text-gray-600">
                         Chat Quota
                       </p>
-                      <div className="bg-gray-100 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full w-3/4" />
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        7 / 10 chats created
-                      </p>
+                      <ChatQuota userId={userId} />
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-gray-600">
                         Message Quota
                       </p>
-                      <div className="bg-gray-100 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full w-1/2" />
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        50 / 100 messages sent
-                      </p>
+                      <MessageQuota userId={userId} />
                     </div>
                   </div>
                 </div>

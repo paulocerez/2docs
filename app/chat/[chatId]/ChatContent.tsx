@@ -13,11 +13,10 @@ import { Message } from "@/types/message";
 import { useWorkflow } from "@/hooks/workflows/useWorkflow";
 import { useWorkflowUpdateMutation } from "@/hooks/workflows/useWorkflowUpdateMutation";
 import { useWorkflowQuestionMutation } from "@/hooks/workflows/useWorkflowQuestionMutation";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ScrollButtons from "@/components/ui/scroll-buttons";
 import { QuotaExceededAlert } from "@/components/chat/new-chat/quota/quota-exceeded-alert";
-import { ChatQuota } from "@/components/chat/new-chat/quota/chat-quota";
 import { MessageQuota } from "@/components/chat/new-chat/quota/message-quota";
+import { useQuery } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -25,12 +24,14 @@ interface ChatContentProps {
   userId: string;
   currentChatId: string;
   currentChatTitle: string;
+  initialMessages: Message[];
 }
 
 function ChatContentInner({
   userId,
   currentChatId,
   currentChatTitle,
+  initialMessages,
 }: ChatContentProps) {
   const [isAiResponding, setIsAiResponding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -41,22 +42,34 @@ function ChatContentInner({
   const [streamingContent, setStreamingContent] = useState("");
 
   const {
-    data: messages,
+    data: messages = initialMessages,
     isLoading: isMessagesLoading,
     error: messagesError,
-  }: {
-    data: Message[] | undefined;
-    isLoading: boolean;
-    error: Error | null;
-  } = useMessages(currentChatId);
+  } = useQuery<Message[]>({
+    queryKey: ["messages", currentChatId],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/users/${userId}/chats/${currentChatId}/messages`
+      );
+      if (!response.ok) {
+        throw new Error(`Error fetching messages: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    initialData: initialMessages,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60, // Consider data fresh for 1 minute
+  });
 
   console.log("Chat Messages", messages);
 
   const userMessageMutation = useUserMessageMutation(userId);
   const workflowQuestionMutation = useWorkflowQuestionMutation();
   const workflowUpdateMutation = useWorkflowUpdateMutation();
-  const { data: workflow, isLoading: isWorkflowLoading } =
-    useWorkflow(currentChatId);
+  const { data: workflow, isLoading: isWorkflowLoading } = useWorkflow(
+    currentChatId,
+    userId
+  );
 
   const selectMode = (selectedMode: "question" | "editing") => {
     setMode(selectedMode);
@@ -72,11 +85,7 @@ function ChatContentInner({
     };
   }, []);
 
-  useEffect(() => {
-    if (!isMessagesLoading && !isWorkflowLoading && messages !== undefined) {
-      setIsInitialLoading(false);
-    }
-  }, [isMessagesLoading, isWorkflowLoading, messages]);
+  const isLoading = isMessagesLoading || isWorkflowLoading;
 
   const handleSubmit = useCallback(
     async (prompt: string) => {
@@ -150,7 +159,11 @@ function ChatContentInner({
                 ...(messages || []),
                 { role: "user", content: prompt },
               ],
-              codeSnippet: workflow?.codeSnippet || "",
+              codeSnippet: {
+                mainFunction: workflow?.mainFunction.codeSnippet || "",
+                steps: workflow?.steps || [],
+              },
+              userId: userId,
             },
             {
               // prevent automatic updates due to streaming
@@ -164,6 +177,7 @@ function ChatContentInner({
               chatId: currentChatId,
               prompt,
               workflow,
+              userId: userId,
             },
             {
               // prevent automatic updates due to streaming
@@ -195,21 +209,15 @@ function ChatContentInner({
     ]
   );
 
-  if (isInitialLoading || isWorkflowLoading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen space-x-2">
-        <LoadingSpinner />
-        <p className="text-sm text-gray-400 flex items-center">
-          {isWorkflowLoading ? "Loading workflow..." : "Loading chat..."}
-        </p>
-      </div>
-    );
-  }
-
-  if (isMessagesLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <MessageLoadingScreen />
+      <div className="flex-grow overflow-y-auto pb-32">
+        <div className="mx-auto px-4 w-full max-w-2xl relative">
+          <div className="flex items-center justify-center min-h-[50vh] space-x-2">
+            <LoadingSpinner />
+            <p className="text-sm text-gray-400">Loading chat...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -268,7 +276,7 @@ function ChatContentInner({
         </div>
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full space-y-2">
-            <MessageQuota />
+            <MessageQuota userId={userId} />
             <Prompt
               mode={mode}
               setMode={selectMode}
@@ -278,7 +286,7 @@ function ChatContentInner({
             />
           </div>
         </div>
-        <QuotaExceededAlert />
+        <QuotaExceededAlert userId={userId} />
       </div>
     </AuthenticatedLayout>
   );

@@ -1,6 +1,6 @@
 "use client";
 import SidebarHeader from "./SidebarHeader";
-import { SelectChat } from "@/db/postgres/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 import { ChatList } from "./chat-list";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { GrChat, GrStorage } from "react-icons/gr";
@@ -84,7 +84,7 @@ export default function Sidebar({
 
       {/* Footer with quota */}
       <div className="mt-auto pt-4 border-t-2 border-gray-200 dark:border-gray-700">
-        <ChatQuota />
+        <ChatQuota userId={userId} />
       </div>
     </div>
   );
