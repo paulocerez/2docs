@@ -1,14 +1,16 @@
-import { getUserNameAndImageByUserId } from "@/db/postgres/queries/user/user";
+import { auth } from "@/auth";
+import { getUserNameAndImageByUserId } from "@/db/queries/user/user";
+import { authorizeUser } from "@/lib/auth/authorize-user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET (request: NextRequest, { params }: { params: { userId: string}}): Promise<NextResponse> {
-	const { userId } = await params
-	
-	if (!userId) {
-		return NextResponse.json({error: "User Id is not provided"}, { status: 400 })
-	}
+	const session = await auth();
+  
+	const authError = await authorizeUser(session, params.userId, "access user information");
+	if (authError) return authError;
+
 	try {
-		const result = await getUserNameAndImageByUserId(userId)
+		const result = await getUserNameAndImageByUserId(params.userId)
 		if (!result) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 });
 		  }

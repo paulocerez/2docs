@@ -1,25 +1,20 @@
-async function testRateLimit() {
+async function testRateLimit(userId: string) {
   const makeRequest = async () => {
-    const res = await fetch('http://localhost:3000/api/test-rate-limit', {
-      headers: {
-        'x-test-mode': 'true'
-      }
-    })
-    return res.json()
-  }
+    const response = await fetch(
+      `http://localhost:3000/api/users/${userId}/test/rate-limit`
+    );
+    const data = await response.json();
+    console.log(`Status: ${response.status}`, data);
+    return response.ok;
+  };
 
-  console.log('Starting rate limit test...')
-  
-  for (let i = 1; i <= 12; i++) {
-    try {
-      const result = await makeRequest()
-      console.log(`Request ${i}:`, result)
-    } catch (error) {
-      console.error(`Request ${i} failed:`, error)
-    }
-    // Add small delay between requests
-    await new Promise(resolve => setTimeout(resolve, 100))
+  // Make 12 requests to test the rate limit
+  for (let i = 0; i < 12; i++) {
+    console.log(`Request ${i + 1}:`);
+    await makeRequest();
+    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between requests
   }
 }
 
-testRateLimit() 
+// Use a test user ID when running the script
+testRateLimit('test-user-123'); 
