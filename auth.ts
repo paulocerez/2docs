@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { db } from "./db/postgres/db";
+import { db } from "./db/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	providers: [Google],
@@ -17,11 +17,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 		},
 
 		authorized({auth, request: { nextUrl}}) {
-			const isLoggedIn = !!auth?.user;
+			if (nextUrl.pathname.startsWith('/api/auth/')) {
+				return true;
+			}
 
+			const isLoggedIn = !!auth?.user;
 			const paths = ["/chat", "/workflows", "/settings", "/docs"]
 			const isProtected = paths.some((path) => nextUrl.pathname.startsWith(path))
-
 
 			if (isProtected && !isLoggedIn) {
 				const redirectUrl = new URL("/", nextUrl.origin)
