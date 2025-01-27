@@ -1,29 +1,28 @@
+import { useQuery } from "@tanstack/react-query";
 import { Message } from "@/types/message";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { auth } from "@/auth";
 
-export function useMessages(currentChatId: string) {
-  const queryClient = useQueryClient();
-
+export function useMessages(chatId: string) {
   return useQuery<Message[]>({
-    queryKey: ["messages", currentChatId],
+    queryKey: ["messages", chatId],
     queryFn: async () => {
-      const response = await fetch(`/api/chats/${currentChatId}/messages`);
+      const session = await auth();
+	  const userId = session?.user?.id
+      if (!userId) throw new Error("Not authenticated");
+
+      const response = await fetch(
+        `/api/users/${userId}/chats/${chatId}/messages`
+      );
+      
       if (!response.ok) {
-        throw new Error("Failed to fetch messages");
+        const error = await response.json();
+        throw new Error(error.message || "Failed to fetch messages");
       }
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        console.error("Expected array of messages, got:", data);
-        return [];
-      }
-      return data.filter((message): message is Message => message != null);
+
+      return response.json();
     },
-    enabled: !!currentChatId,
-    initialData: () => {
-      // Return the cached messages if available
-      return currentChatId
-        ? queryClient.getQueryData<Message[]>(["messages", currentChatId]) || []
-        : [];
-    },
+    refetchOnWindowFocus: false,
+    retry: 2,
+    staleTime: 1000 * 60, // 1 minute
   });
 }

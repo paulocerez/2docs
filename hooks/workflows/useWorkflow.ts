@@ -1,15 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
+import { WorkflowProps } from "@/types/workflow";
 
-export function useWorkflow(chatId: string) {
-  return useQuery({
-    queryKey: ["workflow", chatId],
+export function useWorkflow(chatId: string, userId: string) {
+  return useQuery<WorkflowProps>({
+    queryKey: ["workflow", userId, chatId],
     queryFn: async () => {
-      const response = await fetch(`/api/chats/${chatId}/workflow`);
+      const response = await fetch(
+        `/api/users/${userId}/chats/${chatId}/workflow`
+      );
+      
       if (!response.ok) {
-        throw new Error("Failed to fetch workflow");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || 
+          `Failed to fetch workflow: ${response.status} ${response.statusText}`
+        );
       }
-      const data = await response.json();
-      return data.workflow;
-    }
+
+      return response.json();
+    },
   });
 }

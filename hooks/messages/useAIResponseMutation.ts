@@ -1,18 +1,19 @@
-import { SelectChat } from "@/db/postgres/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AIResponseMutationData {
 	chatId: string;
 	messages: Array<{ role: string; content: string }>;
+	userId: string;
 }	
-
+	
 export function useAIResponseMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ chatId, messages }: AIResponseMutationData ) => {
-      const response = await fetch(`/api/chats/${chatId}/ai-response`, {
+    mutationFn: async ({ chatId, messages, userId }: AIResponseMutationData ) => {
+      const response = await fetch(`/api/users/${userId}/chats/${chatId}/ai-response`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages }),

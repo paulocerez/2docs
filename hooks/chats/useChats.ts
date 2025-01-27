@@ -1,4 +1,4 @@
-import { SelectChat } from "@/db/postgres/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -7,9 +7,9 @@ export function useChats(userId: string) {
   const { data: chats, isLoading } = useQuery<SelectChat[]>({
     queryKey: ["chats", userId],
     queryFn: async () => {
-		const response = await fetch(`/api/chats?userId=${userId}`)
+		const response = await fetch(`/api/users/${userId}/chats`);
 		if (!response.ok) {
-			throw new Error('Network response was not ok');
+			throw new Error('Failed to fetch chats');
 		}
 		return response.json()
 	},

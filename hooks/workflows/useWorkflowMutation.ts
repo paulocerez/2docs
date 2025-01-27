@@ -5,32 +5,33 @@ import { toast } from 'sonner';
 interface WorkflowMutationData {
   prompt: string;
   apiDocIds: string[];
-  userId: string;
   title: string;
 }
 
-export function useWorkflowMutation() {
+export function useWorkflowMutation(userId: string) {
 	const router = useRouter();
 	
 	console.log("workflow mutation");
 
   return useMutation({
-    mutationFn: async ({ prompt, apiDocIds, userId, title }: WorkflowMutationData) => {
-      const response = await fetch(`/api/workflows`, {
+    mutationFn: async ({ prompt, apiDocIds, title }: WorkflowMutationData) => {
+      const response = await fetch(`/api/users/${userId}/workflows`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, apiDocIds, userId, title }),
+        body: JSON.stringify({ 
+          prompt, 
+          apiDocIds,
+          chatTitle: title
+        }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate and save workflow");
+        throw new Error("Failed to generate workflow");
       }
       return response.json(); 
     },
     onError: (error) => {
-      // Set error state in your store or context
       toast.error("Failed to generate workflow. Please try again.");
-      // Redirect to workflow creation
       router.push('/workflow/new');
     }
   });

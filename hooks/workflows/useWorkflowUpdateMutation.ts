@@ -2,12 +2,13 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useWorkflowUpdateMutation() {
 	return useMutation({
-	  mutationFn: async ({ chatId, prompt, workflow }: {
+	  mutationFn: async ({ chatId, prompt, workflow, userId }: {
 		chatId: string;
 		prompt: string;
 		workflow: any;
+		userId: string;
 	  }) => {
-		const response = await fetch(`/api/chats/${chatId}/workflow-update`, {
+		const response = await fetch(`/api/users/${userId}/chats/${chatId}/workflow-update`, {
 		  method: "POST",
 		  headers: { "Content-Type": "application/json" },
 		  body: JSON.stringify({ prompt, workflow }),

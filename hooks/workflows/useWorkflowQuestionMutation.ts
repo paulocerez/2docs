@@ -1,3 +1,4 @@
+import { WorkflowStepProps } from "@/types/workflow";
 import { useMutation } from "@tanstack/react-query";
 
 export function useWorkflowQuestionMutation() {
@@ -6,12 +7,14 @@ export function useWorkflowQuestionMutation() {
 			chatId,
 			messages,
 			codeSnippet,
+			userId,
 		}: {
 			chatId: string;
 			messages: { role: string; content: string }[];
-			codeSnippet: string;
+			codeSnippet: { mainFunction: string; steps: WorkflowStepProps[] };
+			userId: string;
 		}) => {
-		const response = await fetch(`/api/chats/${chatId}/workflow-question`, {
+		const response = await fetch(`/api/users/${userId}/chats/${chatId}/workflow-question`, {
 		  method: "POST",
 		  headers: { "Content-Type": "application/json" },
 		  body: JSON.stringify({ messages, codeSnippet }),

@@ -1,4 +1,4 @@
-import { SelectChat } from "@/db/postgres/schema/chats";
+import { SelectChat } from "@/db/schema/chats";
 import { Message } from "@/types/message";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -14,8 +14,11 @@ export function useUserMessageMutation(userId: string) {
   
 	return useMutation({
 	  mutationFn: async ({ chatId, title, prompt, workflowId }: UserMessageMutationData) => {
-		let url = chatId ? `/api/chats/${chatId}/messages` : '/api/chats';
-		let body = chatId ? { prompt } : { userId, title, prompt, workflowId };
+		let url = chatId 
+		  ? `/api/users/${userId}/chats/${chatId}/messages` 
+		  : `/api/users/${userId}/chats`;
+		
+		let body = chatId ? { prompt } : { title, prompt, workflowId };
   
 		const response = await fetch(url, {
 		  method: "POST",
@@ -27,8 +30,7 @@ export function useUserMessageMutation(userId: string) {
 		  throw new Error(chatId ? "Failed to add message to chat" : "Failed to create new chat");
 		}
   
-		const data = await response.json();
-		return data;	
+		return response.json();
 	  },
 	  onSuccess: (data, variables) => {
 		if (variables.chatId) {
