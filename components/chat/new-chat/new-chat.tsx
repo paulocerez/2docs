@@ -3,10 +3,8 @@ import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
 import { FormEvent, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserMessageMutation } from "@/hooks/messages/useUserMessageMutation";
-import LinkInputs from "@/components/chat/new-chat/link-inputs";
 import ChecklistItem from "@/components/chat/new-chat/ChecklistItem";
 import DefaultPrompt from "@/components/chat/new-chat/default-prompt";
-import WorkflowRecommendations from "@/components/chat/workflow-recommendations";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useChatApiLinksMutation } from "@/hooks/chats/useChatApiLinksMutation";
 import SubmitButton from "./submit";
@@ -14,9 +12,9 @@ import ScrapingApiLoading from "../../state/scraping-api-loading";
 import { useScrapeUrlMutation } from "@/hooks/messages/useScrapeUrlMutation";
 import { useWorkflowMutation } from "@/hooks/workflows/useWorkflowMutation";
 import NewChatParagraph from "./new-chat-paragraph";
-import { useQuery } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
 import { useChatQuota } from "@/hooks/quota/useChatQuota";
+import NewChatError from "@/components/state/new-chat-error";
+import QuotaAlertChat from "@/components/state/quota-alert-chat";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +31,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
   const [currentStep, setCurrentStep] = useState<string>(
     "Scraping API documentation..."
   );
-  const [quotaExceeded, setQuotaExceeded] = useState(false);
+
   // mutation hooks
   const userMessageMutation = useUserMessageMutation(userId);
   const scrapeUrlMutation = useScrapeUrlMutation();
@@ -49,60 +47,77 @@ function NewChatPageContent({ userId }: { userId: string }) {
     setChecklist((prev) => [prev[0], prev[1], allLinksValid]);
   }, [links]);
 
-  useEffect(() => {
-    console.log("UserId:", userId, "Links:", links);
-  }, [userId, links]);
-
   const scrapeDocsAndGenerateWorkflow = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!isFormValid) return;
 
-      setIsProcessing(true);
       setError(null);
+      setIsProcessing(true);
+      setCurrentStep("Scraping API documentation...");
 
       try {
         setCurrentStep("Scraping API documentation...");
-        // TODOstill need to check if links are pointing to valid api references
-        // const validatedLinks = await validateLinks(links);
-        const apiDocIds = [];
-        // Scrape and process each api reference
-        for (const link of links) {
-          const { apiDocId } = await scrapeUrlMutation.mutateAsync({
-            userId,
-            url: link,
-          });
-          apiDocIds.push(apiDocId);
-        }
+        const apiDocIds = await Promise.all(
+          links.map(async (link) => {
+            try {
+              const result = await scrapeUrlMutation.mutateAsync({
+                userId,
+                url: link,
+              });
+              return result.apiDocId;
+            } catch (error) {
+              console.error("Failed to scrape API doc:", error);
+              setError(`Failed to scrape API documentation from ${link}`);
+              throw error;
+            }
+          })
+        );
 
-        // Generate and save the workflow, receiving the saved workflow with its ID
+        // Generate and save the workflow
         setCurrentStep("Generating workflow...");
-        const { workflow } = await workflowMutation.mutateAsync({
-          prompt,
-          apiDocIds,
-          title,
-        });
+        const { workflow } = await workflowMutation
+          .mutateAsync({
+            prompt,
+            apiDocIds,
+            title,
+          })
+          .catch((error) => {
+            console.error("Workflow generation failed:", error);
+            setError("Failed to generate workflow. Please try again.");
+            throw error;
+          });
 
-        console.log("Workflow in NewChatPageContent", workflow);
+        setCurrentStep("Creating new chat...");
+        const { chat } = await userMessageMutation
+          .mutateAsync({
+            prompt,
+            title,
+            workflowId: workflow.id,
+          })
+          .catch((error) => {
+            console.error("Chat creation failed:", error);
+            setError("Failed to create chat. Please try again.");
+            throw error;
+          });
 
-        setCurrentStep("Saving workflow, creating a new chat...");
-        // create chat and add user message
-        const { chat } = await userMessageMutation.mutateAsync({
-          prompt,
-          title,
-          workflowId: workflow.id,
-        });
+        await chatApiLinksMutation
+          .mutateAsync({
+            chatId: chat.id,
+            apiDocumentationIds: apiDocIds,
+            userId,
+          })
+          .catch((error) => {
+            console.error("API linking failed:", error);
+            setError("Failed to link APIs to chat. Please try again.");
+            throw error;
+          });
 
-        // create chat api links
-        await chatApiLinksMutation.mutateAsync({
-          chatId: chat.id,
-          apiDocumentationIds: apiDocIds,
-        });
-
+        console.log("Successfully linked APIs to chat");
         router.push(`/chat/${chat.id}`);
       } catch (error) {
-        console.error("Failed to send message or generate workflow:", error);
-        setError("Failed to create chat. Please try again.");
+        console.error("Error in workflow creation:", error);
+        setIsProcessing(false);
       } finally {
         setIsAiResponding(false);
       }
@@ -141,8 +156,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
       new URL(input);
       return true;
     } catch {
-      // If it's not a URL, it might be a documentation name which is valid
-      return true;
+      return false;
     }
   }
 
@@ -156,50 +170,26 @@ function NewChatPageContent({ userId }: { userId: string }) {
   // Show quota alert if no remaining chats
   if (quota && quota.remaining === 0) {
     return (
-      <AuthenticatedLayout userId={userId} currentPageTitle="New Chat">
-        <div className="min-h-screen bg-gray-50 pt-16">
-          <div className="max-w-2xl mx-auto px-4 py-12">
-            <div className="text-center space-y-6">
-              <div className="bg-white/50 backdrop-blur-sm rounded-full p-3 w-fit mx-auto">
-                <AlertCircle className="h-8 w-8 text-blue-600" />
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-semibold text-gray-900">
-                  You&apos;ve reached your chat limit
-                </h2>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  You currently have {quota.total} active chats. The maximum
-                  number of chats allowed is {quota.limit}.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div className="w-full max-w-xs mx-auto bg-gray-100 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">
-                  {quota.total} / {quota.limit} chats created
-                </p>
-              </div>
-              <div className="pt-4">
-                <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors gap-2">
-                  Upgrade to Create More Chats
-                  <span aria-hidden="true">&rarr;</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <AuthenticatedLayout userId={userId} currentPageTitle="Quota Alert">
+        <QuotaAlertChat quota={quota} />
       </AuthenticatedLayout>
     );
   }
 
-  if (!userId) return null;
-
   if (isProcessing) {
     return <ScrapingApiLoading currentStep={currentStep} />;
+  }
+
+  if (error) {
+    return (
+      <AuthenticatedLayout userId={userId} currentPageTitle="Failed creation">
+        <NewChatError
+          error={error}
+          setError={setError}
+          setIsProcessing={setIsProcessing}
+        />
+      </AuthenticatedLayout>
+    );
   }
 
   return (
@@ -221,7 +211,7 @@ function NewChatPageContent({ userId }: { userId: string }) {
                 />
                 <div className="flex flex-col space-y-8">
                   <div className="flex flex-col space-y-4 w-full">
-                    <WorkflowRecommendations />
+                    {/* <WorkflowRecommendations /> */}
                     <DefaultPrompt
                       onSubmit={(value: string) => handlePromptChange(value)}
                       isAiResponding={isAiResponding}

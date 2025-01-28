@@ -36,7 +36,6 @@ function ChatContentInner({
   const [isAiResponding, setIsAiResponding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [mode, setMode] = useState<"question" | "editing">("question");
   const workflowRef = useRef<HTMLDivElement>(null);
   const [streamingContent, setStreamingContent] = useState("");
@@ -60,8 +59,6 @@ function ChatContentInner({
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60, // Consider data fresh for 1 minute
   });
-
-  console.log("Chat Messages", messages);
 
   const userMessageMutation = useUserMessageMutation(userId);
   const workflowQuestionMutation = useWorkflowQuestionMutation();
@@ -206,6 +203,7 @@ function ChatContentInner({
       currentChatId,
       messages,
       currentChatTitle,
+      userId,
     ]
   );
 
@@ -229,8 +227,6 @@ function ChatContentInner({
       </div>
     );
   }
-
-  console.log("Workflow in ChatContent", workflow);
 
   return (
     <AuthenticatedLayout userId={userId} currentPageTitle={currentChatTitle}>
@@ -276,7 +272,7 @@ function ChatContentInner({
         </div>
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-50 to-transparent pt-4 pb-4">
           <div className="max-w-2xl mx-auto px-4 w-full space-y-2">
-            <MessageQuota userId={userId} />
+            <MessageQuota userId={userId} transparent={true} />
             <Prompt
               mode={mode}
               setMode={selectMode}
@@ -286,7 +282,6 @@ function ChatContentInner({
             />
           </div>
         </div>
-        <QuotaExceededAlert userId={userId} />
       </div>
     </AuthenticatedLayout>
   );

@@ -47,15 +47,15 @@ export default function MessageList({
     <div className="flex flex-col space-y-10 w-full h-full">
       {Array.isArray(messages) && messages.length > 0 ? (
         <>
-          {messages.map((message: Partial<Message> | null, index) => {
+          {messages.map((message, index) => {
             if (!message) return null;
 
-            // Insert workflow after the first user message
+            // Show workflow after the first user message
             const showWorkflow =
               workflow && message.role === "user" && index === 0;
 
             return (
-              <React.Fragment key={index}>
+              <React.Fragment key={message.id || index}>
                 <div
                   className={`flex ${
                     message.role === "user" ? "justify-end" : "justify-start"
@@ -84,7 +84,7 @@ export default function MessageList({
                     </Markdown>
                   </div>
                 </div>
-                {showWorkflow && (
+                {showWorkflow && workflow && (
                   <Workflow
                     workflow={workflow}
                     className="w-full mt-8"
