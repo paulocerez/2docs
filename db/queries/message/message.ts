@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { chats, InsertMessage, messages, SelectMessage } from "../../schema/chats";
 
 export async function getAllMessagesForChat(chatId: string): Promise<SelectMessage[]> {
@@ -26,3 +26,13 @@ export async function createMessage(messageData: InsertMessage): Promise<SelectM
 	  throw new Error("Failed to create message");
 	}
   }
+
+export async function getTotalMessagesPerUser(userId: string) {
+	const [result] = await db
+		.select({ count: count() })
+		.from(messages)
+		.leftJoin(chats, eq(messages.chatId, chats.id))
+		.where(eq(chats.userId, userId));
+
+	return result?.count || 0;
+}

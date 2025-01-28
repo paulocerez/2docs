@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { withRateLimit } from "@/rate-limiting/rate-limit";
 import { processDocumentation } from "@/lib/docs/processDocumentation";
 import { scrapeURL } from "@/lib/scraping/scrapeURL";
 import { saveMarkdownToFile } from "@/utils/saveMarkdownToFile";
 import { authorizeUser } from "@/lib/auth/authorize-user";
+import { chatRateLimit } from "@/lib/rate-limiters/chat-limiter";
 
 export async function POST(
   request: NextRequest,
@@ -16,8 +16,16 @@ export async function POST(
   if (authError) return authError;
 
   // Add rate limiting for scraping
-  const rateLimitResponse = await withRateLimit(request)
-  if (rateLimitResponse) return rateLimitResponse
+  const { success: scrapeRateLimitRemaining, limit, remaining, reset } = await chatRateLimit.limit(params.userId);
+  if (!scrapeRateLimitRemaining) {
+    return NextResponse.json(
+      {
+        error: "Rate limit exceeded",
+        quota: { limit, remaining: 0, reset: new Date(reset).toISOString() }
+      },
+      { status: 429 }
+    );
+  }
 
   try {
     const { url } = await request.json();

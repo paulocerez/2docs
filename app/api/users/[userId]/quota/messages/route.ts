@@ -12,6 +12,6 @@ export async function GET(
   const authError = await authorizeUser(session, params.userId, "access message quota");
   if (authError) return authError;
 
-  const quota = await getMessageQuota(session!.user.id);
+  const quota = await getMessageQuota(params.userId);
   return NextResponse.json(quota);
 } 

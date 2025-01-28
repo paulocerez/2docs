@@ -1,10 +1,11 @@
-import { createChat, deleteChatById, getAllChatsByUserId, getChatOwnership, updateChatTitle } from "@/db/queries/chat/chat";
+import { createChat, deleteChatById, getAllChatsByUserId, getChatOwnership, updateChatTitle, createChatApiLinks } from "@/db/queries/chat/chat";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getChatQuota } from "@/lib/rate-limiters/chat-limiter";
-import { validateAndSanitizeTitle, validateAndSanitizePrompt, validateAndSanitizeLink } from '@/lib/security/sanitize';
+import { validateAndSanitizeTitle, validateAndSanitizePrompt } from '@/lib/security/sanitize';
 import { z } from 'zod';
 import { authorizeUser } from "@/lib/auth/authorize-user";
+import { chatRateLimit } from "@/lib/rate-limiters/chat-limiter";
 
 export async function GET(
   request: NextRequest,
@@ -33,34 +34,70 @@ export async function POST(
   const authError = await authorizeUser(session, params.userId, "create chat");
   if (authError) return authError;
 
-  const quota = await getChatQuota(session!.user.id);
-  if (quota.remaining === 0) {
-    return NextResponse.json({
-      error: "Chat quota exceeded",
-      quota: {
-        limit: quota.limit,
-        remaining: 0,
-        total: quota.total
-      }
-    }, { status: 429 });
+  // Check quotas with detailed logging
+  const chatQuota = await getChatQuota(params.userId);
+
+  if (chatQuota.absolute.remaining <= 0) {
+    return NextResponse.json(
+      { 
+        error: "Total chat limit exceeded",
+        details: {
+          type: "absolute_limit",
+          limit: chatQuota.absolute.limit,
+          used: chatQuota.absolute.limit - chatQuota.absolute.remaining
+        }
+      },
+      { status: 429 }
+    );
+  }
+  
+  const { success: chatRateLimitRemaining } = await chatRateLimit.limit(params.userId);
+  if (!chatRateLimitRemaining) {
+    return NextResponse.json(
+      { 
+        error: "Hourly chat limit exceeded",
+        details: {
+          type: "rate_limit",
+          limit: chatQuota.rate.limit,
+          reset: chatQuota.rate.reset,
+        }
+      },
+      { status: 429 }
+    );
   }
 
-  const body = await request.json();
   try {
-    // Validate and sanitize inputs
-    const sanitizedTitle = validateAndSanitizeTitle(body.title);
-    const sanitizedPrompt = validateAndSanitizePrompt(body.prompt);
-    const sanitizedLinks = body.apiDocIds.map((link: string) => 
-      validateAndSanitizeLink(link)
-    );
-    
+    const { prompt, title, workflowId, apiDocIds } = await request.json();
+    const sanitizedTitle = validateAndSanitizeTitle(title);
+    const sanitizedPrompt = validateAndSanitizePrompt(prompt);
+
+    if (!workflowId) {
+      console.error("No workflowId provided for chat creation");
+      return NextResponse.json(
+        { error: "workflowId is required" },
+        { status: 400 }
+      );
+    }
+
+    // Create the chat first
     const result = await createChat({
-      ...body,
+      userId: params.userId,
       title: sanitizedTitle,
       prompt: sanitizedPrompt,
-      apiDocIds: sanitizedLinks
+      workflowId
     });
-    return NextResponse.json(result, { status: 201 });
+
+    if (apiDocIds?.length > 0) {
+      try {
+        await createChatApiLinks(result.chat.id, apiDocIds);
+      } catch (linkError) {
+        console.error("Error creating API links:", linkError);
+        // Delete the chat if linking fails
+        await deleteChatById(result.chat.id);
+        throw linkError;
+      }
+    }
+    return NextResponse.json({ chat: result.chat }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ 
@@ -68,8 +105,11 @@ export async function POST(
         details: error.errors 
       }, { status: 400 });
     }
-    console.error("Error creating chat", error);
-    return NextResponse.json({ error: "Could not create chat"}, { status: 500 });
+    console.error("Error creating chat:", error);
+    return NextResponse.json(
+      { error: "Failed to create chat" },
+      { status: 500 }
+    );
   }
 }
 

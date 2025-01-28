@@ -5,6 +5,7 @@ import { messageRateLimit } from "@/lib/rate-limiters/message-limiter";
 import { validateAndSanitizeMessage } from "@/lib/security/sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getMessageQuota } from "@/lib/rate-limiters/message-limiter";
 
 export async function GET(
   request: NextRequest,
@@ -56,6 +57,20 @@ export async function POST(
 	  }
 	  
 	  const sanitizedMessage = validateAndSanitizeMessage(prompt);
+	  
+	  const messageQuota = await getMessageQuota(params.userId);
+	  if (messageQuota.absolute.remaining <= 0) {
+		return NextResponse.json(
+		  { error: "You have reached your total message limit" },
+		  { status: 429 }
+		);
+	  }
+	  if (messageQuota.rate.remaining <= 0) {
+		return NextResponse.json(
+		  { error: "You have reached your hourly message limit. Please try again later." },
+		  { status: 429 }
+		);
+	  }
 	  
 	  const result = await createMessage({
 		chatId: params.chatId, 

@@ -1,28 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import { Message } from "@/types/message";
-import { auth } from "@/auth";
 
-export function useMessages(chatId: string) {
+export function useMessages(chatId: string, userId: string, initialMessages: Message[]) {
   return useQuery<Message[]>({
-    queryKey: ["messages", chatId],
+    queryKey: ["messages", userId, chatId],
     queryFn: async () => {
-      const session = await auth();
-	  const userId = session?.user?.id
-      if (!userId) throw new Error("Not authenticated");
-
       const response = await fetch(
         `/api/users/${userId}/chats/${chatId}/messages`
       );
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to fetch messages");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || 
+          `Failed to fetch messages: ${response.status} ${response.statusText}`
+        );
       }
 
-      return response.json();
+      const data = await response.json();
+      return data;
     },
+    initialData: initialMessages,
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 30, // 30 minutes
     refetchOnWindowFocus: false,
     retry: 2,
-    staleTime: 1000 * 60, // 1 minute
+    enabled: Boolean(userId) && Boolean(chatId)
   });
 }

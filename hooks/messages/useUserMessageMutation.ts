@@ -53,10 +53,10 @@ export function useUserMessageMutation(userId: string) {
 		} else {
 		  // Add new chat
 		  const newChat: SelectChat = {
-			title: variables.title!,
+			title: data.chat.title,
 			workflowId: variables.workflowId!,
 			id: data.chat.id,
-			prompt: data.message.content,
+			prompt: data.chat.prompt,
 			userId: userId,
 			createdAt: new Date(data.chat.createdAt),
 			lastActivityAt: new Date(data.chat.lastActivityAt)

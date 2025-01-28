@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ChatApiLinksMutationData {
+	userId: string;
 	chatId: string;
 	apiDocumentationIds: string[];
 }
@@ -9,8 +10,8 @@ export function useChatApiLinksMutation() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ chatId, apiDocumentationIds }: ChatApiLinksMutationData) => {
-			const response = await fetch(`/api/chats/${chatId}/api-links`, {
+		mutationFn: async ({ userId, chatId, apiDocumentationIds }: ChatApiLinksMutationData) => {
+			const response = await fetch(`/api/users/${userId}/chats/${chatId}/api-links`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ apiDocumentationIds }),

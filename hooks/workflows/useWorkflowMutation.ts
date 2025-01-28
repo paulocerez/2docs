@@ -10,8 +10,6 @@ interface WorkflowMutationData {
 
 export function useWorkflowMutation(userId: string) {
 	const router = useRouter();
-	
-	console.log("workflow mutation");
 
   return useMutation({
     mutationFn: async ({ prompt, apiDocIds, title }: WorkflowMutationData) => {
@@ -21,18 +19,28 @@ export function useWorkflowMutation(userId: string) {
         body: JSON.stringify({ 
           prompt, 
           apiDocIds,
-          chatTitle: title
+          title
         }),
       });
 
       if (!response.ok) {
+        console.error("Workflow mutation failed:", response.status, response.statusText);
         throw new Error("Failed to generate workflow");
       }
-      return response.json(); 
+      
+      const data = await response.json();
+      
+      if (!data.workflow || !data.workflow.id) {
+        console.error("Invalid workflow response structure:", data);
+        throw new Error("Invalid workflow response from server");
+      }
+
+      return data;
     },
     onError: (error) => {
+      console.error("Workflow mutation error:", error);
       toast.error("Failed to generate workflow. Please try again.");
-      router.push('/workflow/new');
+      router.push('/chat');
     }
   });
 }

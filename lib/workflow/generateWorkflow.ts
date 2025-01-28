@@ -3,7 +3,7 @@ import { generateChatCompletion } from "@/lib/language-model/chat-completion";
 import { WorkflowEndpoint, WorkflowProps, WorkflowStepProps } from "@/types/workflow";
 import getWorkflowPrompt from "./workflowPrompt";
 
-export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, chatTitle: string) {
+export async function generateWorkflow(prompt: string, apiDocIds: string[], userId: string, title: string) {
   // Fetch all API information
   let allApiInfo = await Promise.all(apiDocIds.map(getApiInfoWithEndpoints));
   console.log("Fetched API info:", allApiInfo);
@@ -30,8 +30,6 @@ export async function generateWorkflow(prompt: string, apiDocIds: string[], user
           requestBody: endpoint.requestBody || undefined,
           responses: endpoint.responses || undefined,
         });
-
-        console.log(`Mapped endpoint: ${key} -> ${endpoint.id}`);
       }
     });
   });
@@ -101,7 +99,7 @@ ${api.endpoints.map(endpoint => `
     
     const finalWorkflow = {
       ...workflow,
-      title: chatTitle
+      title
     };
 
     console.log("Final workflow:", finalWorkflow);

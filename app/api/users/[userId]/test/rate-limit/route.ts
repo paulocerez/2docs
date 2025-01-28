@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { messageRateLimit } from "@/lib/rate-limiters/message-limiter";
-import { withRateLimit } from "@/rate-limiting/rate-limit";
 import { authorizeUser } from "@/lib/auth/authorize-user";
 
 export async function GET(
