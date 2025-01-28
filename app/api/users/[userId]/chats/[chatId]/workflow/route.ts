@@ -13,18 +13,6 @@ export async function GET(
 	const authError = await authorizeUser(session, params.userId, "access workflow");
 	if (authError) return authError;
 
-  // Rate limit check
-  const { success: workflowRateLimitRemaining, limit, remaining, reset } = await chatRateLimit.limit(params.userId);
-  if (!workflowRateLimitRemaining) {
-    return NextResponse.json(
-      {
-        error: "Rate limit exceeded",
-        quota: { limit, remaining: 0, reset: new Date(reset).toISOString() }
-      },
-      { status: 429 }
-    );
-  }
-
   try {
     const workflow = await getWorkflowByChatId(params.chatId);
 
