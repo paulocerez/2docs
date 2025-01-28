@@ -268,30 +268,40 @@ The workflows are much more accurate. Users can share workflows in an Online Com
 
 ```mermaid
 erDiagram
-    %% Authentication
+    %% Authentication & Users
     users ||--o{ accounts : has
     users ||--o{ sessions : has
     users ||--o{ authenticators : has
+    users ||--o{ verificationTokens : has
+    users ||--o{ subscriptions : has
 
     %% Chat System
     users ||--o{ chats : creates
     chats ||--o{ messages : contains
     chats ||--o{ chatApiLinks : has
+    chats ||--o{ chatWorkflows : has
 
     %% API Documentation
     users ||--o{ apiDocumentations : creates
     apiDocumentations ||--o{ apiEndpoints : contains
     apiDocumentations ||--o{ chatApiLinks : referenced_in
-    apiEndpoints ||--o{ vectorEmbeddings : has
 
     %% Workflow System
-    users ||--o{ workflowRuns : executes
+    users ||--o{ workflows : creates
     users ||--o{ userWorkflows : has
     workflows ||--o{ userWorkflows : accessed_by
     workflows ||--o{ workflowSteps : contains
-    workflows ||--o{ workflowVariables : has
     workflows ||--o{ workflowRuns : tracks
-    workflowSteps }o--|| apiEndpoints : uses
+    workflowSteps ||--o{ workflowStepEndpoints : uses
+    apiEndpoints ||--o{ workflowStepEndpoints : used_in
+    workflows ||--o{ chatWorkflows : used_in
+    workflows ||--o{ chats : associated_with
+
+    %% Subscription System
+    subscriptions ||--o{ subscriptionHistory : tracks
+    subscriptions ||--o{ subscriptionUsage : monitors
+    users ||--o{ subscriptionHistory : has
+    users ||--o{ subscriptionUsage : generates
 
     users {
         string id PK
@@ -336,6 +346,7 @@ erDiagram
     chats {
         string id PK
         string userId FK
+        string workflowId FK
         timestamp createdAt
         string prompt
         string title
@@ -358,6 +369,7 @@ erDiagram
         string content
         timestamp lastScrapedAt
         string createdBy FK
+        boolean isPublic
     }
 
     apiEndpoints {
@@ -365,6 +377,7 @@ erDiagram
         string apiDocumentationId FK
         string path
         string method
+        string operation
         string summary
         string description
         string parameters
@@ -372,19 +385,14 @@ erDiagram
         string responses
     }
 
-    vectorEmbeddings {
-        string id PK
-        string apiEndpointId FK
-        string content
-        string metadata
-        string vectorId
-    }
-
     workflows {
         string id PK
-        string createdBy FK "References creator"
+        string createdById FK
         string title
         string description
+        string technicalOverview
+        jsonb mainFunction
+        jsonb deploymentSuggestions
         timestamp createdAt
         timestamp updatedAt
         boolean isPublished
@@ -393,29 +401,16 @@ erDiagram
         string[] tags
     }
 
-    userWorkflows {
-        string id PK
-        string userId FK
-        string workflowId FK
-        string role "owner|editor|viewer"
-        timestamp addedAt
-    }
-
     workflowSteps {
         string id PK
         string workflowId FK
-        string endpointId FK
+        string title
         integer order
-        string inputMapping
-        string outputMapping
-    }
-
-    workflowVariables {
-        string id PK
-        string workflowId FK
-        string name
-        string defaultValue
         string description
+        string input
+        string output
+        string codeSnippet
+        string additionalDetails
     }
 
     workflowRuns {
@@ -428,6 +423,70 @@ erDiagram
         string result
     }
 
+    subscriptions {
+        string id PK
+        string userId FK
+        string tier
+        string status
+        timestamp startDate
+        timestamp endDate
+        timestamp trialEndsAt
+        timestamp canceledAt
+        timestamp currentPeriodStart
+        timestamp currentPeriodEnd
+        string stripeCustomerId UK
+        string stripeSubscriptionId UK
+    }
+
+    subscriptionHistory {
+        string id PK
+        string subscriptionId FK
+        string userId FK
+        string tier
+        string status
+        timestamp startDate
+        timestamp endDate
+        timestamp changeDate
+        string reason
+    }
+
+    subscriptionUsage {
+        string id PK
+        string subscriptionId FK
+        string userId FK
+        string resourceType
+        integer count
+        string period
+        timestamp periodStart
+        timestamp periodEnd
+    }
+
+    verificationTokens {
+        string id PK
+        string identifier UK
+        string token UK
+        timestamp expires
+    }
+
+    workflowStepEndpoints {
+        string id PK
+        string workflowStepId FK
+        string endpointId FK
+    }
+
+    userWorkflows {
+        string id PK
+        string userId FK
+        string workflowId FK
+        string role
+    }
+
+    chatWorkflows {
+        string id PK
+        string chatId FK
+        string workflowId FK
+    }
+
     chatApiLinks {
         string id PK
         string chatId FK
@@ -435,29 +494,29 @@ erDiagram
     }
 ```
 
-### PostgreSQL
+### PostgreSQL Tables
 
-```
-Storing data in tables per entity.
-```
-
-| Entity            | Information stored                                  | References               | Referenced By                                      | Example                                                                                       |
-| ----------------- | --------------------------------------------------- | ------------------------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| users             | User information                                    | -                        | accounts, sessions, authenticators, chats, apiDocs | { id: "user123", name: "John Doe", email: "john@example.com" }                                |
-| accounts          | OAuth account connections                           | users                    | -                                                  | { userId: "user123", provider: "google", providerAccountId: "123456" }                        |
-| sessions          | User session data                                   | users                    | -                                                  | { sessionToken: "abc123", userId: "user123", expires: "2024-12-31" }                          |
-| authenticators    | WebAuthn credentials                                | users                    | -                                                  | { id: "auth123", userId: "user123", credentialID: "cred456" }                                 |
-| chats             | Individual chat sessions                            | users                    | messages, chatApiLinks                             | { id: "chat456", userId: "user123", title: "API Integration Chat" }                           |
-| messages          | Chat messages                                       | chats                    | -                                                  | { id: "msg789", chatId: "chat456", role: "user", content: "How do I..." }                     |
-| apiDocumentations | Metadata about API documentations                   | users                    | apiEndpoints, chatApiLinks                         | { id: "api789", name: "GitHub API", createdBy: "user123" }                                    |
-| apiEndpoints      | Detailed information about individual API endpoints | apiDocumentations        | vectorEmbeddings, workflowSteps                    | { id: "endpoint101", apiDocumentationId: "api789", path: "/users", method: "GET" }            |
-| vectorEmbeddings  | References to vector embeddings                     | apiEndpoints             | -                                                  | { id: "vec505", apiEndpointId: "endpoint101", vectorId: "qdrant123" }                         |
-| chatApiLinks      | Links between chats and API documentations          | chats, apiDocumentations | -                                                  | { id: "link101", chatId: "chat456", apiDocumentationId: "api789" }                            |
-| workflows         | User-created workflows                              | users                    | userWorkflows, workflowSteps                       | { id: "workflow202", createdBy: "user123", title: "GitHub Issue Tracker", isPublished: true } |
-| userWorkflows     | User-workflow access permissions                    | users, workflows         | -                                                  | { id: "uw303", userId: "user123", workflowId: "workflow202", role: "owner" }                  |
-| workflowSteps     | Individual steps within a workflow                  | workflows, apiEndpoints  | -                                                  | { id: "step303", workflowId: "workflow202", endpointId: "endpoint101", order: 1 }             |
-| workflowVariables | Variables used within workflows                     | workflows                | -                                                  | { id: "var404", workflowId: "workflow202", name: "GITHUB_API_KEY", defaultValue: null }       |
-| workflowRuns      | Execution records of workflows                      | workflows, users         | -                                                  | { id: "run505", workflowId: "workflow202", userId: "user123", status: "completed" }           |
+| Entity                | Information stored          | References                  | Referenced By                                                       | Example                                                                                   |
+| --------------------- | --------------------------- | --------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| users                 | Core user information       | -                           | accounts, sessions, authenticators, chats, workflows, subscriptions | `{ id: "user123", name: "John Doe", email: "john@example.com" }`                          |
+| accounts              | OAuth account connections   | users                       | -                                                                   | `{ userId: "user123", provider: "google", providerAccountId: "123456" }`                  |
+| sessions              | User session data           | users                       | -                                                                   | `{ sessionToken: "abc123", userId: "user123", expires: "2024-12-31" }`                    |
+| authenticators        | WebAuthn credentials        | users                       | -                                                                   | `{ id: "auth123", userId: "user123", credentialID: "cred456" }`                           |
+| verificationTokens    | Email verification tokens   | -                           | -                                                                   | `{ identifier: "john@example.com", token: "vt789", expires: "2024-03-16" }`               |
+| chats                 | Chat sessions               | users, workflows            | messages, chatApiLinks, chatWorkflows                               | `{ id: "chat456", userId: "user123", title: "API Integration Chat" }`                     |
+| messages              | Chat messages               | chats                       | -                                                                   | `{ id: "msg789", chatId: "chat456", role: "user", content: "How do I..." }`               |
+| chatApiLinks          | Chat-API doc associations   | chats, apiDocumentations    | -                                                                   | `{ id: "cal101", chatId: "chat456", apiDocumentationId: "api789" }`                       |
+| apiDocumentations     | API documentation metadata  | users                       | apiEndpoints, chatApiLinks                                          | `{ id: "api789", name: "GitHub API", createdBy: "user123", isPublic: true }`              |
+| apiEndpoints          | API endpoint details        | apiDocumentations           | workflowStepEndpoints                                               | `{ id: "endpoint101", apiDocumentationId: "api789", path: "/users", method: "GET" }`      |
+| workflows             | User-created workflows      | users                       | workflowSteps, workflowRuns, userWorkflows, chats                   | `{ id: "wf101", createdById: "user123", title: "GitHub Integration", isPublished: true }` |
+| workflowSteps         | Individual workflow steps   | workflows                   | workflowStepEndpoints                                               | `{ id: "step202", workflowId: "wf101", title: "Fetch Issues", order: 1 }`                 |
+| workflowStepEndpoints | Step-endpoint connections   | workflowSteps, apiEndpoints | -                                                                   | `{ id: "wse303", workflowStepId: "step202", endpointId: "endpoint101" }`                  |
+| workflowRuns          | Workflow execution records  | workflows, users            | -                                                                   | `{ id: "run303", workflowId: "wf101", userId: "user123", status: "completed" }`           |
+| userWorkflows         | Workflow access permissions | users, workflows            | -                                                                   | `{ id: "uw404", userId: "user123", workflowId: "wf101", role: "owner" }`                  |
+| chatWorkflows         | Chat-workflow associations  | chats, workflows            | -                                                                   | `{ id: "cw505", chatId: "chat456", workflowId: "wf101" }`                                 |
+| subscriptions         | User subscription data      | users                       | subscriptionHistory, subscriptionUsage                              | `{ id: "sub404", userId: "user123", tier: "pro", status: "active" }`                      |
+| subscriptionHistory   | Subscription change history | subscriptions, users        | -                                                                   | `{ id: "hist505", subscriptionId: "sub404", tier: "pro", changeDate: "2024-03-15" }`      |
+| subscriptionUsage     | Resource usage tracking     | subscriptions, users        | -                                                                   | `{ id: "usage606", subscriptionId: "sub404", resourceType: "chat", count: 50 }`           |
 
 ### Data
 
