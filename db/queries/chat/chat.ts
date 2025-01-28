@@ -1,22 +1,29 @@
 import { db } from "../../db";
-import { desc, eq, and } from "drizzle-orm";
+import { desc, eq, and, count } from "drizzle-orm";
 import { chatApiLinks, chats, InsertChat, messages, SelectChat } from "../../schema/chats";
 import { apiDocumentations } from "../../schema/apis";
+import { PgDatabase } from "drizzle-orm/pg-core";
 
 export async function getAllChatsByUserId(userId: string): Promise<SelectChat[]> {
   return await db.select().from(chats).where(eq(chats.userId, userId)).orderBy(desc(chats.lastActivityAt));
 }
+
 export async function createChat(chatData: InsertChat) {
-	// destructuring the variable as returning () returns an array -> returns the first element/object of the array (that only has one element in total)
-	const [chat] = await db.insert(chats).values(chatData).returning();
+	const [chat] = await db.insert(chats).values({
+		...chatData,
+		lastActivityAt: new Date(),
+	}).returning();
+
+	// Create the initial message
 	const [message] = await db.insert(messages).values({
 		chatId: chat.id,
 		content: chatData.prompt,
 		role: 'user',
+		timestamp: new Date(),
 	}).returning();
-	const result = { chat, message };
-	return result;
-  }
+
+	return { chat, message };
+}
 
 export async function getChatById(chatId: string): Promise<SelectChat | null> {
 	const [result] = await db.select().from(chats).where(eq(chats.id, chatId));
@@ -34,7 +41,7 @@ export async function updateChatTitle(chatId: string, title: string) {
 }
 
 export async function createChatApiLinks(chatId: string, apiDocumentationIds: string[]) {
-	const values = apiDocumentationIds.map(apiDocumentationId => ({ chatId, apiDocumentationId }))
+	const values = apiDocumentationIds.map(apiDocumentationId => ({ chatId, apiDocumentationId }));
 	return await db.insert(chatApiLinks).values(values).returning();
 }
 
@@ -71,4 +78,9 @@ export async function getChatsByUserIdWithMessagesAndApis(userId: string) {
 
 export async function getChatOwnership(userId: string, chatId: string) {
 	return await db.select().from(chats).where(and(eq(chats.id, chatId), eq(chats.userId, userId))).limit(1);
+}
+
+export async function getTotalChatsPerUser(userId: string) {
+	const [result] = await db.select({ count: count() }).from(chats).where(eq(chats.userId, userId));
+	return result?.count || 0;
 }
