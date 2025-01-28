@@ -1,10 +1,16 @@
 import { defineConfig } from "drizzle-kit";
 
+if (process.env.NODE_ENV !== 'production') {
+  const dotenv = require('dotenv');
+  dotenv.config({ path: '.env.local' });
+}
+
 export default defineConfig({
-  schema: "./db/postgres/schema/*",
+  schema: "./db/schema/*",
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: "postgresql://2docs-db_owner:XCeJshBnuV83@ep-billowing-scene-a2mggovy.eu-central-1.aws.neon.tech/2docs-db?sslmode=require"
+    url: process.env.DATABASE_URL!
   },
 });
+
