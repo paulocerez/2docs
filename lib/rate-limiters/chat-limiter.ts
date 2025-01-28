@@ -4,14 +4,13 @@ import { getTotalChatsPerUser } from "@/db/queries/chat/chat";
 
 const isDev = process.env.NODE_ENV === 'development';
 
-// Default values and type-safe environment variables
-const DEFAULT_ABSOLUTE_LIMIT = isDev ? 200 : 20;
-const DEFAULT_RATE_LIMIT = isDev ? 10 : 10;
+const DEFAULT_ABSOLUTE_LIMIT = isDev ? 10 : 10;
+const DEFAULT_RATE_LIMIT = isDev ? 5 : 5;
 
-const absoluteLimit = Number(process.env.CHAT_QUOTA_ABSOLUTE_LIMIT) || DEFAULT_ABSOLUTE_LIMIT;
-const rateLimit = Number(process.env.CHAT_QUOTA_RATE_LIMIT) || DEFAULT_RATE_LIMIT;
+const absoluteLimit = Number(process.env.CHAT_QUOTA_FREE_ABSOLUTE_LIMIT) || DEFAULT_ABSOLUTE_LIMIT;
+const rateLimit = Number(process.env.CHAT_QUOTA_FREE_RATE_LIMIT) || DEFAULT_RATE_LIMIT;
 
-// Time-based rate limit: 10 chats per hour
+// Time-based rate limit: 5 chats per hour for free tier
 export const chatRateLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(rateLimit, "1 h"),
