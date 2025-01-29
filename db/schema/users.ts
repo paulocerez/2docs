@@ -5,10 +5,12 @@ import {
 	text,
 	primaryKey,
 	integer,
-  } from "drizzle-orm/pg-core"
-  import type { AdapterAccountType } from "next-auth/adapters"
+	varchar,
+	index,
+} from "drizzle-orm/pg-core"
+import type { AdapterAccountType } from "next-auth/adapters"
    
-  export const users = pgTable("user", {
+export const users = pgTable("user", {
 	id: text("id")
 	  .primaryKey()
 	  .$defaultFn(() => crypto.randomUUID()),
@@ -16,9 +18,29 @@ import {
 	email: text("email").unique(),
 	emailVerified: timestamp("emailVerified", { mode: "date" }),
 	image: text("image"),
-  })
-   
-  export const accounts = pgTable(
+	hasPassword: boolean("has_password").notNull().default(false),
+})
+
+export const emailPasswords = pgTable("email_password", {
+	id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+	userId: text("userId")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	hashedPassword: text("hashed_password").notNull(),
+	passwordUpdatedAt: timestamp("password_updated_at").notNull().defaultNow(),
+	passwordResetToken: text("password_reset_token"),
+	passwordResetExpires: timestamp("password_reset_expires"),
+	failedLoginAttempts: integer("failed_login_attempts").notNull().default(0),
+	lastFailedLogin: timestamp("last_failed_login"),
+	lockedUntil: timestamp("locked_until"),
+}, (table) => {
+    return {
+        userIdIdx: index("idx_email_password_user_id").on(table.userId),
+        resetTokenIdx: index("idx_password_reset_token").on(table.passwordResetToken),
+    }
+});
+
+export const accounts = pgTable(
 	"account",
 	{
 	  userId: text("userId")
@@ -40,17 +62,17 @@ import {
 		columns: [account.provider, account.providerAccountId],
 	  }),
 	})
-  )
+)
    
-  export const sessions = pgTable("session", {
+export const sessions = pgTable("session", {
 	sessionToken: text("sessionToken").primaryKey(),
 	userId: text("userId")
 	  .notNull()
 	  .references(() => users.id, { onDelete: "cascade" }),
 	expires: timestamp("expires", { mode: "date" }).notNull(),
-  })
+})
    
-  export const verificationTokens = pgTable(
+export const verificationTokens = pgTable(
 	"verificationToken",
 	{
 	  identifier: text("identifier").notNull(),
@@ -62,9 +84,9 @@ import {
 		columns: [verificationToken.identifier, verificationToken.token],
 	  }),
 	})
-  )
+)
    
-  export const authenticators = pgTable("authenticator", {
+export const authenticators = pgTable("authenticator", {
 	id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
 	credentialID: text("credentialID").notNull().unique(),
 	userId: text("userId")
@@ -76,9 +98,9 @@ import {
 	credentialDeviceType: text("credentialDeviceType").notNull(),
 	credentialBackedUp: boolean("credentialBackedUp").notNull(),
 	transports: text("transports"),
-  })
+})
 
-  // Types
+// Types
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 
@@ -93,3 +115,7 @@ export type SelectVerificationToken = typeof verificationTokens.$inferSelect;
 
 export type InsertAuthenticator = typeof authenticators.$inferInsert;
 export type SelectAuthenticator = typeof authenticators.$inferSelect;
+
+// Add types for the new table
+export type InsertEmailPassword = typeof emailPasswords.$inferInsert;
+export type SelectEmailPassword = typeof emailPasswords.$inferSelect;

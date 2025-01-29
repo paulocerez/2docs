@@ -1,17 +1,48 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Sendgrid from "next-auth/providers/sendgrid"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { db } from "./db/db";
 import { getGoogleAccountByUserId, updateGoogleAccessToken } from "./db/queries/user/user";
+import CredentialsProvider from "next-auth/providers/credentials"
+import { verifyEmailLogin } from "./lib/auth/email-auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-	providers: [Google],
+	providers: [
+		Google,
+		// Sendgrid,
+		CredentialsProvider({
+			name: "credentials",
+			credentials: {
+				email: { label: "Email", type: "email" },
+				password: { label: "Password", type: "password" }
+			},
+			async authorize(credentials) {
+				if (!credentials?.email || !credentials?.password) {
+					return null
+				}
+				
+				try {
+					const user = await verifyEmailLogin(
+						credentials.email as string,
+						credentials.password as string
+					)
+					return user
+				} catch (error) {
+					return null
+				}
+			}
+		})
+	],
 	adapter: DrizzleAdapter(db),
+	session: {
+		strategy: "jwt", // password-email auth
+	},
 	callbacks: {
 		// functions acting similar to middleware
 		// called when user logs in > access to session and user object from the db
-		async session({session, user}) {
-			const googleAccount = await getGoogleAccountByUserId(user.id)
+		async session({session, token}) {
+			const googleAccount = await getGoogleAccountByUserId(token.id as string)
 
 			if (googleAccount && googleAccount.expires_at && googleAccount.expires_at * 1000 < Date.now()) {
 				try {
@@ -35,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 						refresh_token: string
 					  }
 
-					  await updateGoogleAccessToken(user.id, {
+					  await updateGoogleAccessToken(token.id as string, {
 						access_token: newTokens.access_token,
 						expires_at: Math.floor(Date.now() / 1000 + newTokens.expires_in),
 						refresh_token: newTokens.refresh_token,
@@ -47,13 +78,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 				}
 			}
 
-
-
-
 			if (session.user) {
-			  session.user.id = user.id;
+			  session.user.id = token.id as string;
 			}
 			return session;
+		},
+
+		async jwt({ token, user }) {
+			if (user) {
+				token.id = user.id
+				token.email = user.email
+			}
+			return token
 		},
 
 		authorized({auth, request: { nextUrl}}) {

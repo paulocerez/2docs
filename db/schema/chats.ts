@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, varchar, index } from 'drizzle-orm/pg-core';
 import { users } from './users';
 import { apiDocumentations } from './apis';
 import { workflows } from './workflows';
@@ -11,6 +11,10 @@ export const chats = pgTable("chat", {
     prompt: text("prompt").notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     lastActivityAt: timestamp("last_activity_at").notNull().defaultNow(),
+}, (table) => {
+    return {
+        userIdIdx: index("idx_chats_user_id").on(table.userId),
+    }
 });
 
 export const messages = pgTable("message", {
@@ -49,8 +53,6 @@ export const chatWorkflows = pgTable("chat_workflow", {
         .references(() => workflows.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
 });
-
-
 
 export type InsertChat = typeof chats.$inferInsert;
 export type SelectChat = typeof chats.$inferSelect;

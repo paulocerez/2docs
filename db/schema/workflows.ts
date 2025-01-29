@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, timestamp, varchar, jsonb } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { apiEndpoints } from "./apis";
 
@@ -20,6 +20,11 @@ export const workflows = pgTable("workflow", {
     publishedAt: timestamp("published_at"),
     version: integer("version").notNull().default(1),
     tags: text("tags").array(),
+}, (table) => {
+    return {
+        createdByIdx: index("idx_workflows_created_by").on(table.createdById),
+        titleSearchIdx: index("idx_workflows_title").on(table.title),
+    }
 });
 
 export const userWorkflows = pgTable("user_workflow", {

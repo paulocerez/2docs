@@ -274,6 +274,7 @@ erDiagram
     users ||--o{ authenticators : has
     users ||--o{ verificationTokens : has
     users ||--o{ subscriptions : has
+    users ||--o{ emailPassword : has
 
     %% Chat System
     users ||--o{ chats : creates
@@ -302,6 +303,14 @@ erDiagram
     subscriptions ||--o{ subscriptionUsage : monitors
     users ||--o{ subscriptionHistory : has
     users ||--o{ subscriptionUsage : generates
+
+    emailPassword {
+        string id PK
+        string userId FK
+        string hashedPassword
+        timestamp createdAt
+        timestamp updatedAt
+    }
 
     users {
         string id PK
@@ -498,6 +507,7 @@ erDiagram
 
 | Entity                | Information stored          | References                  | Referenced By                                                       | Example                                                                                   |
 | --------------------- | --------------------------- | --------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| emailPassword         | Email auth password hashes  | users                       | -                                                                   | `{ id: "ep123", userId: "user123", hashedPassword: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz5" }`  |
 | users                 | Core user information       | -                           | accounts, sessions, authenticators, chats, workflows, subscriptions | `{ id: "user123", name: "John Doe", email: "john@example.com" }`                          |
 | accounts              | OAuth account connections   | users                       | -                                                                   | `{ userId: "user123", provider: "google", providerAccountId: "123456" }`                  |
 | sessions              | User session data           | users                       | -                                                                   | `{ sessionToken: "abc123", userId: "user123", expires: "2024-12-31" }`                    |
