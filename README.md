@@ -614,11 +614,11 @@ graph TD
 
 #### Authentication & Authorization
 
-| Threat               | Entry Point         | Mitigation                                                                                                                                                                                                                           | Impact/Urgency                                                               | Status                                             |
-| -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | -------------------------------------------------- |
-| OAuth Token Theft    | Authentication Flow | • Implement secure OAuth 2.0 with PKCE extension<br/>• Use short-lived access tokens with refresh token rotation<br/>• Store tokens securely using HttpOnly cookies<br/>• Implement token revocation on suspicious activity          | Critical/Immediate<br/><br/>Impact: Account takeover and unauthorized access | ✅ Basic OAuth<br/>❌ PKCE<br/>❌ Token rotation   |
-| Session Hijacking    | User Sessions       | • Implement secure session management<br/>• Use session timeouts and automatic invalidation<br/>• Bind sessions to IP addresses<br/>• Implement device fingerprinting<br/>• Add multi-factor authentication for sensitive operations | High/Urgent<br/><br/>Impact: Unauthorized access to user accounts            | ✅ Basic session mgmt<br/>❌ IP binding<br/>❌ MFA |
-| Privilege Escalation | API Endpoints       | • Implement Role-Based Access Control (RBAC)<br/>• Validate permissions on every request<br/>• Audit logs for privilege changes<br/>• Principle of least privilege                                                                   | Critical/Immediate<br/><br/>Impact: Unauthorized access to admin functions   | ❌                                                 |
+| Threat               | Entry Point         | Mitigation                                                                                                                                                                                               | Impact/Urgency                                                               | Status                                             |
+| -------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| OAuth Token Theft    | Authentication Flow | • Implement secure OAuth 2.0 <br/>• Use short-lived access tokens with refresh token rotation<br/>• Store tokens securely using HttpOnly cookies<br/>• Implement token revocation on suspicious activity | Critical/Immediate<br/><br/>Impact: Account takeover and unauthorized access | ✅ Basic OAuth<br/>❌✅ Token rotation             |
+| Session Hijacking    | User Sessions       | • Implement secure session management<br/>• Use session timeouts and automatic invalidation<br/>• Bind sessions to IP addresses<br/>• Implement device fingerprinting<br/>• Add for sensitive operations | High/Urgent<br/><br/>Impact: Unauthorized access to user accounts            | ✅ Basic session mgmt<br/>❌ IP binding<br/>❌ MFA |
+| Privilege Escalation | API Endpoints       | • Implement Role-Based Access Control (RBAC)<br/>• Validate permissions on every request<br/>• Audit logs for privilege changes<br/>• Principle of least privilege                                       | Critical/Immediate<br/><br/>Impact: Unauthorized access to admin functions   | ❌                                                 |
 
 #### API & Data Security
 
@@ -658,13 +658,12 @@ graph TD
 
 #### Network Security
 
-| Threat                  | Entry Point | Mitigation                                                                                                          | Impact/Urgency | Status    |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------- | --------- |
-| HTTPS Bypass            | All Routes  | Enforce HTTPS using HSTS headers. Redirect all HTTP traffic to HTTPS. Configure `secure` flag on cookies.           | Critical       | ⚠️ Needed |
-| Session Hijacking       | Auth Tokens | Implement secure session handling with HTTPOnly cookies, SameSite=Strict, and secure flags. Short expiration times. | Critical       | ⚠️ Needed |
-| OAuth Interception      | Auth Flow   | Validate OAuth state parameter, use PKCE for auth code flow, validate redirect URIs.                                | High           | ⚠️ Needed |
-| Request Tampering       | API Routes  | Implement request signing or use strong CSRF tokens. Add integrity checks for sensitive operations.                 | High           | ⚠️ Needed |
-| SSL/TLS Vulnerabilities | All Routes  | Use modern TLS 1.3, strong cipher suites, proper certificate validation.                                            | Critical       | ⚠️ Needed |
+| Threat                  | Entry Point | Mitigation                                                                                                          | Impact/Urgency | Status |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------- | ------ |
+| HTTPS Bypass            | All Routes  | Enforce HTTPS using HSTS headers. Redirect all HTTP traffic to HTTPS. Configure `secure` flag on cookies.           | Critical       | ❌     |
+| Session Hijacking       | Auth Tokens | Implement secure session handling with HTTPOnly cookies, SameSite=Strict, and secure flags. Short expiration times. | Critical       | ✅     |
+| Request Tampering       | API Routes  | Implement request signing or use strong CSRF tokens. Add integrity checks for sensitive operations.                 | High           | ❌     |
+| SSL/TLS Vulnerabilities | All Routes  | Use modern TLS 1.3, strong cipher suites, proper certificate validation.                                            | Critical       | ❌     |
 
 #### Future Features Security
 

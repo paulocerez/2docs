@@ -41,7 +41,7 @@ const urlSchema = z.string().url().refine((url) => {
             return false;
         }
 
-        // Check for localhost and similar
+        // Check for localhost/internal
         if (parsedUrl.hostname === 'localhost' || 
             parsedUrl.hostname === '127.0.0.1' || 
             parsedUrl.hostname.endsWith('.local') ||

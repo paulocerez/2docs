@@ -36,6 +36,13 @@ export async function POST(
 
   // Check quotas with detailed logging
   const chatQuota = await getChatQuota(params.userId);
+  console.log(`[Rate Limit Check] User ${params.userId}:`, {
+    absoluteLimit: chatQuota.absolute.limit,
+    absoluteRemaining: chatQuota.absolute.remaining,
+    rateLimit: chatQuota.rate.limit,
+    rateRemaining: chatQuota.rate.remaining,
+    rateReset: chatQuota.rate.reset
+  });
 
   if (chatQuota.absolute.remaining <= 0) {
     return NextResponse.json(

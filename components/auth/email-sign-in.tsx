@@ -1,9 +1,8 @@
 "use client";
-
-import { signIn } from "@/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "./password-input";
+import { signInWithEmail } from "@/app/actions/auth";
 
 export default function EmailSignIn() {
   const [email, setEmail] = useState("");
@@ -18,21 +17,17 @@ export default function EmailSignIn() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
+      const result = await signInWithEmail(email, password);
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError(result.error);
         return;
       }
 
       router.push("/chat");
       router.refresh();
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }

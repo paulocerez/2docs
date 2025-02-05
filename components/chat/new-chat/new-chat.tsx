@@ -97,7 +97,23 @@ function NewChatPageContent({ userId }: { userId: string }) {
           })
           .catch((error) => {
             console.error("Chat creation failed:", error);
-            setError("Failed to create chat. Please try again.");
+            if (error.response?.status === 429) {
+              const details = error.response?.data?.details;
+              if (details?.type === "rate_limit") {
+                const resetTime = new Date(details.reset).toLocaleString();
+                setError(
+                  `Hourly chat limit reached (${details.limit} chats per hour). Try again after ${resetTime}`
+                );
+              } else if (details?.type === "absolute_limit") {
+                setError(
+                  `Total chat limit reached (${details.limit} chats). Please upgrade your plan for more chats.`
+                );
+              } else {
+                setError("Rate limit exceeded. Please try again later.");
+              }
+            } else {
+              setError("Failed to create chat. Please try again.");
+            }
             throw error;
           });
 

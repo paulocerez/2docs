@@ -19,7 +19,6 @@ export function useScrapeUrlMutation() {
 		  if (checkResponse.ok) {
 			const { apiDocId } = await checkResponse.json();
 			if (apiDocId) {
-				console.log("Existing API used for url:", apiDocId);
 				return { apiDocId };
 			}
 		  }

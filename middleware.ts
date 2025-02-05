@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
-import { NextRequest } from 'next/server'
 
 export default auth(async (req) => {
   const { nextUrl, headers, method } = req
@@ -11,14 +10,14 @@ export default auth(async (req) => {
   response.headers.set(
     'Strict-Transport-Security',
     'max-age=31536000; includeSubDomains; preload'
-  )
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  ) // HTTPS
+  response.headers.set('X-Content-Type-Options', 'nosniff') // no sniffing
+  response.headers.set('X-Frame-Options', 'DENY') // no iframes
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin') // strict referrer policy
   response.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.vercel-postgres.com *"
-  )
+  ) // CSP
 
   // HTTPS in production
   if (process.env.NODE_ENV === 'production' && !req.url.startsWith('https://')) {

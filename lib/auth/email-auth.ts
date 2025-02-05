@@ -1,7 +1,5 @@
-import { db } from '@/db/db';
-import { users, emailPasswords, InsertEmailPassword } from '@/db/schema/users';
-import { eq } from 'drizzle-orm';
-import { createEmailPassword, createUserByEmail, deleteEmailPasswordUser, getCredentials, getUserByEmail, resetFailedLoginAttempts, updateEmailPassword, updateFailedLoginAttempts, updateResetToken } from '@/db/queries/user/user';
+import { InsertEmailPassword } from '@/db/schema/users';
+import { createEmailPassword, createUserByEmail, deleteEmailPasswordUser, getCredentials, getUserByEmail, resetFailedLoginAttempts, updateFailedLoginAttempts } from '@/db/queries/user/user';
 import { hashPassword, verifyPassword } from './password';
 
 const MAX_LOGIN_ATTEMPTS = 5;

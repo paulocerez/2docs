@@ -10,7 +10,6 @@ import { verifyEmailLogin } from "./lib/auth/email-auth";
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	providers: [
 		Google,
-		// Sendgrid,
 		CredentialsProvider({
 			name: "credentials",
 			credentials: {
@@ -39,7 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 		strategy: "jwt", // password-email auth
 	},
 	callbacks: {
-		// functions acting similar to middleware
 		// called when user logs in > access to session and user object from the db
 		async session({session, token}) {
 			const googleAccount = await getGoogleAccountByUserId(token.id as string)
