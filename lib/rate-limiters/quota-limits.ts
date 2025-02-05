@@ -1,4 +1,5 @@
-import { SubscriptionTier } from "@/db/schema/users";
+import { SubscriptionTier } from "@/db/schema/subscriptions";
+
 
 interface QuotaLimits {
     absolute: number;
