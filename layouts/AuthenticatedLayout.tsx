@@ -1,8 +1,10 @@
 "use client";
+import ChatDeleteAlert from "@/components/chat/chat-delete-alert";
 import Header from "@/components/header/Header";
 import Sidebar from "@/components/sidebar/Sidebar";
 import { SelectChat } from "@/db/schema/chats";
 import { useChats } from "@/hooks/chats/useChats";
+import { useDeleteChat } from "@/hooks/chats/useDeleteChat";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useState } from "react";
@@ -22,6 +24,10 @@ export default function AuthenticatedLayout({
   children,
 }: AuthenticatedLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
 
   const { chats, isLoading, setCurrentChat } = useChats(userId);
   const { data: currentChat } = useQuery<SelectChat | undefined>({
@@ -30,8 +36,16 @@ export default function AuthenticatedLayout({
     enabled: !!queryClient.getQueryData(["currentChat"]),
   });
 
+  const handleDeleteChat = useDeleteChat(userId);
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   useHotkeys("s", () => toggleSidebar());
+
+  const confirmDelete = () => {
+    if (!chatToDelete) return;
+    handleDeleteChat.mutate(chatToDelete.id);
+    setChatToDelete(null);
+  };
 
   return (
     <div className="flex">
@@ -44,6 +58,8 @@ export default function AuthenticatedLayout({
           isLoading={isLoading}
           currentChatId={currentChat?.id || null}
           setCurrentChatId={setCurrentChat}
+          chatToDelete={chatToDelete}
+          setChatToDelete={setChatToDelete}
         />
       )}
       <div
@@ -57,6 +73,12 @@ export default function AuthenticatedLayout({
           currentPageTitle={currentPageTitle}
         />
         <main className="flex-1 overflow-hidden">{children}</main>
+        <ChatDeleteAlert
+          isOpen={chatToDelete !== null}
+          onClose={() => setChatToDelete(null)}
+          onConfirm={confirmDelete}
+          chatTitle={chatToDelete?.title || ""}
+        />
       </div>
     </div>
   );

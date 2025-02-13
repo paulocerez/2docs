@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import ChatContent from "./ChatContent";
 import { getAllMessagesForChat } from "@/db/queries/message/message";
 import { Message } from "@/types/message";
+import { getChatById } from "@/db/queries/chat/chat";
 
 export default async function ChatPage({
   params: { chatId },
@@ -12,14 +13,18 @@ export default async function ChatPage({
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 
-  // Fetch initial messages server-side
-  const initialMessages = await getAllMessagesForChat(chatId);
+  const [initialMessages, chat] = await Promise.all([
+    getAllMessagesForChat(chatId),
+    getChatById(chatId),
+  ]);
+
+  if (!chat) throw new Error("Chat not found");
 
   return (
     <ChatContent
       userId={userId}
       currentChatId={chatId}
-      currentChatTitle=""
+      currentChatTitle={chat.title}
       initialMessages={initialMessages as Message[]}
     />
   );
