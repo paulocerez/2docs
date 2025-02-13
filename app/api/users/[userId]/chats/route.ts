@@ -14,7 +14,7 @@ export async function GET(
   const session = await auth();
   
 	const authError = await authorizeUser(session, params.userId, "access chats");
-		if (authError) return authError;
+	if (authError) return authError;
 
   try {
     const result = await getAllChatsByUserId(params.userId);

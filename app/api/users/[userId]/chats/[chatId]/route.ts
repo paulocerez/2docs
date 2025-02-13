@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { updateChatTitle, deleteChatById } from "@/db/queries/chat/chat";
 import { authorizeUser } from "@/lib/auth/authorize-user";
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { userId: string; chatId: string } }
