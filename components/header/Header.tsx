@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { FiSidebar } from "react-icons/fi";
-import { IoRocketOutline } from "react-icons/io5";
 import Hotkey from "../ui/hotkey";
-import Soon from "../ui/soon";
 
 interface HeaderProps {
   isSidebarOpen: boolean;

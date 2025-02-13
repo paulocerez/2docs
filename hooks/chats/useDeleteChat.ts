@@ -27,7 +27,6 @@ export function useDeleteChat(userId: string) {
 			
 			// If we're on the deleted chat's page, redirect to /chat
 			router.push("/chat");
-			
 			toast.success("Chat deleted successfully");
 		},
 		onError: () => {

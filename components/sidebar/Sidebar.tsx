@@ -16,6 +16,8 @@ interface SidebarProps {
   toggleSidebar: () => void;
   chats: SelectChat[] | undefined;
   isLoading: boolean;
+  chatToDelete: { id: string; title: string } | null;
+  setChatToDelete: (id: { id: string; title: string } | null) => void;
 }
 
 const sidebarItems = [
@@ -37,6 +39,8 @@ export default function Sidebar({
   isSidebarOpen,
   chats,
   isLoading,
+  chatToDelete,
+  setChatToDelete,
 }: SidebarProps) {
   const pathname = usePathname();
 
@@ -78,6 +82,9 @@ export default function Sidebar({
             currentChatId={currentChatId}
             setCurrentChatId={setCurrentChatId}
             isLoading={isLoading}
+            userId={userId}
+            chatToDelete={chatToDelete}
+            setChatToDelete={setChatToDelete}
           />
         </div>
       </div>
