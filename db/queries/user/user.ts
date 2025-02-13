@@ -20,7 +20,7 @@ export async function getUserByEmail(email: string) {
 	return result
 }
 
-export async function createUserByEmail(email: string, name?: string) {
+export async function createUserByEmail(email: string, name?: string, id?: string) {
 	const [result] = await db.insert(users).values({ email, name: name || email.split('@')[0], hasPassword: true }).returning()
 	return result
 }

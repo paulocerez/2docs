@@ -1,17 +1,23 @@
 import { db } from "../../db";
-import { eq, and, desc } from "drizzle-orm";
-import { subscriptions, subscriptionHistory, subscriptionUsage, SubscriptionTier, SubscriptionStatus } from "../../schema/subscriptions";
+import { eq, and } from "drizzle-orm";
+import { subscriptions, subscriptionHistory, subscriptionUsage, SubscriptionTier, SubscriptionStatus, SelectSubscription } from "../../schema/subscriptions";
 
 export async function getUserSubscriptionTier(userId: string): Promise<SubscriptionTier> {
     const [subscription] = await db
-        .select({ tier: subscriptions.tier })
+        .select()
         .from(subscriptions)
-        .where(and(
-            eq(subscriptions.userId, userId),
-            eq(subscriptions.status, SubscriptionStatus.ACTIVE)
-        ));
+        .where(eq(subscriptions.userId, userId));
     
-    return (subscription?.tier || SubscriptionTier.FREE) as SubscriptionTier;
+    return subscription?.tier as SubscriptionTier || SubscriptionTier.FREE;
+}
+
+export async function getUserSubscription(userId: string): Promise<SelectSubscription | null> {
+    const [subscription] = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, userId));
+
+    return subscription;
 }
 
 export async function createSubscription(
@@ -50,77 +56,49 @@ export async function createSubscription(
 export async function updateSubscription(
     userId: string,
     tier: SubscriptionTier,
-    stripeCustomerId?: string,
-    stripeSubscriptionId?: string
+    stripeCustomerId: string,
+    stripeSubscriptionId: string
 ) {
-    // Get current subscription
-    const [currentSubscription] = await db
+    const [subscription] = await db
         .select()
         .from(subscriptions)
-        .where(and(
-            eq(subscriptions.userId, userId),
-            eq(subscriptions.status, SubscriptionStatus.ACTIVE)
-        ));
-
-    if (!currentSubscription) {
-        return createSubscription(userId, tier, stripeCustomerId, stripeSubscriptionId);
-    }
-
-    // Update subscription
-    const [updatedSubscription] = await db
-        .update(subscriptions)
-        .set({
-            tier,
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: tier === SubscriptionTier.FREE ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            stripeCustomerId,
-            stripeSubscriptionId,
-        })
-        .where(eq(subscriptions.id, currentSubscription.id))
-        .returning();
-
-    // Record in history
-    await db.insert(subscriptionHistory).values({
-        subscriptionId: currentSubscription.id,
-        userId,
-        tier,
-        status: SubscriptionStatus.ACTIVE,
-        startDate: new Date(),
-        reason: `Upgraded to ${tier}`,
-    });
-
-    return updatedSubscription;
-}
-
-export async function cancelSubscription(userId: string, reason: string = 'User canceled') {
-    const [subscription] = await db
-        .update(subscriptions)
-        .set({
-            status: SubscriptionStatus.CANCELED,
-            tier: SubscriptionTier.FREE,
-            canceledAt: new Date(),
-            endDate: new Date(),
-            stripeSubscriptionId: null,
-        })
-        .where(and(
-            eq(subscriptions.userId, userId),
-            eq(subscriptions.status, SubscriptionStatus.ACTIVE)
-        ))
-        .returning();
+        .where(eq(subscriptions.userId, userId));
 
     if (subscription) {
-        await db.insert(subscriptionHistory).values({
-            subscriptionId: subscription.id,
-            userId,
-            tier: SubscriptionTier.FREE,
-            status: SubscriptionStatus.CANCELED,
-            startDate: subscription.startDate,
-            endDate: subscription.endDate,
-            reason,
-        });
+        return await db
+            .update(subscriptions)
+            .set({
+                tier,
+                stripeCustomerId,
+                stripeSubscriptionId,
+                status: SubscriptionStatus.ACTIVE,
+                currentPeriodStart: new Date(),
+            })
+            .where(eq(subscriptions.userId, userId))
+            .returning();
     }
 
-    return subscription;
+    return await db
+        .insert(subscriptions)
+        .values({
+            userId,
+            tier,
+            stripeCustomerId,
+            stripeSubscriptionId,
+            status: SubscriptionStatus.ACTIVE,
+        })
+        .returning();
+}
+
+export async function cancelSubscription(userId: string) {
+    return await db
+        .update(subscriptions)
+        .set({
+            status: SubscriptionStatus.CANCELED,
+            canceledAt: new Date(),
+        })
+        .where(eq(subscriptions.userId, userId))
+        .returning();
 }
 
 export async function getSubscriptionUsage(

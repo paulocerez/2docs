@@ -5,7 +5,6 @@ import {
 	text,
 	primaryKey,
 	integer,
-	varchar,
 	index,
 } from "drizzle-orm/pg-core"
 import type { AdapterAccountType } from "next-auth/adapters"
