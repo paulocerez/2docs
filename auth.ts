@@ -9,7 +9,18 @@ import { verifyEmailLogin } from "./lib/auth/email-auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	providers: [
-		Google,
+		Google({
+			clientId: process.env.AUTH_GOOGLE_ID,
+			clientSecret: process.env.AUTH_GOOGLE_SECRET,
+			authorization: {
+				params: {
+					prompt: "consent",
+					access_type: "offline",
+					response_type: "code",
+					scope: "openid email profile"
+				}
+			}
+		}),
 		CredentialsProvider({
 			name: "credentials",
 			credentials: {
@@ -35,57 +46,63 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 	],
 	adapter: DrizzleAdapter(db),
 	session: {
-		strategy: "jwt", // password-email auth
+		strategy: "jwt",
 	},
 	callbacks: {
 		// called when user logs in > access to session and user object from the db
 		async session({session, token}) {
-			const googleAccount = await getGoogleAccountByUserId(token.id as string)
+			if (token.provider === "google") {
+				const googleAccount = await getGoogleAccountByUserId(token.id as string)
 
-			if (googleAccount && googleAccount.expires_at && googleAccount.expires_at * 1000 < Date.now()) {
-				try {
-					const response = await fetch("https://oauth2.googleapis.com/token", {
-						method: "POST",
-						body: new URLSearchParams({
-						  client_id: process.env.AUTH_GOOGLE_ID!,
-						  client_secret: process.env.AUTH_GOOGLE_SECRET!,
-						  grant_type: "refresh_token",
-						  refresh_token: googleAccount.refresh_token ?? "",
-						}),
-					  })
+				if (googleAccount?.refresh_token) {
+					const tokenExpiryTime = googleAccount.expires_at ? googleAccount.expires_at * 1000 : 0
+					const shouldRefreshToken = tokenExpiryTime ? tokenExpiryTime <= Date.now() : false
 
-					  const tokensOrError = await response.json()
+					if (shouldRefreshToken) {
+						try {
+							const response = await fetch("https://oauth2.googleapis.com/token", {
+								method: "POST",
+								headers: { "Content-Type": "application/x-www-form-urlencoded" },
+								body: new URLSearchParams({
+									client_id: process.env.AUTH_GOOGLE_ID!,
+									client_secret: process.env.AUTH_GOOGLE_SECRET!,
+									grant_type: "refresh_token",
+									refresh_token: googleAccount.refresh_token,
+								}),
+							})
 
-					  if (!response.ok) throw tokensOrError
-			
-					  const newTokens = tokensOrError as {
-						access_token: string
-						expires_in: number
-						refresh_token: string
-					  }
+							const tokens = await response.json()
 
-					  await updateGoogleAccessToken(token.id as string, {
-						access_token: newTokens.access_token,
-						expires_at: Math.floor(Date.now() / 1000 + newTokens.expires_in),
-						refresh_token: newTokens.refresh_token,
-					  })
+							if (!response.ok) throw tokens
 
-				} catch (error) {
-					console.error("Error refreshing Google access token", error)
-					session.error = "RefreshTokenError"
+							await updateGoogleAccessToken(token.id as string, {
+								access_token: tokens.access_token,
+								expires_at: Math.floor(Date.now() / 1000 + tokens.expires_in),
+								// Only update refresh_token if a new one was provided
+								...(tokens.refresh_token && { refresh_token: tokens.refresh_token }),
+							})
+						} catch (error) {
+							console.error("Error refreshing Google access token", error)
+							session.error = "RefreshTokenError"
+						}
+					}
 				}
 			}
 
 			if (session.user) {
-			  session.user.id = token.id as string;
+				session.user.id = token.id as string
 			}
-			return session;
+			return session
 		},
 
-		async jwt({ token, user }) {
+		async jwt({ token, user, account }) {
 			if (user) {
 				token.id = user.id
 				token.email = user.email
+			}
+			// Save the provider to the token right after signing in
+			if (account) {
+				token.provider = account.provider
 			}
 			return token
 		},
