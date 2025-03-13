@@ -28,7 +28,7 @@ function DocumentationContentInner({ userId }: { userId: string }) {
   if (documentationError) return <div>Error loading documentation</div>;
 
   return (
-    <AuthenticatedLayout userId={userId} currentPageTitle="Documentation Hub">
+    <AuthenticatedLayout userId={userId} currentPageTitle="Documentations">
       <div className="container mx-auto px-4 py-8 pt-16 flex flex-col space-y-8">
         {documentation.length === 0 ? (
           <NoDataAvailable title="Documentation" />

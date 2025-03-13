@@ -89,7 +89,7 @@ function WorkflowContentInner({ userId }: { userId: string }) {
   );
 
   return (
-    <AuthenticatedLayout userId={userId} currentPageTitle="Your Workflows">
+    <AuthenticatedLayout userId={userId} currentPageTitle="Workflows">
       <div className="container mx-auto px-4 py-8 pt-16 flex flex-col space-y-8">
         <div className="flex justify-end items-center">
           <button

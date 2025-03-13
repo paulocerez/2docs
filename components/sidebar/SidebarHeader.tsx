@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { SelectUser } from "@/db/schema/users";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import Hotkey from "../ui/hotkey";
 
 export interface SidebarHeaderProps {
@@ -72,7 +71,7 @@ export default function SidebarHeader({
           />
         )}
         <p className="text-sm text-gray-700 dark:text-gray-300">
-          {user?.name || "User"}
+          {user?.name || "Loading..."}
         </p>
         <div
           className={`transition-transform duration-300 ease-in-out ${

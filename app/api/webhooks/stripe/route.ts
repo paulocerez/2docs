@@ -84,7 +84,7 @@ break;
       case "customer.subscription.deleted": {
 		  
 		  // revoke access to the user, fired once subscription is cancelled and the payment subscription lifecycle is over
-		  const subscription = await stripe.subscriptions.retrieve(data.object.id);
+		  const subscription = data.object as Stripe.Subscription;
 		  const userId = subscription.metadata.userId;
 		  
 		  if (userId) {

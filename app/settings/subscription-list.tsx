@@ -82,7 +82,7 @@ export const plans: Plan[] = [
     ],
   },
   {
-    name: "Enterprise",
+    name: "Test",
     description: "Custom solutions for teams",
     priceId: null,
     link: "mailto:sales@2docs.ai",
