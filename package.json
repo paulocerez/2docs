@@ -60,7 +60,7 @@
     "sonner": "^1.7.2",
     "stripe": "^17.5.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-react": "^5.18.2",
+    "swagger-ui-react": "^5.20.2",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.0",
